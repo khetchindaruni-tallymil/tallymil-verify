@@ -9,9 +9,8 @@ const BAG_DATABASE = {
 };
 
 module.exports = async (req, res) => {
-  const { id } = req.query;
-
-  // ค้นหาข้อมูลกระเป๋าจาก id
+  // รองรับทั้งการส่งค่าแบบ ?id= หรือ ?uid= เพื่อไม่ให้พลาดอีก
+  const id = req.query.id || req.query.uid;
   const bagInfo = BAG_DATABASE[id];
 
   if (!bagInfo) {
@@ -24,21 +23,20 @@ module.exports = async (req, res) => {
           <title>TALLY MIL - Not Found</title>
           <style>
               body { font-family: sans-serif; background: #0b0f19; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-              .card { background: #131b2e; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 320px; text-align: center; border: 1px solid #1e293b; }
+              .card { background: #131b2e; padding: 30px; border-radius: 16px; width: 320px; text-align: center; border: 1px solid #1e293b; }
               h2 { color: #ef4444; margin-bottom: 5px; }
           </style>
       </head>
       <body>
           <div class="card">
               <h2>⚠️ ไม่พบข้อมูล</h2>
-              <p style="font-size: 14px; color: #94a3b8;">ไม่พบรหัสสินค้านี้ในระบบ</p>
+              <p style="font-size: 14px; color: #94a3b8;">ไม่พบรหัสสินค้านี้ในระบบ (รหัสที่ส่งมา: ${id})</p>
           </div>
       </body>
       </html>
     `);
   }
 
-  // ส่งหน้าแสดงผลสินค้าแท้
   return res.status(200).setHeader('Content-Type', 'text/html').send(`
     <!DOCTYPE html>
     <html lang="th">
@@ -48,7 +46,7 @@ module.exports = async (req, res) => {
         <title>TALLY MIL - Authenticity Verification</title>
         <style>
             body { font-family: sans-serif; background: #0b0f19; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-            .card { background: #131b2e; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 320px; text-align: center; border: 1px solid #1e293b; }
+            .card { background: #131b2e; padding: 30px; border-radius: 16px; width: 320px; text-align: center; border: 1px solid #1e293b; }
             h2 { color: #38bdf8; margin-bottom: 5px; }
             .status { background: #10b981; color: #000; font-weight: bold; padding: 10px; border-radius: 8px; margin: 15px 0; font-size: 16px; }
             .info { text-align: left; font-size: 14px; margin-top: 15px; background: #0f172a; padding: 15px; border-radius: 8px; line-height: 1.6; }
