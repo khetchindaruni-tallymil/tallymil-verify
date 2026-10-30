@@ -1,8 +1,8 @@
 const BAG_DATABASE = {
-  'BAG-001': {
+  'BAG-002': {
     model: 'Hexagon Tote Bag',
     serial: 'TM-HEX-001',
-    owner: 'คุณ เขตชินดา (Khetchinda)',
+    owner: 'คุณ พรรษวุฒิ พุ่มดอกไม้
     purchaseDate: '2026-03-31',
     warrantyExpiry: '2027-03-31',
     status: 'AUTHENTIC'
