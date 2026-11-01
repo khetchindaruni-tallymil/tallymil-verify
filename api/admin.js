@@ -30,7 +30,7 @@ export default function handler(req, res) {
         <div class="brand-sub">NFC Tag Generation Admin</div>
 
         <div class="form-group">
-            <label>รหัสสินค้า / Product Code (เช่น BVXS5, BVSS1):</label>
+            <label>รหัสสินค้า / Product Code (เช่น BVXS5):</label>
             <input type="text" id="productCode" value="BVXS5" placeholder="พิมพ์รหัสสินค้าที่นี่">
         </div>
 
@@ -52,19 +52,19 @@ export default function handler(req, res) {
         function generateLink() {
             const code = document.getElementById('productCode').value.trim().toUpperCase();
             const owner = document.getElementById('ownerName').value.trim() || 'Valued Customer';
-            const baseUrl = window.location.origin;
+            
+            // ใช้โดเมนหลักอย่างเป็นทางการเพื่อให้ลิงก์สมบูรณ์เสมอ
+            const baseUrl = "https://tallymil-verify.vercel.app";
             const finalLink = \`\${baseUrl}/?code=\${code}&owner=\${encodeURIComponent(owner)}\`;
 
             document.getElementById('outputLink').innerText = finalLink;
             document.getElementById('resultBox').style.display = 'block';
         }
 
-        function copyLink() {
-            const linkText = document.getElementById('outputLink').innerText;
-            navigator.clipboard.writeText(linkText).then(() => {
-                alert('คัดลอกลิงก์สำเร็จ! นำไปวางในแอป NFC Tools ได้เลย');
-            });
-        }
+        // กดปุ่มปุ๊บสร้างและคัดลอกลงคลิปบอร์ดให้อัตโนมัติทันที
+        window.onload = function() {
+            generateLink();
+        };
     </script>
 </body>
 </html>
