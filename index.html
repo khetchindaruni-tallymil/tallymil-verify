@@ -116,60 +116,63 @@
   </div>
 
   <script>
+    // ฐานข้อมูลรหัสสินค้าทั้งหมดที่ถูกต้อง
     const database = {
+      // Hexag Bovin - XS
+      'BVXS1': { model: 'Hexag Bovin', size: 'XS', color: 'Onyx Black', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVXS2': { model: 'Hexag Bovin', size: 'XS', color: 'Glacier Mist', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVXS3': { model: 'Hexag Bovin', size: 'XS', color: 'Cashmere Ivory', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVXS4': { model: 'Hexag Bovin', size: 'XS', color: 'Burgundy Rouge', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVXS5': { model: 'Hexag Bovin', size: 'XS', color: 'Camel Suede', startDate: '2026-11-02', owner: 'คุณมินตา' },
+
+      // Hexag Bovin - S
       'BVSS1': { model: 'Hexag Bovin', size: 'S', color: 'Onyx Black', startDate: '2026-11-02', owner: 'คุณมินตา' },
-      'BVSS2': { model: 'Hexag Bovin', size: 'S', color: 'Glacier Mist', startDate: '2026-11-02', owner: 'คุณมินตา' }
-    };
+      'BVSS2': { model: 'Hexag Bovin', size: 'S', color: 'Glacier Mist', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVSS3': { model: 'Hexag Bovin', size: 'S', color: 'Cashmere Ivory', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVSS4': { model: 'Hexag Bovin', size: 'S', color: 'Burgundy Rouge', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVSS5': { model: 'Hexag Bovin', size: 'S', color: 'Camel Suede', startDate: '2026-11-02', owner: 'คุณมินตา' },
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('id') ? urlParams.get('id').trim() : (urlParams.get('code') ? urlParams.get('code').trim() : 'BVSS1');
+      // Hexag Bovin - Medium
+      'BVSL1': { model: 'Hexag Bovin', size: 'Medium', color: 'Onyx Black', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVSL2': { model: 'Hexag Bovin', size: 'Medium', color: 'Glacier Mist', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVSL3': { model: 'Hexag Bovin', size: 'Medium', color: 'Cashmere Ivory', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVSL4': { model: 'Hexag Bovin', size: 'Medium', color: 'Burgundy Rouge', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVSL5': { model: 'Hexag Bovin', size: 'Medium', color: 'Camel Suede', startDate: '2026-11-02', owner: 'คุณมินตา' },
 
-    let item = {};
+      // Hexag Bovin - Large
+      'BVL1': { model: 'Hexag Bovin', size: 'Large', color: 'Onyx Black', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVL2': { model: 'Hexag Bovin', size: 'Large', color: 'Glacier Mist', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVL3': { model: 'Hexag Bovin', size: 'Large', color: 'Cashmere Ivory', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVL4': { model: 'Hexag Bovin', size: 'Large', color: 'Burgundy Rouge', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVL5': { model: 'Hexag Bovin', size: 'Large', color: 'Camel Suede', startDate: '2026-11-02', owner: 'คุณมินตา' },
 
-    if (urlParams.get('model') || urlParams.get('size') || urlParams.get('color')) {
-      item = {
-        model: urlParams.get('model') ? decodeURIComponent(urlParams.get('model')) : 'Hexag Bovin',
-        size: urlParams.get('size') ? decodeURIComponent(urlParams.get('size')) : 'XS',
-        color: urlParams.get('color') ? decodeURIComponent(urlParams.get('color')) : 'Onyx Black',
-        startDate: urlParams.get('date') ? urlParams.get('date') : '2026-11-02',
-        owner: urlParams.get('owner') ? decodeURIComponent(urlParams.get('owner')) : 'คุณมินตา'
-      };
-    } else if (database[productId]) {
-      item = database[productId];
-    } else {
-      item = { model: 'Hexag Bovin', size: 'S', color: 'Onyx Black', startDate: '2026-11-02', owner: 'คุณมินตา' };
-    }
+      // Hexag Bovin - Travel M & L
+      'BVTM1': { model: 'Hexag Bovin', size: 'Travel M', color: 'Onyx Black', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVTM5': { model: 'Hexag Bovin', size: 'Travel M', color: 'Camel Suede', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVTL1': { model: 'Hexag Bovin', size: 'Travel L', color: 'Onyx Black', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVTL5': { model: 'Hexag Bovin', size: 'Travel L', color: 'Camel Suede', startDate: '2026-11-02', owner: 'คุณมินตา' },
 
-    document.getElementById('model').innerText = item.model;
-    document.getElementById('size').innerText = item.size;
-    document.getElementById('color').innerText = item.color;
-    document.getElementById('code').innerText = productId;
-    document.getElementById('owner').innerText = item.owner;
-    document.getElementById('startDate').innerText = item.startDate;
+      // Hexag Vegan - XS
+      'VGXS1': { model: 'Hexag Vegan', size: 'XS', color: 'Onyx Wave', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'VGXS2': { model: 'Hexag Vegan', size: 'XS', color: 'Navy Obsidian', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'VGXS3': { model: 'Hexag Vegan', size: 'XS', color: 'Emerald Forest', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'VGXS4': { model: 'Hexag Vegan', size: 'XS', color: 'Terracotta Spice', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'VGXS5': { model: 'Hexag Vegan', size: 'XS', color: 'Pigeon Grey', startDate: '2026-11-02', owner: 'คุณมินตา' },
 
-    const startDate = new Date(item.startDate);
-    const endDate = new Date(startDate);
-    endDate.setFullYear(endDate.getFullYear() + 1);
+      // Hexag Vegan - S
+      'VGSS1': { model: 'Hexag Vegan', size: 'S', color: 'Onyx Wave', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'VGSS2': { model: 'Hexag Vegan', size: 'S', color: 'Navy Obsidian', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'VGSS3': { model: 'Hexag Vegan', size: 'S', color: 'Emerald Forest', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'VGSS4': { model: 'Hexag Vegan', size: 'S', color: 'Terracotta Spice', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'VGSS5': { model: 'Hexag Vegan', size: 'S', color: 'Pigeon Grey', startDate: '2026-11-02', owner: 'คุณมินตา' },
 
-    function updateTimer() {
-      const now = new Date();
-      const diff = endDate - now;
+      // Hexag Vegan - Medium
+      'VGSL1': { model: 'Hexag Vegan', size: 'Medium', color: 'Onyx Wave', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'VGSL2': { model: 'Hexag Vegan', size: 'Medium', color: 'Navy Obsidian', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'VGSL3': { model: 'Hexag Vegan', size: 'Medium', color: 'Emerald Forest', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'VGSL4': { model: 'Hexag Vegan', size: 'Medium', color: 'Terracotta Spice', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'VGSL5': { model: 'Hexag Vegan', size: 'Medium', color: 'Pigeon Grey', startDate: '2026-11-02', owner: 'คุณมินตา' },
 
-      if (diff > 0) {
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((diff / 1000 / 60) % 60);
-        const seconds = Math.floor((diff / 1000) % 60);
-
-        document.getElementById('warrantyDays').innerText = 
-          `${days} วัน ${hours}ชม. ${minutes}น. ${seconds}วินาที`;
-      } else {
-        document.getElementById('warrantyDays').innerText = 'หมดระยะเวลารับประกัน';
-      }
-    }
-
-    updateTimer();
-    setInterval(updateTimer, 1000);
-  </script>
-</body>
-</html>
+      // Hexag Vegan - Large
+      'VGL1': { model: 'Hexag Vegan', size: 'Large', color: 'Onyx Wave', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'VGL2': { model: 'Hexag Vegan', size: 'Large', color: 'Navy Obsidian', startDate: '2026-11-02', owner: '
