@@ -1,48 +1,90 @@
-module.exports = async (req, res) => {
-  if (req.method === 'POST' || req.query.code) {
-    const code = req.query.code || '';
-    const owner = req.query.owner || '';
-    const host = req.headers['x-forwarded-host'] || req.headers.host;
-    const protocol = req.headers['x-forwarded-proto'] || 'https';
-    
-    // ลิงก์จะวิ่งตรงเข้าหน้า index.html โดยตรงทันที ไม่ผ่าน Serverless ให้พัง
-    const targetUrl = `${protocol}://${host}/?code=${encodeURIComponent(code)}&owner=${encodeURIComponent(owner)}`;
-    
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(200).send(`
-      <!DOCTYPE html>
-      <html lang="th">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>TALLY MiL - NFC Link Generator</title>
-          <style>
-              body { font-family: -apple-system, sans-serif; background: #0c0a09; color: #f5f5f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-              .box { background: #1c1917; padding: 30px; border-radius: 20px; border: 1px solid #d4af37; width: 100%; max-width: 400px; text-align: center; }
-              input, button { width: 100%; padding: 12px; margin-top: 12px; border-radius: 10px; border: 1px solid #444; background: #292524; color: #fff; font-size: 14px; box-sizing: border-box; }
-              button { background: #d4af37; color: #0c0a09; font-weight: bold; cursor: pointer; border: none; }
-              textarea { width: 100%; height: 80px; margin-top: 12px; padding: 10px; background: #0c0a09; color: #d4af37; border-radius: 8px; font-family: monospace; font-size: 12px; }
-          </style>
-      </head>
-      <body>
-          <div class="box">
-              <h2>TALLY MiL Admin</h2>
-              <p style="font-size: 12px; color: #a8a29e; margin-top: 5px;">NFC Link Generator</p>
-              <form method="GET">
-                  <input type="text" name="code" placeholder="Product Code (e.g. BVXS5)" value="${code}" required>
-                  <input type="text" name="owner" placeholder="Owner Name (e.g. Minta)" value="${owner}" required>
-                  <button type="submit">Generate NFC Link</button>
-              </form>
-              ${code ? `
-                  <textarea readonly id="linkBox">${targetUrl}</textarea>
-                  <button onclick="navigator.clipboard.writeText(document.getElementById('linkBox').value); alert('Copied!');" style="background: #10b981; color: #fff;">Copy URL for NFC</button>
-              ` : ''}
-          </div>
-      </body>
-      </html>
-    `);
-  }
-  
-  res.writeHead(302, { Location: '/api/admin?code=BVXS5&owner=Minta' });
-  res.end();
-};
+export default function handler(req, res) {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.status(200).send(`
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TALLY MiL - NFC Admin Generator</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0c0a09; color: #f5f5f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .admin-card { background: #1c1917; padding: 32px 24px; border-radius: 24px; width: 100%; max-width: 420px; border: 1px solid rgba(212, 175, 55, 0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
+        .brand-header { font-family: serif; font-size: 28px; font-weight: 800; color: #fef3c7; letter-spacing: 3px; text-align: center; margin-bottom: 4px; }
+        .brand-sub { font-size: 10px; color: #d4af37; text-transform: uppercase; letter-spacing: 2px; text-align: center; margin-bottom: 24px; }
+        .form-group { margin-bottom: 16px; }
+        label { color: #a8a29e; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
+        select, input { width: 100%; padding: 12px 16px; background: #0c0a09; border: 1px solid #383531; border-radius: 12px; color: #fff; font-size: 14px; outline: none; }
+        select:focus, input:focus { border-color: #d4af37; }
+        .btn { width: 100%; background: linear-gradient(135deg, #d4af37, #996515); color: #0c0a09; font-weight: 700; padding: 14px; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; transition: opacity 0.2s; }
+        .btn:hover { opacity: 0.9; }
+        .result-box { margin-top: 24px; background: #0c0a09; border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 14px; padding: 16px; display: none; }
+        .result-title { font-size: 10px; color: #d4af37; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .result-link { font-family: monospace; font-size: 12px; color: #34d399; word-break: break-all; margin-bottom: 12px; display: block; background: rgba(0,0,0,0.5); padding: 8px; border-radius: 8px; }
+        .btn-copy { background: #10b981; color: #fff; padding: 8px 12px; border: none; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="admin-card">
+        <div class="brand-header">TALLY MiL</div>
+        <div class="brand-sub">NFC Tag Generation Admin</div>
+
+        <div class="form-group">
+            <label>เลือกุ่นสินค้า / Model & Series:</label>
+            <select id="productCode">
+                <optgroup label="Hexag Bovin (XS)">
+                    <option value="BVXS1">Hexag Bovin - XS - Onyx Black</option>
+                    <option value="BVXS2">Hexag Bovin - XS - Glacier Mist</option>
+                    <option value="BVXS3">Hexag Bovin - XS - Cashmere Ivory</option>
+                    <option value="BVXS4">Hexag Bovin - XS - Burgundy Rouge</option>
+                    <option value="BVXS5" selected>Hexag Bovin - XS - Camel Suede</option>
+                </optgroup>
+                <optgroup label="Hexag Bovin (S)">
+                    <option value="BVSS1">Hexag Bovin - S - Onyx Black</option>
+                    <option value="BVSS5">Hexag Bovin - S - Camel Suede</option>
+                </optgroup>
+                <optgroup label="Hexag Vegan (XS)">
+                    <option value="VGXS1">Hexag Vegan - XS - Onyx Wave</option>
+                    <option value="VGXS2">Hexag Vegan - XS - Navy Obsidian</option>
+                    <option value="VGXS5">Hexag Vegan - XS - Pigeon Grey</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>ชื่อผู้ถือครอง / Registered Owner:</label>
+            <input type="text" id="ownerName" value="Minta Pumdokmai" placeholder="ระบุชื่อ-นามสกุลลูกค้า">
+        </div>
+
+        <button class="btn" onclick="generateLink()">สร้างลิงก์สำหรับเขียน NFC</button>
+
+        <div class="result-box" id="resultBox">
+            <div class="result-title">Generated NFC Link:</div>
+            <span class="result-link" id="outputLink"></span>
+            <button class="btn-copy" onclick="copyLink()">คัดลอกลิงก์ (Copy Link)</button>
+        </div>
+    </div>
+
+    <script>
+        function generateLink() {
+            const code = document.getElementById('productCode').value;
+            const owner = document.getElementById('ownerName').value.trim() || 'Valued Customer';
+            const baseUrl = window.location.origin;
+            const finalLink = \`\${baseUrl}/?code=\${code}&owner=\${encodeURIComponent(owner)}\`;
+
+            document.getElementById('outputLink').innerText = finalLink;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function copyLink() {
+            const linkText = document.getElementById('outputLink').innerText;
+            navigator.clipboard.writeText(linkText).then(() => {
+                alert('คัดลอกลิงก์สำเร็จ! นำไปวางในแอป NFC Tools ได้เลย');
+            });
+        }
+    </script>
+</body>
+</html>
+  `);
+}
