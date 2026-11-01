@@ -8,6 +8,45 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0c0a09; color: #f5f5f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
 
+        /* --- หน้าจอ Splash Screen ต้อนรับสุดหรู --- */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0c0a09; color: #fdfbf7; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+            text-align: center; padding: 30px;
+            animation: fadeOutSplash 0.6s ease 2s forwards;
+        }
+
+        @keyframes fadeOutSplash {
+            0% { opacity: 1; visibility: visible; }
+            99% { opacity: 0; visibility: visible; }
+            100% { opacity: 0; visibility: hidden; display: none; pointer-events: none; }
+        }
+        
+        .splash-brand {
+            font-family: serif; font-size: 36px; font-weight: 800; color: #fef3c7;
+            letter-spacing: 8px; margin-bottom: 14px; text-transform: uppercase;
+            animation: assembleText 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0; transform: translateY(20px) scale(0.9);
+            text-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .splash-sub {
+            font-size: 12px; color: #d4af37; text-transform: uppercase; letter-spacing: 3px;
+            animation: fadeInSub 1s ease 0.5s forwards; opacity: 0;
+        }
+
+        @keyframes assembleText {
+            0% { opacity: 0; transform: translateY(20px) scale(0.85); letter-spacing: 14px; }
+            100% { opacity: 1; transform: translateY(0) scale(1); letter-spacing: 8px; }
+        }
+
+        @keyframes fadeInSub {
+            0% { opacity: 0; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Main Warranty Card --- */
         .card {
             background: #1c1917; padding: 32px 24px; border-radius: 24px;
             width: 100%; max-width: 380px; border: 1px solid rgba(212, 175, 55, 0.4);
@@ -41,6 +80,13 @@
 </head>
 <body>
 
+    <!-- หน้าจอ Splash Screen ต้อนรับ -->
+    <div id="splash-screen">
+        <div class="splash-brand">TALLY MiL</div>
+        <div class="splash-sub">WELCOME TO THE FAMILY TALLY MiL</div>
+    </div>
+
+    <!-- บัตรรับประกันสินค้า -->
     <div class="card">
         <div class="brand-header">TALLY MiL</div>
         <div class="brand-sub">Certificate of Authenticity & Warranty</div>
@@ -68,12 +114,10 @@
     </div>
 
     <script>
-        // ดึงค่าแบบสตรอง ป้องกันพารามิเตอร์เพี้ยน
         const urlParams = new URLSearchParams(window.location.search);
         let code = urlParams.get('code');
         let owner = urlParams.get('owner');
 
-        // ถ้าหาไม่เจอใน query string ให้ลองดึงแบบตัดแต่ง string ตรงๆ เผื่อกรณีลิงก์ถูก encode ซ้อน
         if (!code && window.location.search.includes('code=')) {
             try {
                 const parts = window.location.search.split('code=')[1];
@@ -100,16 +144,4 @@
             'BVSS1': { model: 'Hexag Bovin', size: 'S', color: 'Onyx Black' },
             'BVSS2': { model: 'Hexag Bovin', size: 'S', color: 'Glacier Mist' },
             'BVSS3': { model: 'Hexag Bovin', size: 'S', color: 'Cashmere Ivory' },
-            'BVSS4': { model: 'Hexag Bovin', size: 'S', color: 'Burgundy Rouge' },
-            'BVSS5': { model: 'Hexag Bovin', size: 'S', color: 'Camel Suede' },
-
-            'BVSL1': { model: 'Hexag Bovin', size: 'Medium', color: 'Onyx Black' },
-            'BVSL2': { model: 'Hexag Bovin', size: 'Medium', color: 'Glacier Mist' },
-            'BVSL3': { model: 'Hexag Bovin', size: 'Medium', color: 'Cashmere Ivory' },
-            'BVSL4': { model: 'Hexag Bovin', size: 'Medium', color: 'Burgundy Rouge' },
-            'BVSL5': { model: 'Hexag Bovin', size: 'Medium', color: 'Camel Suede' },
-
-            'BVL1': { model: 'Hexag Bovin', size: 'Large', color: 'Onyx Black' },
-            'BVL2': { model: 'Hexag Bovin', size: 'Large', color: 'Glacier Mist' },
-            'BVL3': { model: 'Hexag Bovin', size: 'Large', color: 'Cashmere Ivory' },
-            'BVL4': { model: 'Hexag Bovin', size: 'Large', color: 'Burgundy Rouge
+            'BV
