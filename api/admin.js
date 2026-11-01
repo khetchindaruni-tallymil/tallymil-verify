@@ -27,7 +27,12 @@ module.exports = async (req, res) => {
             
             <div class="form-group">
                 <label>รหัสสินค้าบนชิป (Short Code):</label>
-                <input type="text" id="shortCode" value="TM001" placeholder="เช่น TM001, TM002">
+                <input type="text" id="shortCode" value="TM001" placeholder="เช่น TM001">
+            </div>
+
+            <div class="form-group">
+                <label>ชื่อเจ้าของสินค้า (Customer Name):</label>
+                <input type="text" id="ownerName" value="คุณเชอรี่ (Khun Cherry)" placeholder="ระบุชื่อลูกค้าที่ซื้อ">
             </div>
 
             <button onclick="generateUrl()">สร้างลิงก์สำหรับ NFC (Short URL)</button>
@@ -44,7 +49,10 @@ module.exports = async (req, res) => {
             function generateUrl() {
                 const baseUrl = window.location.origin + '/api/check';
                 const code = document.getElementById('shortCode').value.trim() || 'TM001';
-                const finalUrl = baseUrl + '?code=' + code;
+                const owner = encodeURIComponent(document.getElementById('ownerName').value.trim() || 'ไม่ระบุชื่อ');
+                
+                // ส่งแค่ code กับ owner ไป เพื่อให้ลิงก์สั้นและเขียนลงชิปความจุน้อยได้
+                const finalUrl = baseUrl + '?code=' + code + '&owner=' + owner;
 
                 document.getElementById('finalUrl').innerText = finalUrl;
                 document.getElementById('byteCount').innerText = 'ขนาดลิงก์: ประมาณ ' + finalUrl.length + ' Bytes (เขียนลงชิป NTAG213 ได้แน่นอน)';
