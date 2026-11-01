@@ -1,17 +1,36 @@
 module.exports = async (req, res) => {
-  const { id, owner, model, start } = req.query;
+  const { code } = req.query;
 
-  // ถ้าไม่มีการแนบพารามิเตอร์มา ให้เด้งกลับไปหน้าแอดมิน
-  if (!id && !owner && !model) {
+  // --- ฐานข้อมูลรหัสย่อ สำหรับดึงข้อมูลภาษาไทย/อังกฤษเต็มรูปแบบ ---
+  const SHORT_CODES = {
+    'TM001': {
+      model: 'Hexag Bovin / Brown / Micro',
+      id: 'TM-HEXB-001',
+      owner: 'คุณเชอรี่ (Khun Cherry)',
+      start: '2026-10-31'
+    },
+    'TM002': {
+      model: 'Hexag Bovin / Brown / Micro',
+      id: 'TM-HEXB-002',
+      owner: 'คุณมินตา (Khun Minta)',
+      start: '2026-10-31'
+    },
+    'TM003': {
+      model: 'Hexag Vegan / Red / Mini',
+      id: 'TM-HEXV-003',
+      owner: 'คุณสมชาย (Khun Somchai)',
+      start: '2026-11-01'
+    }
+  };
+
+  // ถ้าไม่มีรหัสส่งมา หรือไม่มีรหัสนี้ในระบบ ให้ดีดกลับไปหน้าแอดมิน
+  if (!code || !SHORT_CODES[code]) {
     res.writeHead(302, { Location: '/api/admin' });
     res.end();
     return;
   }
 
-  const serialNo = id || 'TM-UNKNOWN';
-  const customerName = owner ? decodeURIComponent(owner) : 'ไม่ระบุชื่อ';
-  const productModel = model ? decodeURIComponent(model) : 'Hexag Bovin';
-  const startDate = start || '2026-10-31';
+  const item = SHORT_CODES[code];
 
   return res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(`
     <!DOCTYPE html>
@@ -24,7 +43,7 @@ module.exports = async (req, res) => {
             * { box-sizing: border-box; margin: 0; padding: 0; }
             body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #0c0a09; color: #f5f5f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; overflow: hidden; }
 
-            /* --- 1. หน้า Welcome Splash Screen (สีครีมหรูหรา) --- */
+            /* --- 1. หน้า Welcome Splash Screen (สีครีมอุ่นๆ หรูหรา) --- */
             #splash-screen {
                 position: fixed;
                 top: 0;
@@ -43,7 +62,6 @@ module.exports = async (req, res) => {
                 transition: opacity 1s ease-in-out, visibility 1s;
             }
 
-            /* เอฟเฟกต์โลโก้หมุนและค่อยๆ คลี่ออกอย่างนุ่มนวล */
             .luxury-logo-wrapper {
                 width: 80px;
                 height: 80px;
@@ -57,44 +75,22 @@ module.exports = async (req, res) => {
                 box-shadow: 0 10px 25px rgba(184, 151, 88, 0.25);
             }
 
-            .luxury-logo-text {
-                font-family: serif;
-                font-size: 22px;
-                font-weight: 700;
-                letter-spacing: 3px;
-                color: #8c6d31;
-            }
+            .luxury-logo-text { font-family: serif; font-size: 22px; font-weight: 700; letter-spacing: 3px; color: #8c6d31; }
 
             @keyframes spinLogo {
                 0% { transform: rotate(0deg) scale(0.9); }
                 100% { transform: rotate(360deg) scale(1.05); }
             }
 
-            .welcome-title {
-                font-family: serif;
-                font-size: 22px;
-                color: #1a1918;
-                letter-spacing: 1.5px;
-                margin-bottom: 8px;
-                opacity: 0;
-                animation: fadeInText 1.5s ease-forward 0.5s forwards;
-            }
-
-            .welcome-sub {
-                font-size: 12px;
-                color: #8c6d31;
-                text-transform: uppercase;
-                letter-spacing: 2px;
-                opacity: 0;
-                animation: fadeInText 1.5s ease-forward 0.8s forwards;
-            }
+            .welcome-title { font-family: serif; font-size: 22px; color: #1a1918; letter-spacing: 1.5px; margin-bottom: 8px; opacity: 0; animation: fadeInText 1.5s ease 0.5s forwards; }
+            .welcome-sub { font-size: 12px; color: #8c6d31; text-transform: uppercase; letter-spacing: 2px; opacity: 0; animation: fadeInText 1.5s ease 0.8s forwards; }
 
             @keyframes fadeInText {
                 to { opacity: 1; transform: translateY(0); }
                 from { opacity: 0; transform: translateY(10px); }
             }
 
-            /* --- 2. หน้า Certificate (ธีมดำ-ทองเดิม) --- */
+            /* --- 2. หน้า Certificate (ธีมดำ-ทอง หรูหรา) --- */
             .card { 
                 background: #1c1917; 
                 padding: 28px 20px; 
@@ -109,11 +105,7 @@ module.exports = async (req, res) => {
                 transition: opacity 1s ease, transform 1s ease;
             }
 
-            .card.show {
-                opacity: 1;
-                transform: scale(1);
-            }
-
+            .card.show { opacity: 1; transform: scale(1); }
             h2 { color: #fef3c7; font-size: 24px; margin-top: 0; margin-bottom: 4px; font-family: serif; letter-spacing: 2px; }
             .subtitle { font-size: 11px; color: #d4af37; text-transform: uppercase; margin-bottom: 18px; letter-spacing: 1.5px; }
             
@@ -146,51 +138,51 @@ module.exports = async (req, res) => {
     </head>
     <body>
 
-        <!-- หน้าต้อนรับสีครีม -->
+        <!-- หน้าต้อนรับสีครีม (Welcome Splash) -->
         <div id="splash-screen">
             <div class="luxury-logo-wrapper">
                 <div class="luxury-logo-text">TM</div>
             </div>
             <div class="welcome-title">Welcome to the family</div>
-            <div class="welcome-sub">with TALLY MiL</div>
+            <div class="welcome-sub">ยินดีต้อนรับสู่ครอบครัว TALLY MiL</div>
         </div>
 
-        <!-- หน้าบัตรรับประกันเดิม -->
+        <!-- หน้าใบรับประกัน (Certificate) -->
         <div class="card" id="main-card">
             <h2>TALLY MiL</h2>
-            <div class="subtitle">Certificate of Warranty</div>
+            <div class="subtitle">Certificate of Warranty / ใบรับประกันสินค้า</div>
             
-            <div class="badge-luxury">✓ AUTHENTIC & GUARANTEED</div>
+            <div class="badge-luxury">✓ AUTHENTIC & GUARANTEED (ของแท้และรับประกัน)</div>
 
             <div class="info-box">
                 <div class="info-row">
-                    <span class="label">รุ่นสินค้า / สี / ขนาด:</span>
-                    <span class="value">${productModel}</span>
+                    <span class="label">รุ่นสินค้า / สี / ขนาด (Model / Color / Size):</span>
+                    <span class="value">${item.model}</span>
                 </div>
                 <div class="info-row">
-                    <span class="label">รหัส Serial No.:</span>
-                    <span class="value">${serialNo}</span>
+                    <span class="label">รหัส Serial No. (Serial Number):</span>
+                    <span class="value">${item.id}</span>
                 </div>
                 <div class="info-row">
-                    <span class="label">ผู้รับสิทธิ์ / ลูกค้า:</span>
-                    <span class="value">${customerName}</span>
+                    <span class="label">ผู้รับสิทธิ์ / ลูกค้า (Registered Owner):</span>
+                    <span class="value">${item.owner}</span>
                 </div>
                 <div class="info-row">
-                    <span class="label">วันเริ่มรับประกัน:</span>
-                    <span class="value">${startDate}</span>
+                    <span class="label">วันเริ่มรับประกัน (Start Date):</span>
+                    <span class="value">${item.start}</span>
                 </div>
             </div>
 
             <div class="countdown-box">
-                <div class="countdown-title">WARRANTY REMAINING (1 YEAR)</div>
+                <div class="countdown-title">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</div>
                 <div id="countdown" class="timer">กำลังคำนวณ...</div>
             </div>
 
-            <div class="footer">ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL</div>
+            <div class="footer">Thank you for choosing TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL</div>
         </div>
 
         <script>
-            // สลับจากหน้าครีมไปหน้าบัตรรับประกันอัตโนมัติ
+            // สลับจากหน้าครีมต้อนรับ ไปหน้าใบรับประกันอัตโนมัติภายใน 2.8 วินาที
             window.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     const splash = document.getElementById('splash-screen');
@@ -198,13 +190,13 @@ module.exports = async (req, res) => {
                     
                     splash.style.opacity = '0';
                     splash.style.visibility = 'hidden';
-                    
                     card.classList.add('show');
-                }, 2800); // แสดงหน้าต้อนรับครีมไว้ 2.8 วินาที
+                }, 2800);
             });
 
+            // ฟังก์ชันนับถอยหลัง 1 ปีเต็มจากวันที่เริ่มรับประกัน
             function startCountdown() {
-                const startDateStr = "${startDate}";
+                const startDateStr = "${item.start}";
                 const start = new Date(startDateStr);
                 
                 const expireDate = new Date(start);
@@ -215,7 +207,7 @@ module.exports = async (req, res) => {
                     const diff = expireDate - now;
 
                     if (diff <= 0) {
-                        document.getElementById('countdown').innerText = "EXPIRED (หมดระยะเวลารับประกัน)";
+                        document.getElementById('countdown'].innerText = "EXPIRED / หมดระยะเวลารับประกัน";
                         document.getElementById('countdown').style.color = "#ef4444";
                         return;
                     }
@@ -226,7 +218,7 @@ module.exports = async (req, res) => {
                     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
                     document.getElementById('countdown').innerText = 
-                        \`\${days}d \${hours}h \${minutes}m \${seconds}s\`;
+                        days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
                 }
 
                 updateTimer();
