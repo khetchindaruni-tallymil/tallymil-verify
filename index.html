@@ -68,11 +68,28 @@
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get('code') ? params.get('code').trim().toUpperCase() : 'BVXS5';
-        const owner = params.get('owner') ? decodeURIComponent(params.get('owner')) : 'Valued Customer';
+        // ดึงค่าแบบสตรอง ป้องกันพารามิเตอร์เพี้ยน
+        const urlParams = new URLSearchParams(window.location.search);
+        let code = urlParams.get('code');
+        let owner = urlParams.get('owner');
 
-        // ฐานข้อมูลกระเป๋า TALLY MiL ครบถ้วนทุกรุ่น
+        // ถ้าหาไม่เจอใน query string ให้ลองดึงแบบตัดแต่ง string ตรงๆ เผื่อกรณีลิงก์ถูก encode ซ้อน
+        if (!code && window.location.search.includes('code=')) {
+            try {
+                const parts = window.location.search.split('code=')[1];
+                code = parts.split('&')[0];
+            } catch(e) {}
+        }
+        code = code ? decodeURIComponent(code).trim().toUpperCase() : 'BVSS1';
+
+        if (!owner && window.location.search.includes('owner=')) {
+            try {
+                const parts = window.location.search.split('owner=')[1];
+                owner = parts.split('&')[0];
+            } catch(e) {}
+        }
+        owner = owner ? decodeURIComponent(owner).replace(/20/g, ' ').trim() : 'Minta Pumdokmai';
+
         const PRODUCT_DATABASE = {
             'BVXS1': { model: 'Hexag Bovin', size: 'XS', color: 'Onyx Black' },
             'BVXS2': { model: 'Hexag Bovin', size: 'XS', color: 'Glacier Mist' },
@@ -95,70 +112,4 @@
             'BVL1': { model: 'Hexag Bovin', size: 'Large', color: 'Onyx Black' },
             'BVL2': { model: 'Hexag Bovin', size: 'Large', color: 'Glacier Mist' },
             'BVL3': { model: 'Hexag Bovin', size: 'Large', color: 'Cashmere Ivory' },
-            'BVL4': { model: 'Hexag Bovin', size: 'Large', color: 'Burgundy Rouge' },
-            'BVL5': { model: 'Hexag Bovin', size: 'Large', color: 'Camel Suede' },
-
-            'BVTM1': { model: 'Hexag Bovin', size: 'Travel M', color: 'Onyx Black' },
-            'BVTM5': { model: 'Hexag Bovin', size: 'Travel M', color: 'Camel Suede' },
-            'BVTL1': { model: 'Hexag Bovin', size: 'Travel L', color: 'Onyx Black' },
-            'BVTL5': { model: 'Hexag Bovin', size: 'Travel L', color: 'Camel Suede' },
-
-            'VGXS1': { model: 'Hexag Vegan', size: 'XS', color: 'Onyx Wave' },
-            'VGXS2': { model: 'Hexag Vegan', size: 'XS', color: 'Navy Obsidian' },
-            'VGXS3': { model: 'Hexag Vegan', size: 'XS', color: 'Emerald Forest' },
-            'VGXS4': { model: 'Hexag Vegan', size: 'XS', color: 'Terracotta Spice' },
-            'VGXS5': { model: 'Hexag Vegan', size: 'XS', color: 'Pigeon Grey' },
-
-            'VGSS1': { model: 'Hexag Vegan', size: 'S', color: 'Onyx Wave' },
-            'VGSS2': { model: 'Hexag Vegan', size: 'S', color: 'Navy Obsidian' },
-            'VGSS3': { model: 'Hexag Vegan', size: 'S', color: 'Emerald Forest' },
-            'VGSS4': { model: 'Hexag Vegan', size: 'S', color: 'Terracotta Spice' },
-            'VGSS5': { model: 'Hexag Vegan', size: 'S', color: 'Pigeon Grey' },
-
-            'VGSL1': { model: 'Hexag Vegan', size: 'Medium', color: 'Onyx Wave' },
-            'VGSL2': { model: 'Hexag Vegan', size: 'Medium', color: 'Navy Obsidian' },
-            'VGSL3': { model: 'Hexag Vegan', size: 'Medium', color: 'Emerald Forest' },
-            'VGSL4': { model: 'Hexag Vegan', size: 'Medium', color: 'Terracotta Spice' },
-            'VGSL5': { model: 'Hexag Vegan', size: 'Medium', color: 'Pigeon Grey' },
-
-            'VGL1': { model: 'Hexag Vegan', size: 'Large', color: 'Onyx Wave' },
-            'VGL2': { model: 'Hexag Vegan', size: 'Large', color: 'Navy Obsidian' },
-            'VGL3': { model: 'Hexag Vegan', size: 'Large', color: 'Emerald Forest' },
-            'VGL4': { model: 'Hexag Vegan', size: 'Large', color: 'Terracotta Spice' },
-            'VGL5': { model: 'Hexag Vegan', size: 'Large', color: 'Pigeon Grey' }
-        };
-
-        // ถ้าใส่รหัสตรงกับฐานข้อมูล ให้ดึงข้อมูลมาแสดง ถ้าไม่ตรง ให้แสดงรหัสที่พิมพ์เข้ามาตรงๆ ได้เลย
-        const item = PRODUCT_DATABASE[code] || { model: 'Hexag Custom Series', size: 'Standard', color: 'Exclusive Edition' };
-
-        document.getElementById('valModel').innerText = item.model;
-        document.getElementById('valSize').innerText = item.size;
-        document.getElementById('valColor').innerText = item.color;
-        document.getElementById('valCode').innerText = code;
-        document.getElementById('valOwner').innerText = owner;
-
-        const storageKey = 'TALLYMIL_START_' + code;
-        let startTime = localStorage.getItem(storageKey);
-        if (!startTime) {
-            startTime = new Date().toISOString();
-            localStorage.setItem(storageKey, startTime);
-        }
-
-        const startDate = new Date(startTime);
-        document.getElementById('startDateText').innerText = startDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-
-        const expireDate = new Date(startDate);
-        expireDate.setFullYear(expireDate.getFullYear() + 1);
-
-        function updateTimer() {
-            const now = new Date();
-            const diff = expireDate - now;
-            if (diff <= 0) {
-                document.getElementById('countdown').innerText = "EXPIRED / หมดระยะเวลารับประกัน";
-                return;
-            }
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            document.getElementById('cou
+            'BVL4': { model: 'Hexag Bovin', size: 'Large', color: 'Burgundy Rouge
