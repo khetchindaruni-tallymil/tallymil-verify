@@ -8,64 +8,62 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0c0a09;
-      color: #fafaf9;
+      background: #000000;
+      color: #ffffff;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 10px;
     }
     .card {
       width: 100%;
-      max-width: 400px;
-      background: #141210;
-      border: 1px solid #2e2a24;
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      max-width: 420px;
+      background: #121110;
+      border: 1px solid #332d24;
+      border-radius: 28px;
+      padding: 24px 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
     }
-    .header { text-align: center; margin-bottom: 20px; }
-    .brand { font-size: 28px; font-weight: bold; letter-spacing: 2px; color: #fef3c7; }
-    .subtitle { font-size: 11px; color: #d97706; letter-spacing: 1px; margin-top: 4px; }
+    .header { text-align: center; margin-bottom: 18px; }
+    .brand { font-size: 26px; font-weight: bold; letter-spacing: 3px; color: #fef08a; }
+    .subtitle { font-size: 10px; color: #d97706; letter-spacing: 1.5px; margin-top: 4px; }
     .badge {
-      border: 1px solid #10b981;
+      border: 1px solid #059669;
       color: #34d399;
-      background: rgba(16, 185, 129, 0.1);
-      border-radius: 50px;
-      padding: 10px;
+      background: rgba(5, 150, 105, 0.15);
+      border-radius: 40px;
+      padding: 12px;
       text-align: center;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      margin-bottom: 18px;
     }
     .info-box {
-      background: #1c1917;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 16px;
+      background: #1a1816;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 14px;
+      border: 1px solid #292520;
     }
     .info-item {
-      display: flex;
-      justify-content: space-between;
       margin-bottom: 12px;
-      font-size: 13px;
-      border-bottom: 1px solid #292524;
-      padding-bottom: 8px;
+      font-size: 12px;
     }
-    .info-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .label { color: #a8a29e; }
-    .value { color: #fef3c7; font-weight: 500; }
+    .info-item:last-child { margin-bottom: 0; }
+    .label { color: #88837d; display: block; margin-bottom: 2px; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
+    .value { color: #fef08a; font-size: 14px; font-weight: 500; }
     .warranty-box {
-      background: #1c1917;
-      border: 1px solid #b45309;
-      border-radius: 16px;
+      background: #1a1816;
+      border: 1px solid #78350f;
+      border-radius: 18px;
       padding: 16px;
       text-align: center;
     }
-    .warranty-title { font-size: 12px; color: #d97706; margin-bottom: 8px; }
-    .warranty-days { font-size: 20px; font-weight: bold; color: #fef3c7; }
-    .footer { text-align: center; margin-top: 20px; font-size: 10px; color: #78716c; }
+    .warranty-title { font-size: 10px; color: #d97706; margin-bottom: 6px; letter-spacing: 0.5px; line-height: 1.4; }
+    .warranty-days { font-size: 18px; font-weight: bold; color: #fef08a; }
+    .footer { text-align: center; margin-top: 18px; font-size: 9px; color: #57534e; line-height: 1.4; }
   </style>
 </head>
 <body>
@@ -81,17 +79,35 @@
     </div>
 
     <div class="info-box">
-      <div class="info-item"><span class="label">รุ่นสินค้า / MODEL:</span><span class="value" id="model">-</span></div>
-      <div class="info-item"><span class="label">ไซส์ / SIZE:</span><span class="value" id="size">-</span></div>
-      <div class="info-item"><span class="label">สี / COLOR:</span><span class="value" id="color">-</span></div>
-      <div class="info-item"><span class="label">รหัสสินค้า / PRODUCT CODE:</span><span class="value" id="code">-</span></div>
-      <div class="info-item"><span class="label">ชื่อผู้ถือครอง / OWNER:</span><span class="value" id="owner">-</span></div>
-      <div class="info-item"><span class="label">วันเริ่มรับประกัน / START DATE:</span><span class="value" id="startDate">-</span></div>
+      <div class="info-item">
+        <span class="label">รุ่นสินค้า / MODEL:</span>
+        <span class="value" id="model">-</span>
+      </div>
+      <div class="info-item">
+        <span class="label">ไซส์ / SIZE:</span>
+        <span class="value" id="size">-</span>
+      </div>
+      <div class="info-item">
+        <span class="label">สี / COLOR:</span>
+        <span class="value" id="color">-</span>
+      </div>
+      <div class="info-item">
+        <span class="label">รหัสสินค้า / PRODUCT CODE:</span>
+        <span class="value" id="code">-</span>
+      </div>
+      <div class="info-item">
+        <span class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
+        <span class="value" id="owner">-</span>
+      </div>
+      <div class="info-item">
+        <span class="label">วันเริ่มรับประกัน / START DATE:</span>
+        <span class="value" id="startDate">กำลังตรวจสอบ...</span>
+      </div>
     </div>
 
     <div class="warranty-box">
       <div class="warranty-title">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</div>
-      <div class="warranty-days" id="warrantyDays">กำลังคำนวณ...</div>
+      <div class="warranty-days" id="warrantyDays">คำนวณเวลา . . .</div>
     </div>
 
     <div class="footer">
@@ -100,11 +116,50 @@
   </div>
 
   <script>
-    // ฐานข้อมูลสินค้าจำลอง
+    // ฐานข้อมูลสินค้าจำลอง (เพิ่มรหัสชิปของคุณตรงนี้ได้เลย)
     const database = {
       'BVSS1': { model: 'Hexag Bovin', size: 'S', color: 'Onyx Black', startDate: '2026-01-15', owner: 'คุณมินตา' },
       'BVSS2': { model: 'Hexag Bovin', size: 'S', color: 'Glacier Mist', startDate: '2026-02-01', owner: 'คุณมินตา' },
       'BVSS3': { model: 'Hexag Bovin', size: 'S', color: 'Cashmere Ivory', startDate: '2026-02-10', owner: 'คุณมินตา' },
       'BVSS4': { model: 'Hexag Bovin', size: 'S', color: 'Burgundy Rouge', startDate: '2026-02-15', owner: 'คุณมินตา' },
       'BVSS5': { model: 'Hexag Bovin', size: 'S', color: 'Camel Suede', startDate: '2026-03-01', owner: 'คุณมินตา' },
-      'B
+      'BVSL1': { model: 'Hexag Bovin', size: 'Medium', color: 'Onyx Black', startDate: '2026-01-10', owner: 'คุณมินตา' },
+      'BVL1': { model: 'Hexag Bovin', size: 'Large', color: 'Onyx Black', startDate: '2026-01-05', owner: 'คุณมินตา' },
+      'VGXS1': { model: 'Hexag Vegan', size: 'XS', color: 'Onyx Wave', startDate: '2026-02-20', owner: 'คุณมินตา' },
+      'VGSS1': { model: 'Hexag Vegan', size: 'S', color: 'Onyx Wave', startDate: '2026-02-25', owner: 'คุณมินตา' }
+    };
+
+    // ดึงค่ารหัสจาก URL (เช่น ?id=BVSS1)
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+
+    if (productId && database[productId]) {
+      const item = database[productId];
+      document.getElementById('model').innerText = item.model;
+      document.getElementById('size').innerText = item.size;
+      document.getElementById('color').innerText = item.color;
+      document.getElementById('code').innerText = productId;
+      document.getElementById('owner').innerText = item.owner || 'ยังไม่ได้ลงทะเบียน';
+      document.getElementById('startDate').innerText = item.startDate;
+
+      // คำนวณวันรับประกัน 1 ปี
+      const start = new Date(item.startDate);
+      const end = new Date(start);
+      end.setFullYear(end.getFullYear() + 1);
+      const today = new Date();
+      const diffTime = end - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays > 0) {
+        document.getElementById('warrantyDays').innerText = `เหลือ ${diffDays} วัน`;
+      } else {
+        document.getElementById('warrantyDays').innerText = 'หมดระยะเวลารับประกัน';
+      }
+    } else if (productId) {
+      document.getElementById('code').innerText = productId;
+      document.getElementById('startDate').innerText = 'ไม่พบข้อมูลในระบบ';
+      document.getElementById('warrantyDays').innerText = 'ตรวจสอบไม่พบ';
+    }
+  </script>
+</body>
+</html>
