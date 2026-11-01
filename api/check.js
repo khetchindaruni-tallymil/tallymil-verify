@@ -1,35 +1,83 @@
 module.exports = async (req, res) => {
   const { code, owner } = req.query;
 
-  // --- ข้อมูลพื้นฐานของสินค้าแต่ละรหัส (Short Code) ---
-  const SHORT_CODES = {
-    'TM001': {
-      model: 'Hexag Bovin / Brown / Micro',
-      id: 'TM-HEXB-001',
-      start: '2026-10-31'
-    },
-    'TM002': {
-      model: 'Hexag Bovin / Brown / Micro',
-      id: 'TM-HEXB-002',
-      start: '2026-10-31'
-    },
-    'TM003': {
-      model: 'Hexag Vegan / Red / Mini',
-      id: 'TM-HEXV-003',
-      start: '2026-11-01'
-    }
+  // --- ฐานข้อมูลตัวย่อรุ่นกระเป๋า TALLY MiL ทั้งหมด ---
+  const PRODUCT_DATABASE = {
+    // === 1. Hexag Bovin Series ===
+    // Size: XS
+    'BVXS1': { model: 'Hexag Bovin', size: 'XS', color: 'Onyx Black' },
+    'BVXS2': { model: 'Hexag Bovin', size: 'XS', color: 'Glacier Mist' },
+    'BVXS3': { model: 'Hexag Bovin', size: 'XS', color: 'Cashmere Ivory' },
+    'BVXS4': { model: 'Hexag Bovin', size: 'XS', color: 'Burgundy Rouge' },
+    'BVXS5': { model: 'Hexag Bovin', size: 'XS', color: 'Camel Suede' },
+
+    // Size: S
+    'BVSS1': { model: 'Hexag Bovin', size: 'S', color: 'Onyx Black' },
+    'BVSS2': { model: 'Hexag Bovin', size: 'S', color: 'Glacier Mist' },
+    'BVSS3': { model: 'Hexag Bovin', size: 'S', color: 'Cashmere Ivory' },
+    'BVSS4': { model: 'Hexag Bovin', size: 'S', color: 'Burgundy Rouge' },
+    'BVSS5': { model: 'Hexag Bovin', size: 'S', color: 'Camel Suede' },
+
+    // Size: Medium
+    'BVSL1': { model: 'Hexag Bovin', size: 'Medium', color: 'Onyx Black' },
+    'BVSL2': { model: 'Hexag Bovin', size: 'Medium', color: 'Glacier Mist' },
+    'BVSL3': { model: 'Hexag Bovin', size: 'Medium', color: 'Cashmere Ivory' },
+    'BVSL4': { model: 'Hexag Bovin', size: 'Medium', color: 'Burgundy Rouge' },
+    'BVSL5': { model: 'Hexag Bovin', size: 'Medium', color: 'Camel Suede' },
+
+    // Size: Large
+    'BVL1': { model: 'Hexag Bovin', size: 'Large', color: 'Onyx Black' },
+    'BVL2': { model: 'Hexag Bovin', size: 'Large', color: 'Glacier Mist' },
+    'BVL3': { model: 'Hexag Bovin', size: 'Large', color: 'Cashmere Ivory' },
+    'BVL4': { model: 'Hexag Bovin', size: 'Large', color: 'Burgundy Rouge' },
+    'BVL5': { model: 'Hexag Bovin', size: 'Large', color: 'Camel Suede' },
+
+    // Size: Travel M & L
+    'BVTM1': { model: 'Hexag Bovin', size: 'Travel M', color: 'Onyx Black' },
+    'BVTM5': { model: 'Hexag Bovin', size: 'Travel M', color: 'Camel Suede' },
+    'BVTL1': { model: 'Hexag Bovin', size: 'Travel L', color: 'Onyx Black' },
+    'BVTL5': { model: 'Hexag Bovin', size: 'Travel L', color: 'Camel Suede' },
+
+    // === 2. Hexag Vegan Series ===
+    // Size: XS
+    'VGXS1': { model: 'Hexag Vegan', size: 'XS', color: 'Onyx Wave' },
+    'VGXS2': { model: 'Hexag Vegan', size: 'XS', color: 'Navy Obsidian' },
+    'VGXS3': { model: 'Hexag Vegan', size: 'XS', color: 'Emerald Forest' },
+    'VGXS4': { model: 'Hexag Vegan', size: 'XS', color: 'Terracotta Spice' },
+    'VGXS5': { model: 'Hexag Vegan', size: 'XS', color: 'Pigeon Grey' },
+
+    // Size: S
+    'VGSS1': { model: 'Hexag Vegan', size: 'S', color: 'Onyx Wave' },
+    'VGSS2': { model: 'Hexag Vegan', size: 'S', color: 'Navy Obsidian' },
+    'VGSS3': { model: 'Hexag Vegan', size: 'S', color: 'Emerald Forest' },
+    'VGSS4': { model: 'Hexag Vegan', size: 'S', color: 'Terracotta Spice' },
+    'VGSS5': { model: 'Hexag Vegan', size: 'S', color: 'Pigeon Grey' },
+
+    // Size: Medium
+    'VGSL1': { model: 'Hexag Vegan', size: 'Medium', color: 'Onyx Wave' },
+    'VGSL2': { model: 'Hexag Vegan', size: 'Medium', color: 'Navy Obsidian' },
+    'VGSL3': { model: 'Hexag Vegan', size: 'Medium', color: 'Emerald Forest' },
+    'VGSL4': { model: 'Hexag Vegan', size: 'Medium', color: 'Terracotta Spice' },
+    'VGSL5': { model: 'Hexag Vegan', size: 'Medium', color: 'Pigeon Grey' },
+
+    // Size: Large
+    'VGL1': { model: 'Hexag Vegan', size: 'Large', color: 'Onyx Wave' },
+    'VGL2': { model: 'Hexag Vegan', size: 'Large', color: 'Navy Obsidian' },
+    'VGL3': { model: 'Hexag Vegan', size: 'Large', color: 'Emerald Forest' },
+    'VGL4': { model: 'Hexag Vegan', size: 'Large', color: 'Terracotta Spice' },
+    'VGL5': { model: 'Hexag Vegan', size: 'Large', color: 'Pigeon Grey' }
   };
 
-  // ถ้าไม่มีรหัสส่งมา ให้ดีดกลับไปหน้าแอดมิน
-  if (!code || !SHORT_CODES[code]) {
+  // ถ้ารหัสไม่ตรง ให้ดีดกลับไปหน้าแอดมิน
+  if (!code || !PRODUCT_DATABASE[code.toUpperCase()]) {
     res.writeHead(302, { Location: '/api/admin' });
     res.end();
     return;
   }
 
-  const item = SHORT_CODES[code];
-  // ดึงชื่อเจ้าของที่พิมพ์มาจากหน้าแอดมิน (ถ้ามี) หรือใช้ค่าเริ่มต้น
-  const customerName = owner ? decodeURIComponent(owner) : 'คุณเชอรี่ (Khun Cherry)';
+  const itemCode = code.toUpperCase();
+  const item = PRODUCT_DATABASE[itemCode];
+  const customerName = owner ? decodeURIComponent(owner) : 'Valued Customer / ลูกค้าท่านทรงเกียรติ';
 
   return res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(`
     <!DOCTYPE html>
@@ -37,194 +85,99 @@ module.exports = async (req, res) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>TALLY MiL - Certificate of Warranty</title>
+        <title>TALLY MiL - Digital Authenticity & Warranty</title>
         <style>
             * { box-sizing: border-box; margin: 0; padding: 0; }
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #0c0a09; color: #f5f5f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; overflow: hidden; }
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0c0a09; color: #f5f5f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; overflow: hidden; }
 
-            /* --- 1. หน้า Welcome Splash Screen (สีครีมอุ่นๆ หรูหรา) --- */
+            /* Splash Screen (ครีมหรูหรา) */
             #splash-screen {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 background: linear-gradient(135deg, #fdfbf7 0%, #f3efe6 100%);
-                color: #262522;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                z-index: 999;
-                text-align: center;
-                padding: 30px;
-                transition: opacity 1s ease-in-out, visibility 1s;
+                color: #262522; display: flex; flex-direction: column;
+                justify-content: center; align-items: center; z-index: 999;
+                text-align: center; padding: 30px; transition: opacity 1s ease, visibility 1s;
             }
-
             .luxury-logo-wrapper {
-                width: 80px;
-                height: 80px;
-                border: 2px solid #b89758;
-                border-radius: 50%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                margin-bottom: 24px;
+                width: 90px; height: 90px; border: 2px solid #b89758; border-radius: 50%;
+                display: flex; justify-content: center; align-items: center; margin-bottom: 20px;
                 animation: spinLogo 3s cubic-bezier(0.25, 1, 0.5, 1) infinite alternate;
                 box-shadow: 0 10px 25px rgba(184, 151, 88, 0.25);
             }
+            .luxury-logo-text { font-family: serif; font-size: 24px; font-weight: 700; letter-spacing: 3px; color: #8c6d31; }
+            @keyframes spinLogo { 0% { transform: rotate(0deg) scale(0.95); } 100% { transform: rotate(360deg) scale(1.05); } }
 
-            .luxury-logo-text { font-family: serif; font-size: 22px; font-weight: 700; letter-spacing: 3px; color: #8c6d31; }
+            .welcome-title { font-family: serif; font-size: 24px; color: #1a1918; letter-spacing: 2px; margin-bottom: 6px; }
+            .welcome-sub { font-size: 12px; color: #8c6d31; text-transform: uppercase; letter-spacing: 2px; }
 
-            @keyframes spinLogo {
-                0% { transform: rotate(0deg) scale(0.9); }
-                100% { transform: rotate(360deg) scale(1.05); }
+            /* Main Card (ดำ-ทอง) */
+            .card {
+                background: #1c1917; padding: 32px 24px; border-radius: 24px;
+                width: 100%; max-width: 380px; border: 1px solid rgba(212, 175, 55, 0.4);
+                box-shadow: 0 20px 50px rgba(0,0,0,0.9); text-align: center;
+                opacity: 0; transform: scale(0.95); transition: opacity 1s ease, transform 1s ease;
             }
-
-            .welcome-title { font-family: serif; font-size: 22px; color: #1a1918; letter-spacing: 1.5px; margin-bottom: 8px; opacity: 0; animation: fadeInText 1.5s ease 0.5s forwards; }
-            .welcome-sub { font-size: 12px; color: #8c6d31; text-transform: uppercase; letter-spacing: 2px; opacity: 0; animation: fadeInText 1.5s ease 0.8s forwards; }
-
-            @keyframes fadeInText {
-                to { opacity: 1; transform: translateY(0); }
-                from { opacity: 0; transform: translateY(10px); }
-            }
-
-            /* --- 2. หน้า Certificate (ธีมดำ-ทอง หรูหรา) --- */
-            .card { 
-                background: #1c1917; 
-                padding: 28px 20px; 
-                border-radius: 24px; 
-                width: 100%; 
-                max-width: 360px; 
-                border: 1px solid rgba(212, 175, 55, 0.4); 
-                box-shadow: 0 20px 40px rgba(0,0,0,0.9); 
-                text-align: center;
-                opacity: 0;
-                transform: scale(0.95);
-                transition: opacity 1s ease, transform 1s ease;
-            }
-
             .card.show { opacity: 1; transform: scale(1); }
-            h2 { color: #fef3c7; font-size: 24px; margin-top: 0; margin-bottom: 4px; font-family: serif; letter-spacing: 2px; }
-            .subtitle { font-size: 11px; color: #d4af37; text-transform: uppercase; margin-bottom: 18px; letter-spacing: 1.5px; }
-            
-            .badge-luxury { 
-                background: linear-gradient(135deg, rgba(6, 78, 59, 0.8), rgba(16, 185, 129, 0.25)); 
-                color: #6ee7b7; 
-                border: 1px solid #10b981; 
-                padding: 8px 16px; 
-                border-radius: 30px; 
-                font-size: 11px; 
-                display: inline-block; 
-                margin-bottom: 18px; 
-                font-weight: 700; 
-                letter-spacing: 1px;
-                box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+
+            /* ชื่อแบรนด์ TALLY MiL ใหญ่สวยหรู */
+            .brand-header {
+                font-family: 'Cinzel', serif, -apple-system;
+                font-size: 32px; font-weight: 800; color: #fef3c7;
+                letter-spacing: 4px; margin-bottom: 2px; text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+            }
+            .brand-sub { font-size: 10px; color: #d4af37; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+
+            /* กรอบเขียว ตรวจแท้ปลอม ภาษาอังกฤษ */
+            .badge-authentic {
+                background: linear-gradient(135deg, rgba(6, 78, 59, 0.9), rgba(16, 185, 129, 0.2));
+                color: #34d399; border: 1.5px solid #10b981; padding: 10px 18px;
+                border-radius: 30px; font-size: 12px; display: inline-block;
+                margin-bottom: 22px; font-weight: 700; letter-spacing: 1.5px;
+                box-shadow: 0 0 15px rgba(16, 185, 129, 0.35); text-transform: uppercase;
             }
 
-            .info-box { background: #0c0a09; border: 1px solid #383531; border-radius: 16px; padding: 16px; text-align: left; margin-bottom: 16px; }
-            .info-row { margin-bottom: 12px; font-size: 13px; }
+            .info-box { background: #0c0a09; border: 1px solid #383531; border-radius: 16px; padding: 18px; text-align: left; margin-bottom: 20px; }
+            .info-row { margin-bottom: 12px; }
             .info-row:last-child { margin-bottom: 0; }
-            .label { color: #a8a29e; font-size: 11px; display: block; margin-bottom: 2px; }
-            .value { color: #fff; font-weight: 500; font-size: 14px; }
-            
-            .countdown-box { background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.25); border-radius: 16px; padding: 14px; margin-bottom: 15px; }
-            .countdown-title { font-size: 10px; color: #d4af37; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-            .timer { font-size: 16px; font-weight: 700; color: #fef3c7; font-family: monospace; letter-spacing: 1px; }
+            .label { color: #a8a29e; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+            .value { color: #fff; font-weight: 600; font-size: 14px; }
+            .highlight-value { color: #fef3c7; font-weight: 700; font-size: 15px; }
 
-            .footer { font-size: 10px; color: #78716c; margin-top: 15px; }
+            /* กล่องนับถอยหลัง */
+            .countdown-box { background: rgba(212, 175, 55, 0.06); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 16px; padding: 16px; margin-bottom: 15px; }
+            .countdown-title { font-size: 10px; color: #d4af37; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; font-weight: 600; }
+            .timer { font-size: 18px; font-weight: 700; color: #fef3c7; font-family: monospace; letter-spacing: 1.5px; }
+
+            .footer { font-size: 10px; color: #78716c; margin-top: 15px; line-height: 1.4; }
         </style>
     </head>
     <body>
 
-        <!-- หน้าต้อนรับสีครีม (Welcome Splash) -->
         <div id="splash-screen">
             <div class="luxury-logo-wrapper">
                 <div class="luxury-logo-text">TM</div>
             </div>
-            <div class="welcome-title">Welcome to the family</div>
+            <div class="welcome-title">Welcome to the Family</div>
             <div class="welcome-sub">ยินดีต้อนรับสู่ครอบครัว TALLY MiL</div>
         </div>
 
-        <!-- หน้าใบรับประกัน (Certificate) -->
         <div class="card" id="main-card">
-            <h2>TALLY MiL</h2>
-            <div class="subtitle">Certificate of Warranty / ใบรับประกันสินค้า</div>
-            
-            <div class="badge-luxury">✓ AUTHENTIC & GUARANTEED (ของแท้และรับประกัน)</div>
+            <!-- ชื่อแบรนด์ตัวใหญ่สวยหรู -->
+            <div class="brand-header">TALLY MiL</div>
+            <div class="brand-sub">Certificate of Authenticity & Warranty</div>
+
+            <!-- กรอบเขียว ตรวจแท้ปลอม ภาษาอังกฤษ -->
+            <div class="badge-authentic">✓ AUTHENTIC & GUARANTEED PRODUCT</div>
 
             <div class="info-box">
                 <div class="info-row">
-                    <span class="label">รุ่นสินค้า / สี / ขนาด (Model / Color / Size):</span>
-                    <span class="value">${item.model}</span>
+                    <span class="label">รุ่นสินค้า / Model:</span>
+                    <span class="value highlight-value">${item.model}</span>
                 </div>
                 <div class="info-row">
-                    <span class="label">รหัส Serial No. (Serial Number):</span>
-                    <span class="value">${item.id}</span>
+                    <span class="label">ไซส์ / Size:</span>
+                    <span class="value">${item.size}</span>
                 </div>
                 <div class="info-row">
-                    <span class="label">ผู้รับสิทธิ์ / ลูกค้า (Registered Owner):</span>
-                    <span class="value">${customerName}</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">วันเริ่มรับประกัน (Start Date):</span>
-                    <span class="value">${item.start}</span>
-                </div>
-            </div>
-
-            <div class="countdown-box">
-                <div class="countdown-title">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</div>
-                <div id="countdown" class="timer">กำลังคำนวณ...</div>
-            </div>
-
-            <div class="footer">Thank you for choosing TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL</div>
-        </div>
-
-        <script>
-            window.addEventListener('DOMContentLoaded', () => {
-                setTimeout(() => {
-                    const splash = document.getElementById('splash-screen');
-                    const card = document.getElementById('main-card');
-                    
-                    splash.style.opacity = '0';
-                    splash.style.visibility = 'hidden';
-                    card.classList.add('show');
-                }, 2800);
-            });
-
-            function startCountdown() {
-                const startDateStr = "${item.start}";
-                const start = new Date(startDateStr);
-                
-                const expireDate = new Date(start);
-                expireDate.setFullYear(expireDate.getFullYear() + 1);
-
-                function updateTimer() {
-                    const now = new Date();
-                    const diff = expireDate - now;
-
-                    if (diff <= 0) {
-                        document.getElementById('countdown').innerText = "EXPIRED / หมดระยะเวลารับประกัน";
-                        document.getElementById('countdown').style.color = "#ef4444";
-                        return;
-                    }
-
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-                    document.getElementById('countdown').innerText = 
-                        days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
-                }
-
-                updateTimer();
-                setInterval(updateTimer, 1000);
-            }
-
-            startCountdown();
-        </script>
-    </body>
-    </html>
-  `);
-};
+                    <span class="label">สี / Color:</span>
+                    <span class="value">${item.colo
