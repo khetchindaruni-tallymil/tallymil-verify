@@ -116,11 +116,9 @@
   </div>
 
   <script>
-    // ฐานข้อมูลกลางสำหรับใช้รหัสย่อ (เช่น ?id=BVSS1)
     const database = {
-      'BVSS1': { model: 'Hexag Bovin', size: 'S', color: 'Onyx Black', startDate: '2026-01-15', owner: 'คุณมินตา' },
-      'BVSS2': { model: 'Hexag Bovin', size: 'S', color: 'Glacier Mist', startDate: '2026-02-01', owner: 'คุณมินตา' },
-      'VGXS1': { model: 'Hexag Vegan', size: 'XS', color: 'Onyx Wave', startDate: '2026-02-20', owner: 'คุณมินตา' }
+      'BVSS1': { model: 'Hexag Bovin', size: 'S', color: 'Onyx Black', startDate: '2026-11-02', owner: 'คุณมินตา' },
+      'BVSS2': { model: 'Hexag Bovin', size: 'S', color: 'Glacier Mist', startDate: '2026-11-02', owner: 'คุณมินตา' }
     };
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -128,23 +126,20 @@
 
     let item = {};
 
-    // เช็คว่าส่งค่าแบบกำหนดเองมาในลิงก์เลยไหม (เช่น model, size, color, owner, date)
     if (urlParams.get('model') || urlParams.get('size') || urlParams.get('color')) {
       item = {
         model: urlParams.get('model') ? decodeURIComponent(urlParams.get('model')) : 'Hexag Bovin',
         size: urlParams.get('size') ? decodeURIComponent(urlParams.get('size')) : 'XS',
-        color: urlParams.get('color') ? decodeURIComponent(urlParams.get('color')) : 'Camel Suede',
-        startDate: urlParams.get('date') ? urlParams.get('date') : '2026-03-01',
+        color: urlParams.get('color') ? decodeURIComponent(urlParams.get('color')) : 'Onyx Black',
+        startDate: urlParams.get('date') ? urlParams.get('date') : '2026-11-02',
         owner: urlParams.get('owner') ? decodeURIComponent(urlParams.get('owner')) : 'คุณมินตา'
       };
     } else if (database[productId]) {
       item = database[productId];
     } else {
-      // ค่าเริ่มต้นถ้าหาไม่เจอ
-      item = { model: 'Hexag Bovin', size: 'XS', color: 'Camel Suede', startDate: '2026-03-01', owner: 'คุณมินตา' };
+      item = { model: 'Hexag Bovin', size: 'S', color: 'Onyx Black', startDate: '2026-11-02', owner: 'คุณมินตา' };
     }
 
-    // แสดงผลลงหน้าเว็บ
     document.getElementById('model').innerText = item.model;
     document.getElementById('size').innerText = item.size;
     document.getElementById('color').innerText = item.color;
@@ -152,7 +147,6 @@
     document.getElementById('owner').innerText = item.owner;
     document.getElementById('startDate').innerText = item.startDate;
 
-    // คำนวณวันรับประกัน (1 ปี)
     const startDate = new Date(item.startDate);
     const endDate = new Date(startDate);
     endDate.setFullYear(endDate.getFullYear() + 1);
