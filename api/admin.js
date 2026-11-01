@@ -15,13 +15,14 @@ export default function handler(req, res) {
         .brand-sub { font-size: 10px; color: #d4af37; text-transform: uppercase; letter-spacing: 2px; text-align: center; margin-bottom: 24px; }
         .form-group { margin-bottom: 16px; }
         label { color: #a8a29e; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
-        input { width: 100%; padding: 12px 16px; background: #0c0a09; border: 1px solid #383531; border-radius: 12px; color: #fff; font-size: 14px; outline: none; text-transform: uppercase; }
+        input { width: 100%; padding: 12px 16px; background: #0c0a09; border: 1px solid #383531; border-radius: 12px; color: #fff; font-size: 14px; outline: none; }
         input:focus { border-color: #d4af37; }
         .btn { width: 100%; background: linear-gradient(135deg, #d4af37, #996515); color: #0c0a09; font-weight: 700; padding: 14px; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; }
         .result-box { margin-top: 24px; background: #0c0a09; border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 14px; padding: 16px; display: none; }
         .result-title { font-size: 10px; color: #d4af37; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-        .result-link { font-family: monospace; font-size: 12px; color: #34d399; word-break: break-all; margin-bottom: 12px; display: block; background: rgba(0,0,0,0.5); padding: 8px; border-radius: 8px; }
-        .btn-copy { background: #10b981; color: #fff; padding: 8px 12px; border: none; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; width: 100%; }
+        .result-input { font-family: monospace; font-size: 12px; color: #34d399; width: 100%; background: rgba(0,0,0,0.8); border: 1px solid #383531; padding: 10px; border-radius: 8px; margin-bottom: 12px; outline: none; text-align: center; }
+        .btn-copy { background: #10b981; color: #fff; padding: 10px 12px; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 600; width: 100%; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-copy:active { background: #059669; }
     </style>
 </head>
 <body>
@@ -31,20 +32,21 @@ export default function handler(req, res) {
 
         <div class="form-group">
             <label>รหัสสินค้า / Product Code (เช่น BVXS5):</label>
-            <input type="text" id="productCode" value="BVXS5" placeholder="พิมพ์รหัสสินค้าที่นี่">
+            <input type="text" id="productCode" value="BVXS5" placeholder="พิมพ์รหัสสินค้าที่นี่" style="text-transform: uppercase;">
         </div>
 
         <div class="form-group">
             <label>ชื่อผู้ถือครอง / Registered Owner:</label>
-            <input type="text" id="ownerName" value="Minta Pumdokmai" style="text-transform: none;" placeholder="ระบุชื่อ-นามสกุลลูกค้า">
+            <input type="text" id="ownerName" value="Minta Pumdokmai" placeholder="ระบุชื่อ-นามสกุลลูกค้า">
         </div>
 
         <button class="btn" onclick="generateLink()">สร้างลิงก์สำหรับเขียน NFC</button>
 
         <div class="result-box" id="resultBox">
-            <div class="result-title">Generated NFC Link:</div>
-            <span class="result-link" id="outputLink"></span>
-            <button class="btn-copy" onclick="copyLink()">คัดลอกลิงก์ (Copy Link)</button>
+            <div class="result-title">Generated NFC Link (แตะเพื่อคัดลอก):</div>
+            <!-- เปลี่ยนเป็น input แบบ readonly เพื่อให้จิ้มเลือกง่ายและกดคัดลอกได้ทันที -->
+            <input type="text" id="outputLink" class="result-input" readonly onclick="this.select(); copyLinkDirect();">
+            <button class="btn-copy" onclick="copyLinkDirect()">📋 คัดลอกลิงก์อัตโนมัติ</button>
         </div>
     </div>
 
@@ -52,16 +54,40 @@ export default function handler(req, res) {
         function generateLink() {
             const code = document.getElementById('productCode').value.trim().toUpperCase();
             const owner = document.getElementById('ownerName').value.trim() || 'Valued Customer';
-            
-            // ใช้โดเมนหลักอย่างเป็นทางการเพื่อให้ลิงก์สมบูรณ์เสมอ
-            const baseUrl = "https://tallymil-verify.vercel.app";
+            const baseUrl = window.location.origin;
             const finalLink = \`\${baseUrl}/?code=\${code}&owner=\${encodeURIComponent(owner)}\`;
 
-            document.getElementById('outputLink').innerText = finalLink;
+            const outputField = document.getElementById('outputLink');
+            outputField.value = finalLink;
             document.getElementById('resultBox').style.display = 'block';
+            
+            // Auto generate และคัดลอกให้ทันทีรอบแรก
+            outputField.select();
+            copyLinkDirect();
         }
 
-        // กดปุ่มปุ๊บสร้างและคัดลอกลงคลิปบอร์ดให้อัตโนมัติทันที
+        function copyLinkDirect() {
+            const outputField = document.getElementById('outputLink');
+            outputField.select();
+            outputField.setSelectionRange(0, 99999); // สำหรับมือถือ
+            
+            navigator.clipboard.writeText(outputField.value).then(() => {
+                // แจ้งเตือนเบาๆ หรือเปลี่ยนปุ่มชั่วคราวให้รู้ว่าก๊อปแล้ว
+                const btn = document.querySelector('.btn-copy');
+                const originalText = btn.innerText;
+                btn.innerText = '✨ คัดลอกสำเร็จแล้ว!';
+                btn.style.background = '#059669';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = '#10b981';
+                }, 1500);
+            }).catch(err => {
+                // Fallback เผื่อเบราว์เซอร์เก่า
+                document.execCommand('copy');
+            });
+        }
+
+        // กดสร้างให้อัตโนมัติทันทีที่เข้าหน้าเว็บ
         window.onload = function() {
             generateLink();
         };
