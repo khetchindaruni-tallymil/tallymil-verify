@@ -114,25 +114,28 @@
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        let code = urlParams.get('code');
-        let owner = urlParams.get('owner');
+        const fullUrl = window.location.href;
+        let code = '';
+        let owner = '';
 
-        if (!code && window.location.search.includes('code=')) {
+        // แยกแกะรหัสจาก URL แบบหยาบแต่มั่นใจว่าได้ชัวร์
+        if (fullUrl.includes('code=')) {
             try {
-                const parts = window.location.search.split('code=')[1];
+                const parts = fullUrl.split('code=')[1];
                 code = parts.split('&')[0];
             } catch(e) {}
         }
-        code = code ? decodeURIComponent(code).trim().toUpperCase() : 'BVSS1';
 
-        if (!owner && window.location.search.includes('owner=')) {
+        if (fullUrl.includes('owner=')) {
             try {
-                const parts = window.location.search.split('owner=')[1];
+                const parts = fullUrl.split('owner=')[1];
                 owner = parts.split('&')[0];
             } catch(e) {}
         }
-        owner = owner ? decodeURIComponent(owner).replace(/20/g, ' ').trim() : 'Minta Pumdokmai';
+
+        // ถ้าไม่มีการส่งค่ามา (เข้าเว็บตรงๆ) ให้ใช้ค่าตั้งต้นนี้แสดงผลทันทีแทนที่จะเป็นขีดว่าง
+        code = code ? decodeURIComponent(code).trim().toUpperCase() : 'BVSS1';
+        owner = owner ? decodeURIComponent(owner).replace(/20/g, ' ').replace(/\+/g, ' ').trim() : 'Minta Pumdokmai';
 
         const PRODUCT_DATABASE = {
             'BVXS1': { model: 'Hexag Bovin', size: 'XS', color: 'Onyx Black' },
@@ -144,4 +147,38 @@
             'BVSS1': { model: 'Hexag Bovin', size: 'S', color: 'Onyx Black' },
             'BVSS2': { model: 'Hexag Bovin', size: 'S', color: 'Glacier Mist' },
             'BVSS3': { model: 'Hexag Bovin', size: 'S', color: 'Cashmere Ivory' },
-            'BV
+            'BVSS4': { model: 'Hexag Bovin', size: 'S', color: 'Burgundy Rouge' },
+            'BVSS5': { model: 'Hexag Bovin', size: 'S', color: 'Camel Suede' },
+
+            'BVSL1': { model: 'Hexag Bovin', size: 'Medium', color: 'Onyx Black' },
+            'BVSL2': { model: 'Hexag Bovin', size: 'Medium', color: 'Glacier Mist' },
+            'BVSL3': { model: 'Hexag Bovin', size: 'Medium', color: 'Cashmere Ivory' },
+            'BVSL4': { model: 'Hexag Bovin', size: 'Medium', color: 'Burgundy Rouge' },
+            'BVSL5': { model: 'Hexag Bovin', size: 'Medium', color: 'Camel Suede' },
+
+            'BVL1': { model: 'Hexag Bovin', size: 'Large', color: 'Onyx Black' },
+            'BVL2': { model: 'Hexag Bovin', size: 'Large', color: 'Glacier Mist' },
+            'BVL3': { model: 'Hexag Bovin', size: 'Large', color: 'Cashmere Ivory' },
+            'BVL4': { model: 'Hexag Bovin', size: 'Large', color: 'Burgundy Rouge' },
+            'BVL5': { model: 'Hexag Bovin', size: 'Large', color: 'Camel Suede' },
+
+            'BVTM1': { model: 'Hexag Bovin', size: 'Travel M', color: 'Onyx Black' },
+            'BVTM5': { model: 'Hexag Bovin', size: 'Travel M', color: 'Camel Suede' },
+            'BVTL1': { model: 'Hexag Bovin', size: 'Travel L', color: 'Onyx Black' },
+            'BVTL5': { model: 'Hexag Bovin', size: 'Travel L', color: 'Camel Suede' },
+
+            'VGXS1': { model: 'Hexag Vegan', size: 'XS', color: 'Onyx Wave' },
+            'VGXS2': { model: 'Hexag Vegan', size: 'XS', color: 'Navy Obsidian' },
+            'VGXS3': { model: 'Hexag Vegan', size: 'XS', color: 'Emerald Forest' },
+            'VGXS4': { model: 'Hexag Vegan', size: 'XS', color: 'Terracotta Spice' },
+            'VGXS5': { model: 'Hexag Vegan', size: 'XS', color: 'Pigeon Grey' },
+
+            'VGSS1': { model: 'Hexag Vegan', size: 'S', color: 'Onyx Wave' },
+            'VGSS2': { model: 'Hexag Vegan', size: 'S', color: 'Navy Obsidian' },
+            'VGSS3': { model: 'Hexag Vegan', size: 'S', color: 'Emerald Forest' },
+            'VGSS4': { model: 'Hexag Vegan', size: 'S', color: 'Terracotta Spice' },
+            'VGSS5': { model: 'Hexag Vegan', size: 'S', color: 'Pigeon Grey' },
+
+            'VGSL1': { model: 'Hexag Vegan', size: 'Medium', color: 'Onyx Wave' },
+            'VGSL2': { model: 'Hexag Vegan', size: 'Medium', color: 'Navy Obsidian' },
+            'VGS
