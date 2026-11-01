@@ -1,29 +1,26 @@
 module.exports = async (req, res) => {
-  const { code } = req.query;
+  const { code, owner } = req.query;
 
-  // --- ฐานข้อมูลรหัสย่อ สำหรับดึงข้อมูลภาษาไทย/อังกฤษเต็มรูปแบบ ---
+  // --- ข้อมูลพื้นฐานของสินค้าแต่ละรหัส (Short Code) ---
   const SHORT_CODES = {
     'TM001': {
       model: 'Hexag Bovin / Brown / Micro',
       id: 'TM-HEXB-001',
-      owner: 'คุณเชอรี่ (Khun Cherry)',
       start: '2026-10-31'
     },
     'TM002': {
       model: 'Hexag Bovin / Brown / Micro',
       id: 'TM-HEXB-002',
-      owner: 'คุณมินตา (Khun Minta)',
       start: '2026-10-31'
     },
     'TM003': {
       model: 'Hexag Vegan / Red / Mini',
       id: 'TM-HEXV-003',
-      owner: 'คุณสมชาย (Khun Somchai)',
       start: '2026-11-01'
     }
   };
 
-  // ถ้าไม่มีรหัสส่งมา หรือไม่มีรหัสนี้ในระบบ ให้ดีดกลับไปหน้าแอดมิน
+  // ถ้าไม่มีรหัสส่งมา ให้ดีดกลับไปหน้าแอดมิน
   if (!code || !SHORT_CODES[code]) {
     res.writeHead(302, { Location: '/api/admin' });
     res.end();
@@ -31,6 +28,8 @@ module.exports = async (req, res) => {
   }
 
   const item = SHORT_CODES[code];
+  // ดึงชื่อเจ้าของที่พิมพ์มาจากหน้าแอดมิน (ถ้ามี) หรือใช้ค่าเริ่มต้น
+  const customerName = owner ? decodeURIComponent(owner) : 'คุณเชอรี่ (Khun Cherry)';
 
   return res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(`
     <!DOCTYPE html>
@@ -165,7 +164,7 @@ module.exports = async (req, res) => {
                 </div>
                 <div class="info-row">
                     <span class="label">ผู้รับสิทธิ์ / ลูกค้า (Registered Owner):</span>
-                    <span class="value">${item.owner}</span>
+                    <span class="value">${customerName}</span>
                 </div>
                 <div class="info-row">
                     <span class="label">วันเริ่มรับประกัน (Start Date):</span>
@@ -182,7 +181,6 @@ module.exports = async (req, res) => {
         </div>
 
         <script>
-            // สลับจากหน้าครีมต้อนรับ ไปหน้าใบรับประกันอัตโนมัติภายใน 2.8 วินาที
             window.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     const splash = document.getElementById('splash-screen');
@@ -194,7 +192,6 @@ module.exports = async (req, res) => {
                 }, 2800);
             });
 
-            // ฟังก์ชันนับถอยหลัง 1 ปีเต็มจากวันที่เริ่มรับประกัน
             function startCountdown() {
                 const startDateStr = "${item.start}";
                 const start = new Date(startDateStr);
@@ -207,7 +204,7 @@ module.exports = async (req, res) => {
                     const diff = expireDate - now;
 
                     if (diff <= 0) {
-                        document.getElementById('countdown'].innerText = "EXPIRED / หมดระยะเวลารับประกัน";
+                        document.getElementById('countdown').innerText = "EXPIRED / หมดระยะเวลารับประกัน";
                         document.getElementById('countdown').style.color = "#ef4444";
                         return;
                     }
