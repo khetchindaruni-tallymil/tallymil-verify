@@ -15,10 +15,9 @@ export default function handler(req, res) {
         .brand-sub { font-size: 10px; color: #d4af37; text-transform: uppercase; letter-spacing: 2px; text-align: center; margin-bottom: 24px; }
         .form-group { margin-bottom: 16px; }
         label { color: #a8a29e; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
-        select, input { width: 100%; padding: 12px 16px; background: #0c0a09; border: 1px solid #383531; border-radius: 12px; color: #fff; font-size: 14px; outline: none; }
-        select:focus, input:focus { border-color: #d4af37; }
-        .btn { width: 100%; background: linear-gradient(135deg, #d4af37, #996515); color: #0c0a09; font-weight: 700; padding: 14px; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; transition: opacity 0.2s; }
-        .btn:hover { opacity: 0.9; }
+        input { width: 100%; padding: 12px 16px; background: #0c0a09; border: 1px solid #383531; border-radius: 12px; color: #fff; font-size: 14px; outline: none; text-transform: uppercase; }
+        input:focus { border-color: #d4af37; }
+        .btn { width: 100%; background: linear-gradient(135deg, #d4af37, #996515); color: #0c0a09; font-weight: 700; padding: 14px; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; }
         .result-box { margin-top: 24px; background: #0c0a09; border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 14px; padding: 16px; display: none; }
         .result-title { font-size: 10px; color: #d4af37; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
         .result-link { font-family: monospace; font-size: 12px; color: #34d399; word-break: break-all; margin-bottom: 12px; display: block; background: rgba(0,0,0,0.5); padding: 8px; border-radius: 8px; }
@@ -31,30 +30,13 @@ export default function handler(req, res) {
         <div class="brand-sub">NFC Tag Generation Admin</div>
 
         <div class="form-group">
-            <label>เลือกุ่นสินค้า / Model & Series:</label>
-            <select id="productCode">
-                <optgroup label="Hexag Bovin (XS)">
-                    <option value="BVXS1">Hexag Bovin - XS - Onyx Black</option>
-                    <option value="BVXS2">Hexag Bovin - XS - Glacier Mist</option>
-                    <option value="BVXS3">Hexag Bovin - XS - Cashmere Ivory</option>
-                    <option value="BVXS4">Hexag Bovin - XS - Burgundy Rouge</option>
-                    <option value="BVXS5" selected>Hexag Bovin - XS - Camel Suede</option>
-                </optgroup>
-                <optgroup label="Hexag Bovin (S)">
-                    <option value="BVSS1">Hexag Bovin - S - Onyx Black</option>
-                    <option value="BVSS5">Hexag Bovin - S - Camel Suede</option>
-                </optgroup>
-                <optgroup label="Hexag Vegan (XS)">
-                    <option value="VGXS1">Hexag Vegan - XS - Onyx Wave</option>
-                    <option value="VGXS2">Hexag Vegan - XS - Navy Obsidian</option>
-                    <option value="VGXS5">Hexag Vegan - XS - Pigeon Grey</option>
-                </optgroup>
-            </select>
+            <label>รหัสสินค้า / Product Code (เช่น BVXS5, BVSS1):</label>
+            <input type="text" id="productCode" value="BVXS5" placeholder="พิมพ์รหัสสินค้าที่นี่">
         </div>
 
         <div class="form-group">
             <label>ชื่อผู้ถือครอง / Registered Owner:</label>
-            <input type="text" id="ownerName" value="Minta Pumdokmai" placeholder="ระบุชื่อ-นามสกุลลูกค้า">
+            <input type="text" id="ownerName" value="Minta Pumdokmai" style="text-transform: none;" placeholder="ระบุชื่อ-นามสกุลลูกค้า">
         </div>
 
         <button class="btn" onclick="generateLink()">สร้างลิงก์สำหรับเขียน NFC</button>
@@ -68,7 +50,7 @@ export default function handler(req, res) {
 
     <script>
         function generateLink() {
-            const code = document.getElementById('productCode').value;
+            const code = document.getElementById('productCode').value.trim().toUpperCase();
             const owner = document.getElementById('ownerName').value.trim() || 'Valued Customer';
             const baseUrl = window.location.origin;
             const finalLink = \`\${baseUrl}/?code=\${code}&owner=\${encodeURIComponent(owner)}\`;
