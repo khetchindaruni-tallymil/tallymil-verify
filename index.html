@@ -114,26 +114,24 @@
     </div>
 
     <script>
-        const fullUrl = window.location.href;
-        let code = '';
-        let owner = '';
+        // ใช้ URLSearchParams มาตรฐานดึงค่าโดยตรงจาก URL ทันที
+        const params = new URLSearchParams(window.location.search);
+        let code = params.get('code');
+        let owner = params.get('owner');
 
-        // แยกแกะรหัสจาก URL แบบหยาบแต่มั่นใจว่าได้ชัวร์
-        if (fullUrl.includes('code=')) {
+        // ถ้าไม่มีใน query string ให้ลองดึงด้วยวิธีตัดข้อความเผื่อกรณีลิงก์ถูกแปลง
+        if (!code && window.location.href.includes('code=')) {
             try {
-                const parts = fullUrl.split('code=')[1];
-                code = parts.split('&')[0];
+                code = window.location.href.split('code=')[1].split('&')[0];
+            } catch(e) {}
+        }
+        if (!owner && window.location.href.includes('owner=')) {
+            try {
+                owner = window.location.href.split('owner=')[1].split('&')[0];
             } catch(e) {}
         }
 
-        if (fullUrl.includes('owner=')) {
-            try {
-                const parts = fullUrl.split('owner=')[1];
-                owner = parts.split('&')[0];
-            } catch(e) {}
-        }
-
-        // ถ้าไม่มีการส่งค่ามา (เข้าเว็บตรงๆ) ให้ใช้ค่าตั้งต้นนี้แสดงผลทันทีแทนที่จะเป็นขีดว่าง
+        // กำหนดค่าเริ่มต้นสำรองถ้าหาไม่เจอจริงๆ
         code = code ? decodeURIComponent(code).trim().toUpperCase() : 'BVSS1';
         owner = owner ? decodeURIComponent(owner).replace(/20/g, ' ').replace(/\+/g, ' ').trim() : 'Minta Pumdokmai';
 
@@ -180,5 +178,3 @@
             'VGSS5': { model: 'Hexag Vegan', size: 'S', color: 'Pigeon Grey' },
 
             'VGSL1': { model: 'Hexag Vegan', size: 'Medium', color: 'Onyx Wave' },
-            'VGSL2': { model: 'Hexag Vegan', size: 'Medium', color: 'Navy Obsidian' },
-            'VGS
