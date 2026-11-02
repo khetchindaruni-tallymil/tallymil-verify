@@ -120,7 +120,6 @@
     const rawId = urlParams.get('id') || urlParams.get('code') || 'BVSS1';
     const productId = rawId.trim().toUpperCase();
 
-    // ดึงชื่อนามสกุลจากลิงก์ (รองรับ %20 เว้นวรรค)
     const rawOwner = urlParams.get('owner');
     const ownerName = rawOwner ? decodeURIComponent(rawOwner) : 'คุณมินตา';
 
@@ -164,12 +163,20 @@
       const colorMap = isVegan ? veganColors : bovinColors;
       const color = colorMap[colorNum] || 'Onyx Black';
 
+      // กำหนดใช้วันที่ปัจจุบันตามเวลาจริงที่สแกน
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`;
+
       return {
         model: model,
         size: size,
         color: color,
-        startDate: '2026-11-02',
-        owner: ownerName
+        startDate: formattedDate,
+        owner: ownerName,
+        startTime: now.getTime()
       };
     }
 
@@ -182,13 +189,13 @@
     document.getElementById('owner').innerText = item.owner;
     document.getElementById('startDate').innerText = item.startDate;
 
-    const startDate = new Date(item.startDate);
-    const endDate = new Date(startDate);
-    endDate.setFullYear(endDate.getFullYear() + 1);
+    // ตั้งเวลาหมดอายุให้อยู่ที่ exatamente 1 ปี (365 วัน) นับจากวินาทีที่เปิดสแกน
+    const startTime = item.startTime;
+    const endTime = startTime + (365 * 24 * 60 * 60 * 1000);
 
     function updateTimer() {
-      const now = new Date();
-      const diff = endDate - now;
+      const now = new Date().getTime();
+      const diff = endTime - now;
 
       if (diff > 0) {
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
