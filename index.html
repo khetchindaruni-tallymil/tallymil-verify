@@ -27,7 +27,10 @@
       justify-content: center;
       align-items: center;
       z-index: 9999;
-      animation: fadeOutSplash 0.6s ease 1.8s forwards;
+      padding: 0 28px;
+      text-align: center;
+      /* ขยายเวลาหน้าต้อนรับเป็น 9 วินาที */
+      animation: fadeOutSplash 0.8s ease 9s forwards;
     }
     .splash-brand {
       font-family: 'Young Serif', serif;
@@ -37,6 +40,16 @@
     .splash-sub {
       font-family: 'Young Serif', serif;
       font-size: 11px; color: #b87333; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .splash-quote-en {
+      font-family: 'Young Serif', serif;
+      font-size: 13px; color: #fbf0b9; letter-spacing: 0.6px; line-height: 1.6; max-width: 340px;
+      margin-bottom: 12px;
+    }
+    .splash-quote-th {
+      font-family: 'Young Serif', serif;
+      font-size: 11px; color: #827b73; letter-spacing: 0.5px; line-height: 1.5; max-width: 320px;
     }
     @keyframes fadeOutSplash {
       0% { opacity: 1; visibility: visible; }
@@ -73,6 +86,8 @@
   <div id="splash-screen">
     <div class="splash-brand">TALLY MiL</div>
     <div class="splash-sub">WELCOME TO TALLY MiL</div>
+    <div class="splash-quote-en">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</div>
+    <div class="splash-quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
   </div>
 
   <div class="card">
@@ -168,10 +183,22 @@
       const colorMap = isVegan ? veganColors : bovinColors;
       const color = colorMap[colorNum] || 'Onyx Black';
 
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
+      // ล็อกเวลาเริ่มต้นประกันถาวรด้วย localStorage จากการสแกนครั้งแรก
+      const storageKey = 'tally_warranty_start_' + productId;
+      let savedStartTime = localStorage.getItem(storageKey);
+      let startTime;
+
+      if (!savedStartTime) {
+        startTime = new Date().getTime();
+        localStorage.setItem(storageKey, startTime);
+      } else {
+        startTime = parseInt(savedStartTime, 10);
+      }
+
+      const startDateObj = new Date(startTime);
+      const year = startDateObj.getFullYear();
+      const month = String(startDateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(startDateObj.getDate()).padStart(2, '0');
       const formattedDate = `${year}-${month}-${day}`;
 
       return {
@@ -180,7 +207,7 @@
         color: color,
         startDate: formattedDate,
         owner: ownerName,
-        startTime: now.getTime()
+        startTime: startTime
       };
     }
 
