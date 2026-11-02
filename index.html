@@ -166,4 +166,55 @@
       };
 
       const colorMap = isVegan ? veganColors : bovinColors;
-      const color = colorMap[colorNum] || 'Onyx Black
+      const color = colorMap[colorNum] || 'Onyx Black';
+
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`;
+
+      return {
+        model: model,
+        size: size,
+        color: color,
+        startDate: formattedDate,
+        owner: ownerName,
+        startTime: now.getTime()
+      };
+    }
+
+    const item = parseProduct(productId);
+
+    document.getElementById('model').innerText = item.model;
+    document.getElementById('size').innerText = item.size;
+    document.getElementById('color').innerText = item.color;
+    document.getElementById('code').innerText = productId;
+    document.getElementById('owner').innerText = item.owner;
+    document.getElementById('startDate').innerText = item.startDate;
+
+    const startTime = item.startTime;
+    const endTime = startTime + (365 * 24 * 60 * 60 * 1000);
+
+    function updateTimer() {
+      const now = new Date().getTime();
+      const diff = endTime - now;
+
+      if (diff > 0) {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / 1000 / 60) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        document.getElementById('warrantyDays').innerText = 
+          `${days} วัน ${hours}ชม. ${minutes}น. ${seconds}วินาที`;
+      } else {
+        document.getElementById('warrantyDays').innerText = 'หมดระยะเวลารับประกัน';
+      }
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
