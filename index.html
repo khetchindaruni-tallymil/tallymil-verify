@@ -66,42 +66,18 @@
     .warranty-title { font-family: 'Young Serif', serif; font-size: 11px; color: #b87333; margin-bottom: 8px; letter-spacing: 0.3px; line-height: 1.4; }
     .warranty-days { font-family: 'Young Serif', serif; font-size: 18px; font-weight: bold; color: #fbf0b9; }
     .footer { font-family: 'Young Serif', serif; text-align: center; margin-top: 20px; font-size: 9px; color: #615a52; line-height: 1.5; letter-spacing: 0.5px; }
-
-    /* ปรับแต่งจุด i ให้เป็นรูปโลโก้หู */
-    .custom-i {
-      display: inline-block;
-      width: 0.3em;
-      height: 0.75em;
-      background-color: currentColor;
-      position: relative;
-      vertical-align: -0.05em;
-      margin: 0 0.02em;
-    }
-    .custom-i::before {
-      content: "";
-      position: absolute;
-      top: -0.42em;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0.55em;
-      height: 0.35em;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80'%3E%3Cpath d='M0,80 L0,30 C0,30 15,20 30,0 C30,0 42,20 50,30 C58,20 70,0 70,0 C85,20 100,30 100,30 L100,80 Z' fill='%23fbf0b9'/%3E%3C/svg%3E");
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-    }
   </style>
 </head>
 <body>
 
   <div id="splash-screen">
-    <div class="splash-brand">TALLY M<span class="custom-i"></span>L</div>
-    <div class="splash-sub">LIFESTYLE FOR YOU</div>
+    <div class="splash-brand">TALLY MiL</div>
+    <div class="splash-sub">WELCOME TO TALLY MiL</div>
   </div>
 
   <div class="card">
     <div class="header">
-      <div class="brand">TALLY M<span class="custom-i"></span>L</div>
+      <div class="brand">TALLY MiL</div>
       <div class="subtitle">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
     </div>
 
@@ -140,7 +116,7 @@
     </div>
 
     <div class="footer">
-      OFFICIAL DIGITAL CERTIFICATE - TALLY M<span class="custom-i"></span>L<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY M<span class="custom-i"></span>L
+      OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL
     </div>
   </div>
 
@@ -190,55 +166,4 @@
       };
 
       const colorMap = isVegan ? veganColors : bovinColors;
-      const color = colorMap[colorNum] || 'Onyx Black';
-
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const formattedDate = `${year}-${month}-${day}`;
-
-      return {
-        model: model,
-        size: size,
-        color: color,
-        startDate: formattedDate,
-        owner: ownerName,
-        startTime: now.getTime()
-      };
-    }
-
-    const item = parseProduct(productId);
-
-    document.getElementById('model').innerText = item.model;
-    document.getElementById('size').innerText = item.size;
-    document.getElementById('color').innerText = item.color;
-    document.getElementById('code').innerText = productId;
-    document.getElementById('owner').innerText = item.owner;
-    document.getElementById('startDate').innerText = item.startDate;
-
-    const startTime = item.startTime;
-    const endTime = startTime + (365 * 24 * 60 * 60 * 1000);
-
-    function updateTimer() {
-      const now = new Date().getTime();
-      const diff = endTime - now;
-
-      if (diff > 0) {
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((diff / 1000 / 60) % 60);
-        const seconds = Math.floor((diff / 1000) % 60);
-
-        document.getElementById('warrantyDays').innerText = 
-          `${days} วัน ${hours}ชม. ${minutes}น. ${seconds}วินาที`;
-      } else {
-        document.getElementById('warrantyDays').innerText = 'หมดระยะเวลารับประกัน';
-      }
-    }
-
-    updateTimer();
-    setInterval(updateTimer, 1000);
-  </script>
-</body>
-</html>
+      const color = colorMap[colorNum] || 'Onyx Black
