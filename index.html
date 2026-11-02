@@ -60,8 +60,8 @@
     .info-box { background: #181614; border-radius: 18px; padding: 20px 18px; margin-bottom: 16px; border: 1px solid #24201a; }
     .info-item { margin-bottom: 14px; font-size: 12px; }
     .info-item:last-child { margin-bottom: 0; }
-    .label { font-family: 'Young Serif', serif; color: #827b73; display: block; margin-bottom: 3px; font-size: 11px; }
-    .value { font-family: 'Young Serif', serif; color: #fbf0b9; font-size: 15px; font-weight: 500; }
+    .label { font-family: 'Young Serif', serif; color: #827b73; display: block; margin-bottom: 3px; font-size: 11px; word-break: break-word; }
+    .value { font-family: 'Young Serif', serif; color: #fbf0b9; font-size: 15px; font-weight: 500; word-break: break-word; }
     .warranty-box { background: #181614; border: 1px solid #4a2e16; border-radius: 18px; padding: 18px 12px; text-align: center; }
     .warranty-title { font-family: 'Young Serif', serif; font-size: 11px; color: #b87333; margin-bottom: 8px; letter-spacing: 0.3px; line-height: 1.4; }
     .warranty-days { font-family: 'Young Serif', serif; font-size: 18px; font-weight: bold; color: #fbf0b9; }
@@ -127,4 +127,24 @@
         <span class="value" id="owner">-</span>
       </div>
       <div class="info-item">
-        <span class="label">วันเริ่มรับ
+        <span class="label">วันเริ่มรับประกัน / START DATE:</span>
+        <span class="value" id="startDate">กำลังตรวจสอบ...</span>
+      </div>
+    </div>
+
+    <div class="warranty-box">
+      <div class="warranty-title">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</div>
+      <div class="warranty-days" id="warrantyDays">คำนวณเวลา . . .</div>
+    </div>
+
+    <div class="footer">
+      OFFICIAL DIGITAL CERTIFICATE - TALLY M<span class="custom-i"></span>L<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY M<span class="custom-i"></span>L
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawId = urlParams.get('id') || urlParams.get('code') || 'BVSS1';
+    const productId = rawId.trim().toUpperCase();
+
+    const rawOwner = urlParams.get('owner
