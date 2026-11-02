@@ -120,7 +120,10 @@
     const rawId = urlParams.get('id') || urlParams.get('code') || 'BVSS1';
     const productId = rawId.trim().toUpperCase();
 
-    // ฟังก์ชันถอดรหัสอัตโนมัติ รองรับทุกรุ่น ทุกไซส์ ทุกสี แบบไม่มีวันพัง
+    // ดึงชื่อนามสกุลจากลิงก์ (รองรับ %20 เว้นวรรค)
+    const rawOwner = urlParams.get('owner');
+    const ownerName = rawOwner ? decodeURIComponent(rawOwner) : 'คุณมินตา';
+
     function parseProduct(code) {
       const isVegan = code.startsWith('VG');
       const model = isVegan ? 'Hexag Vegan' : 'Hexag Bovin';
@@ -142,7 +145,6 @@
         size = 'S';
       }
 
-      // ตารางเทียบสีของ Bovin และ Vegan
       const bovinColors = {
         1: 'Onyx Black',
         2: 'Glacier Mist',
@@ -167,7 +169,7 @@
         size: size,
         color: color,
         startDate: '2026-11-02',
-        owner: 'คุณมินตา'
+        owner: ownerName
       };
     }
 
