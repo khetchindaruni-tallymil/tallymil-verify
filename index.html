@@ -23,7 +23,7 @@
         }
         .container { width: 100%; max-width: 420px; text-align: center; position: relative; }
 
-        /* --- 1. หน้า WELCOME SCREEN (โชว์อัตโนมัติ 8 วินาทีแล้วหายไป) --- */
+        /* --- 1. หน้า WELCOME SCREEN (แสดง 8 วินาทีแล้วซ่อนอัตโนมัติด้วย CSS) --- */
         #welcome-screen {
             position: absolute;
             top: 50%;
@@ -66,7 +66,7 @@
             margin-bottom: 20px;
         }
 
-        /* --- 2. หน้า CERTIFICATE & WARRANTY CARD (พรีเมี่ยมตัวเต็ม) --- */
+        /* --- 2. การ์ด CERTIFICATE (แสดงตัวเต็มพรีเมี่ยมเสมอ) --- */
         #cert-screen {
             background: #111111;
             border: 1px solid #2a2415;
@@ -91,7 +91,35 @@
             margin: 15px 0 20px;
         }
         
-        /* ฟอร์มกรอกข้อมูล (กรณีสแกนครั้งแรก) */
+        /* รายละเอียดใบ Certificate (โชว์เป็นค่าเริ่มต้น ไม่ต้องใช้ JS สั่งเปิด) */
+        .details-box {
+            display: block;
+            background: #161616;
+            border: 1px solid #282113;
+            border-radius: 14px;
+            padding: 18px;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        .detail-item { margin-bottom: 12px; }
+        .detail-item:last-child { margin-bottom: 0; }
+        .detail-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+        .detail-val { font-size: 15px; color: #f3e5ab; font-weight: 500; margin-top: 2px; }
+
+        /* กล่องนับถอยหลังประกัน 1 ปี (โชว์เป็นค่าเริ่มต้น) */
+        .timer-box {
+            display: block;
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid #382d17;
+            border-radius: 14px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .timer-title { font-size: 11px; color: #b38b32; margin-bottom: 6px; }
+        .timer-countdown { font-size: 16px; font-weight: 600; color: #f3e5ab; font-family: 'Cinzel', serif; }
+
+        /* ฟอร์มกรอกข้อมูล (กรณีลูกค้าใหม่) */
         .form-section {
             display: none;
             background: #161616;
@@ -114,34 +142,6 @@
             outline: none;
         }
 
-        /* รายละเอียดใบ Certificate ตัวเต็ม */
-        .details-box {
-            display: none;
-            background: #161616;
-            border: 1px solid #282113;
-            border-radius: 14px;
-            padding: 18px;
-            text-align: left;
-            margin-bottom: 15px;
-        }
-        .detail-item { margin-bottom: 12px; }
-        .detail-item:last-child { margin-bottom: 0; }
-        .detail-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
-        .detail-val { font-size: 15px; color: #f3e5ab; font-weight: 500; margin-top: 2px; }
-
-        /* กล่องนับถอยหลังประกัน 1 ปี */
-        .timer-box {
-            display: none;
-            background: rgba(212, 175, 55, 0.05);
-            border: 1px solid #382d17;
-            border-radius: 14px;
-            padding: 15px;
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        .timer-title { font-size: 11px; color: #b38b32; margin-bottom: 6px; }
-        .timer-countdown { font-size: 16px; font-weight: 600; color: #f3e5ab; font-family: 'Cinzel', serif; }
-
         .btn-gold {
             width: 100%;
             background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
@@ -154,7 +154,7 @@
             cursor: pointer;
         }
         .btn-line {
-            display: none;
+            display: block;
             width: 100%;
             background: #06C755;
             color: #fff;
@@ -188,80 +188,11 @@
         <div class="quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
     </div>
 
-    <!-- 2. หน้า CERTIFICATE & WARRANTY CARD -->
+    <!-- 2. หน้า CERTIFICATE & WARRANTY CARD (เวอร์ชันการ์ดตัวเต็มพรีเมี่ยม) -->
     <div id="cert-screen">
         <div class="brand-logo" style="font-size: 24px;">TALLY MiL</div>
         <div class="welcome-sub" style="font-size: 10px; margin-bottom: 10px;">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
         
         <div class="badge-verified">✓ AUTHENTIC & GUARANTEED PRODUCT</div>
 
-        <!-- ฟอร์มลงทะเบียน (กรณีสแกนครั้งแรก) -->
-        <div id="reg-form-section" class="form-section">
-            <h4 style="color: #f3e5ab; margin-bottom: 12px; text-align: center; font-size: 13px;">ลงทะเบียนผู้ครอบครองเพื่อเปิดประกัน</h4>
-            <div class="form-group">
-                <label>ชื่อ-นามสกุล ผู้ถือครอง</label>
-                <input type="text" id="cust-name" class="form-control" placeholder="กรอกชื่อ-นามสกุล">
-            </div>
-            <div class="form-group">
-                <label>เบอร์โทรศัพท์</label>
-                <input type="tel" id="cust-phone" class="form-control" placeholder="08X-XXX-XXXX">
-            </div>
-            <div class="form-group">
-                <label>LINE ID (ถ้ามี)</label>
-                <input type="text" id="cust-line" class="form-control" placeholder="สำหรับรับสิทธิพิเศษ VIP">
-            </div>
-            <button class="btn-gold" id="btn-save" onclick="submitRegistration()">ยืนยันและรับใบการันตี</button>
-        </div>
-
-        <!-- รายละเอียดใบ Certificate (กรณีลงทะเบียนแล้ว) -->
-        <div id="cert-details" class="details-box">
-            <div class="detail-item">
-                <div class="detail-label">รุ่นสินค้า / MODEL:</div>
-                <div class="detail-val">Hexag Bovin</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">ไซส์ / SIZE:</div>
-                <div class="detail-val">S</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">สี / COLOR:</div>
-                <div class="detail-val">Onyx Black</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">รหัสสินค้า / PRODUCT CODE:</div>
-                <div class="detail-val" id="disp-chip">-</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
-                <div class="detail-val" id="disp-owner">-</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">วันเริ่มรับประกัน / START DATE:</div>
-                <div class="detail-val" id="disp-date">-</div>
-            </div>
-        </div>
-
-        <!-- กล่องนับถอยหลังประกัน 1 ปี -->
-        <div id="timer-box" class="timer-box">
-            <div class="timer-title">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</div>
-            <div class="timer-countdown" id="disp-timer">กำลังคำนวณ...</div>
-        </div>
-
-        <!-- ปุ่ม LINE OA -->
-        <button id="btn-line-oa" class="btn-line" onclick="window.location.href='https://line.me/R/ti/p/@962dvbat'">
-            🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP
-        </button>
-
-        <div class="footer-text">OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL</div>
-    </div>
-</div>
-
-<script>
-    const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    let currentChipId = "BVSS1";
-    let timerInterval = null;
-
-    // ระบบดึงรหัสชิปอัตโนมัติรองรับทุกพารามิเตอร์ (UID หรือ Chip Code)
+        <!-- ฟอร์ม
