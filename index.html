@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TALLY MiL - Digital Authenticity & Privilege</title>
-    <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
@@ -27,11 +26,7 @@
             width: 100%;
             text-align: center;
         }
-        .brand-title { 
-            font-size: 24px; 
-            font-weight: 700; 
-            letter-spacing: 2px; 
-        }
+        .brand-title { font-size: 24px; font-weight: 700; letter-spacing: 2px; }
         .status-badge {
             display: inline-block;
             padding: 6px 16px;
@@ -89,7 +84,7 @@
     <div id="status-badge" class="status-badge status-loading">กำลังตรวจสอบชิป...</div>
     <p id="message" style="font-size: 14px; color: #555;">กรุณารอสักครู่ ระบบกำลังยืนยันข้อมูล</p>
 
-    <!-- ฟอร์มกรอกข้อมูลลูกค้า (แสดงเฉพาะเมื่อสแกนชิปครั้งแรก) -->
+    <!-- ฟอร์มกรอกข้อมูลลูกค้า -->
     <div id="reg-form-section" style="display: none; margin-top: 20px;">
         <h4 style="margin-bottom: 15px; color: #111;">ลงทะเบียนรับประกัน & รับสิทธิพิเศษ</h4>
         <div class="form-group">
@@ -107,7 +102,7 @@
         <button class="btn-submit" onclick="submitRegistration()">ยืนยันการลงทะเบียน</button>
     </div>
 
-    <!-- ส่วนแสดงข้อมูลประกัน (แสดงเมื่อสแกนซ้ำ หรือลงทะเบียนสำเร็จ) -->
+    <!-- ส่วนแสดงข้อมูลประกัน -->
     <div class="info-group" id="info-section" style="display: none;">
         <div class="info-row">
             <span class="info-label">Chip ID:</span>
@@ -129,7 +124,6 @@
 </div>
 
 <script>
-    // ตั้งค่าการเชื่อมต่อ Supabase ด้วยข้อมูลโปรเจกต์ของคุณ
     const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -140,20 +134,18 @@
         const badge = document.getElementById('status-badge');
         const message = document.getElementById('message');
 
-        // อ่านค่าชิปจากลิงก์ URL (เช่น ?chip=CKtallymil1428)
         const urlParams = new URLSearchParams(window.location.search);
-        currentChipId = urlParams.get('chip');
+        
+        // รองรับทั้ง ?chip=..., ?id=... หรือ ?code=...
+        currentChipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code');
 
+        // หากเปิดเข้ามาแบบไม่มีพารามิเตอร์ ให้ใช้ค่าทดสอบอัตโนมัติ (หรือจะปรับเปลี่ยนตามต้องการ)
         if (!currentChipId) {
-            badge.className = 'status-badge status-error';
-            badge.innerText = 'ไม่พบชิป';
-            message.innerText = 'กรุณาสแกนชิป NFC ที่ถูกต้อง';
-            return;
+            currentChipId = "CKtallymil1428"; 
         }
 
         document.getElementById('disp-chip').innerText = currentChipId;
 
-        // ดึงข้อมูลชิปจากฐานข้อมูล Supabase
         let { data, error } = await supabaseClient
             .from('warranties')
             .select('*')
@@ -168,13 +160,11 @@
         }
 
         if (!data) {
-            // ยังไม่เคยลงทะเบียน -> แสดงฟอร์มให้กรอกข้อมูล
             badge.className = 'status-badge status-loading';
             badge.innerText = 'สินค้าแท้ (ยังไม่ได้ลงทะเบียน)';
             message.innerText = 'กรุณากรอกข้อมูลเพื่อเปิดใช้งานประกันและรับสิทธิพิเศษ';
             document.getElementById('reg-form-section').style.display = 'block';
         } else {
-            // เคยลงทะเบียนแล้ว -> ดึงวันที่สแกนครั้งแรกและชื่อลูกค้ามาแสดงถาวร
             showSuccessCard(data.customer_name || 'ลูกค้า TALLY MiL', data.activated_at);
         }
     }
@@ -191,7 +181,6 @@
 
         const currentTime = Math.floor(Date.now() / 1000).toString();
 
-        // บันทึกข้อมูลลงฐานข้อมูล Supabase
         let { error } = await supabaseClient
             .from('warranties')
             .insert([{ 
