@@ -99,7 +99,7 @@
             <label>LINE ID (ถ้ามี)</label>
             <input type="text" id="cust-line" class="form-control" placeholder="สำหรับรับโปรโมชั่นพิเศษ">
         </div>
-        <button class="btn-submit" onclick="submitRegistration()">ยืนยันการลงทะเบียน</button>
+        <button class="btn-submit" id="btn-save" onclick="submitRegistration()">ยืนยันการลงทะเบียน</button>
     </div>
 
     <!-- ส่วนแสดงข้อมูลประกัน -->
@@ -135,14 +135,7 @@
         const message = document.getElementById('message');
 
         const urlParams = new URLSearchParams(window.location.search);
-        
-        // รองรับทั้ง ?chip=..., ?id=... หรือ ?code=...
-        currentChipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code');
-
-        // หากเปิดเข้ามาแบบไม่มีพารามิเตอร์ ให้ใช้ค่าทดสอบอัตโนมัติ (หรือจะปรับเปลี่ยนตามต้องการ)
-        if (!currentChipId) {
-            currentChipId = "CKtallymil1428"; 
-        }
+        currentChipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || "CKtallymil1428";
 
         document.getElementById('disp-chip').innerText = currentChipId;
 
@@ -155,7 +148,7 @@
         if (error) {
             badge.className = 'status-badge status-error';
             badge.innerText = 'เกิดข้อผิดพลาด';
-            message.innerText = 'ไม่สามารถเชื่อมต่อระบบได้';
+            message.innerText = error.message || 'ไม่สามารถเชื่อมต่อระบบได้';
             return;
         }
 
@@ -173,14 +166,19 @@
         const name = document.getElementById('cust-name').value;
         const phone = document.getElementById('cust-phone').value;
         const line = document.getElementById('cust-line').value;
+        const btn = document.getElementById('btn-save');
 
         if (!name || !phone) {
             alert('กรุณากรอกชื่อและเบอร์โทรศัพท์ให้ครบถ้วนจ้า');
             return;
         }
 
+        btn.innerText = 'กำลังบันทึกข้อมูล...';
+        btn.disabled = true;
+
         const currentTime = Math.floor(Date.now() / 1000).toString();
 
+        // บันทึกลง Supabase
         let { error } = await supabaseClient
             .from('warranties')
             .insert([{ 
@@ -192,7 +190,9 @@
             }]);
 
         if (error) {
-            alert('เกิดข้อผิดพลาดในการลงทะเบียน กรุณาลองใหม่อีกครั้ง');
+            alert('เกิดข้อผิดพลาด: ' + (error.message || JSON.stringify(error)));
+            btn.innerText = 'ยืนยันการลงทะเบียน';
+            btn.disabled = false;
         } else {
             document.getElementById('reg-form-section').style.display = 'none';
             showSuccessCard(name, currentTime);
