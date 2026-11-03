@@ -142,6 +142,37 @@
     const rawOwner = urlParams.get('owner');
     const ownerName = rawOwner ? decodeURIComponent(rawOwner) : 'คุณมินตา';
 
+    // ฟังก์ชันช่วยบันทึก Cookie กันแคชหาย
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+      document.cookie = name + "=" + value + ";expires=" + d.toUTCString() + ";path=/";
+    }
+
+    function getCookie(name) {
+      const cname = name + "=";
+      const decodedCookie = decodeURIComponent(document.cookie);
+      const ca = decodedCookie.split(';');
+      for(let i = 0; i < ca.length; i++) {
+        let c = ca[i].trim();
+        if (c.indexOf(cname) === 0) return c.substring(cname.length, c.length);
+      }
+      return "";
+    }
+
+    // ระบบดึงเวลาเปิดสแกนครั้งแรก (เช็กทั้ง LocalStorage และ Cookie)
+    function getOrSetFirstScanTime(id) {
+      const key = 'tm_start_' + id;
+      let time = localStorage.getItem(key) || getCookie(key);
+
+      if (!time) {
+        time = new Date().getTime().toString();
+        localStorage.setItem(key, time);
+        setCookie(key, time, 400); // เก็บยาว 400 วัน
+      }
+      return parseInt(time, 10);
+    }
+
     function parseProduct(code) {
       const isVegan = code.startsWith('VG');
       const model = isVegan ? 'Hexag Vegan' : 'Hexag Bovin';
@@ -182,18 +213,7 @@
       const colorMap = isVegan ? veganColors : bovinColors;
       const color = colorMap[colorNum] || 'Onyx Black';
 
-      // ใช้คีย์ใหม่ล็อกเวลาเริ่มประกันครั้งแรกถาวรแบบไม่ให้รีเซ็ตอีก
-      const storageKey = 'tally_warranty_fixed_v2_' + productId;
-      let savedStartTime = localStorage.getItem(storageKey);
-      let startTime;
-
-      if (!savedStartTime) {
-        startTime = new Date().getTime();
-        localStorage.setItem(storageKey, startTime);
-      } else {
-        startTime = parseInt(savedStartTime, 10);
-      }
-
+      const startTime = getOrSetFirstScanTime(code);
       const startDateObj = new Date(startTime);
       const year = startDateObj.getFullYear();
       const month = String(startDateObj.getMonth() + 1).padStart(2, '0');
@@ -240,7 +260,4 @@
     }
 
     updateTimer();
-    setInterval(updateTimer, 1000);
-  </script>
-</body>
-</html>
+    setInterval(updateTimer,
