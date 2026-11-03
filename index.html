@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TALLY MiL - Digital Authenticity & Privilege</title>
+    <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
@@ -84,7 +85,7 @@
     <div id="status-badge" class="status-badge status-loading">กำลังตรวจสอบชิป...</div>
     <p id="message" style="font-size: 14px; color: #555;">กรุณารอสักครู่ ระบบกำลังยืนยันข้อมูล</p>
 
-    <!-- ฟอร์มกรอกข้อมูลลูกค้า -->
+    <!-- ฟอร์มกรอกข้อมูลลูกค้า (แสดงเฉพาะเมื่อสแกนครั้งแรก) -->
     <div id="reg-form-section" style="display: none; margin-top: 20px;">
         <h4 style="margin-bottom: 15px; color: #111;">ลงทะเบียนรับประกัน & รับสิทธิพิเศษ</h4>
         <div class="form-group">
@@ -102,7 +103,7 @@
         <button class="btn-submit" id="btn-save" onclick="submitRegistration()">ยืนยันการลงทะเบียน</button>
     </div>
 
-    <!-- ส่วนแสดงข้อมูลประกัน -->
+    <!-- ส่วนแสดงข้อมูลประกัน (แสดงเมื่อสแกนซ้ำ หรือลงทะเบียนสำเร็จ) -->
     <div class="info-group" id="info-section" style="display: none;">
         <div class="info-row">
             <span class="info-label">Chip ID:</span>
@@ -117,7 +118,7 @@
             <span class="info-value" id="disp-date">-</span>
         </div>
         
-        <!-- ลิงก์ LINE Official ของคุณอัปเดตตรงนี้เรียบร้อยแล้ว -->
+        <!-- ปุ่มเด้งไป LINE OA ของคุณ -->
         <button class="btn-submit" style="background-color: #06C755; margin-top: 15px;" onclick="window.location.href='https://line.me/R/ti/p/@962dvbat'">
             🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP
         </button>
@@ -125,6 +126,7 @@
 </div>
 
 <script>
+    // การเชื่อมต่อ Supabase
     const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -136,10 +138,12 @@
         const message = document.getElementById('message');
 
         const urlParams = new URLSearchParams(window.location.search);
+        // ดึงรหัสชิปจาก URL (ถ้าระบุ) หากไม่มีให้ใช้รหัสทดสอบ
         currentChipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || "CKtallymil1428";
 
         document.getElementById('disp-chip').innerText = currentChipId;
 
+        // ดึงข้อมูลชิปจาก Supabase
         let { data, error } = await supabaseClient
             .from('warranties')
             .select('*')
@@ -154,11 +158,13 @@
         }
 
         if (!data) {
+            // ยังไม่เคยลงทะเบียน
             badge.className = 'status-badge status-loading';
             badge.innerText = 'สินค้าแท้ (ยังไม่ได้ลงทะเบียน)';
             message.innerText = 'กรุณากรอกข้อมูลเพื่อเปิดใช้งานประกันและรับสิทธิพิเศษ';
             document.getElementById('reg-form-section').style.display = 'block';
         } else {
+            // เคยลงทะเบียนแล้ว
             showSuccessCard(data.customer_name || 'ลูกค้า TALLY MiL', data.activated_at);
         }
     }
@@ -179,6 +185,7 @@
 
         const currentTime = Math.floor(Date.now() / 1000).toString();
 
+        // บันทึกลง Supabase
         let { error } = await supabaseClient
             .from('warranties')
             .insert([{ 
