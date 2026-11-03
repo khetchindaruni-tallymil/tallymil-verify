@@ -117,7 +117,8 @@
             <span class="info-value" id="disp-date">-</span>
         </div>
         
-        <button class="btn-submit" style="background-color: #06C755; margin-top: 15px;" onclick="window.location.href='https://line.me/ti/p/@yourlineid'">
+        <!-- ลิงก์ LINE Official ของคุณอัปเดตตรงนี้เรียบร้อยแล้ว -->
+        <button class="btn-submit" style="background-color: #06C755; margin-top: 15px;" onclick="window.location.href='https://line.me/R/ti/p/@962dvbat'">
             🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP
         </button>
     </div>
@@ -178,7 +179,6 @@
 
         const currentTime = Math.floor(Date.now() / 1000).toString();
 
-        // บันทึกลง Supabase
         let { error } = await supabaseClient
             .from('warranties')
             .insert([{ 
