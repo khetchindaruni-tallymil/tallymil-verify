@@ -9,11 +9,7 @@
     <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Prompt', sans-serif;
             background-color: #050505;
@@ -24,13 +20,9 @@
             align-items: center;
             padding: 20px;
         }
-        .container {
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
-        }
+        .container { width: 100%; max-width: 420px; text-align: center; }
 
-        /* --- 1. หน้า WELCOME SCREEN (โชว์อัตโนมัติ 9 วินาที) --- */
+        /* --- 1. หน้า WELCOME SCREEN --- */
         #welcome-screen {
             padding: 40px 20px;
             animation: fadeIn 1.2s ease-in-out;
@@ -88,7 +80,6 @@
             margin: 15px 0 20px;
         }
         
-        /* ฟอร์มกรอกข้อมูล (กรณีสแกนครั้งแรก) */
         .form-section {
             background: #161616;
             border: 1px solid #332a18;
@@ -97,15 +88,8 @@
             text-align: left;
             margin-bottom: 15px;
         }
-        .form-group {
-            margin-bottom: 14px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: #c5a059;
-            margin-bottom: 6px;
-        }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 12px; color: #c5a059; margin-bottom: 6px; }
         .form-control {
             width: 100%;
             background: #080808;
@@ -117,7 +101,6 @@
             outline: none;
         }
 
-        /* ข้อมูลในใบ Certificate */
         .details-box {
             background: #161616;
             border: 1px solid #282113;
@@ -126,26 +109,11 @@
             text-align: left;
             margin-bottom: 15px;
         }
-        .detail-item {
-            margin-bottom: 12px;
-        }
-        .detail-item:last-child {
-            margin-bottom: 0;
-        }
-        .detail-label {
-            font-size: 11px;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .detail-val {
-            font-size: 15px;
-            color: #f3e5ab;
-            font-weight: 500;
-            margin-top: 2px;
-        }
+        .detail-item { margin-bottom: 12px; }
+        .detail-item:last-child { margin-bottom: 0; }
+        .detail-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+        .detail-val { font-size: 15px; color: #f3e5ab; font-weight: 500; margin-top: 2px; }
 
-        /* กล่องนับถอยหลังรับประกัน */
         .timer-box {
             background: rgba(212, 175, 55, 0.05);
             border: 1px solid #382d17;
@@ -153,19 +121,9 @@
             padding: 15px;
             margin-bottom: 15px;
         }
-        .timer-title {
-            font-size: 11px;
-            color: #b38b32;
-            margin-bottom: 6px;
-        }
-        .timer-countdown {
-            font-size: 16px;
-            font-weight: 600;
-            color: #f3e5ab;
-            font-family: 'Cinzel', serif;
-        }
+        .timer-title { font-size: 11px; color: #b38b32; margin-bottom: 6px; }
+        .timer-countdown { font-size: 16px; font-weight: 600; color: #f3e5ab; font-family: 'Cinzel', serif; }
 
-        /* ปุ่มกด */
         .btn-gold {
             width: 100%;
             background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
@@ -190,12 +148,7 @@
             margin-top: 5px;
         }
 
-        .footer-text {
-            font-size: 10px;
-            color: #555;
-            margin-top: 15px;
-            letter-spacing: 1px;
-        }
+        .footer-text { font-size: 10px; color: #555; margin-top: 15px; letter-spacing: 1px; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -212,14 +165,14 @@
         <div class="quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
     </div>
 
-    <!-- 2. หน้า CERTIFICATE & WARRANTY CARD (ซ่อนไว้ก่อน) -->
+    <!-- 2. หน้า CERTIFICATE & WARRANTY CARD -->
     <div id="cert-screen" class="card" style="display: none;">
         <div class="brand-logo" style="font-size: 24px;">TALLY MiL</div>
         <div class="welcome-sub" style="font-size: 10px; margin-bottom: 10px;">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
         
         <div class="badge-verified">✓ AUTHENTIC & GUARANTEED PRODUCT</div>
 
-        <!-- ฟอร์มลงทะเบียน (แสดงเฉพาะสแกนครั้งแรก) -->
+        <!-- ฟอร์มลงทะเบียน -->
         <div id="reg-form-section" class="form-section" style="display: none;">
             <h4 style="color: #f3e5ab; margin-bottom: 12px; text-align: center; font-size: 13px;">ลงทะเบียนผู้ครอบครองเพื่อเปิดประกัน</h4>
             <div class="form-group">
@@ -286,4 +239,23 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let currentChipId = null;
-    let
+    let timerInterval = null;
+
+    // ดึงรหัสชิปจาก URL
+    const urlParams = new URLSearchParams(window.location.search);
+    currentChipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || "BVSS1";
+    document.getElementById('disp-chip').innerText = currentChipId;
+
+    // เริ่มทำงานเบื้องหลังทันที (ดึงข้อมูลจาก Supabase)
+    let fetchedData = null;
+    supabaseClient
+        .from('warranties')
+        .select('*')
+        .eq('chip_id', currentChipId)
+        .maybeSingle()
+        .then(({ data }) => {
+            fetchedData = data;
+        });
+
+    // บังคับเปลี่ยนหน้าอัตโนมัติเป๊ะๆ ที่ 9 วินาที (ไม่รอ Supabase ก็เปลี่ยนหน้าให้ทันที)
+    setTimeout(
