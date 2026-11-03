@@ -58,7 +58,7 @@
             margin-bottom: 20px;
         }
 
-        /* --- 2. การ์ด CERTIFICATE & WARRANTY --- */
+        /* --- 2. หน้า CERTIFICATE & WARRANTY CARD --- */
         .card {
             background: #111111;
             border: 1px solid #2a2415;
@@ -241,21 +241,16 @@
     let currentChipId = null;
     let timerInterval = null;
 
-    // ดึงรหัสชิปจาก URL
+    // ดึงรหัสชิปจาก URL ทันที
     const urlParams = new URLSearchParams(window.location.search);
     currentChipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || "BVSS1";
     document.getElementById('disp-chip').innerText = currentChipId;
 
-    // เริ่มทำงานเบื้องหลังทันที (ดึงข้อมูลจาก Supabase)
-    let fetchedData = null;
-    supabaseClient
-        .from('warranties')
-        .select('*')
-        .eq('chip_id', currentChipId)
-        .maybeSingle()
-        .then(({ data }) => {
-            fetchedData = data;
-        });
+    // สั่งตั้งเวลาบังคับเปลี่ยนหน้าตอนครบ 9 วินาทีแบบชัวร์ๆ 100%
+    setTimeout(async () => {
+        // ซ่อนหน้าต้อนรับ และแสดงหน้าการ์ดทันที
+        document.getElementById('welcome-screen').style.display = 'none';
+        document.getElementById('cert-screen').style.display = 'block';
 
-    // บังคับเปลี่ยนหน้าอัตโนมัติเป๊ะๆ ที่ 9 วินาที (ไม่รอ Supabase ก็เปลี่ยนหน้าให้ทันที)
-    setTimeout(
+        // ดึงข้อมูลจาก Supabase มาแสดงผล
+        let { data, error } = await supabaseClient
