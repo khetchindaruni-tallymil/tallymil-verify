@@ -30,9 +30,10 @@
             text-align: center;
         }
 
-        /* --- หน้า Welcome Screen --- */
+        /* --- 1. หน้า WELCOME SCREEN (แบบเดิมเป๊ะ) --- */
         #welcome-screen {
             padding: 40px 20px;
+            animation: fadeIn 1.2s ease-in-out;
         }
         .brand-logo {
             font-family: 'Cinzel', serif;
@@ -62,16 +63,17 @@
             color: #888;
             font-weight: 300;
             line-height: 1.6;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
 
-        /* --- การ์ด Certificate & Warranty --- */
+        /* --- 2. การ์ด CERTIFICATE & WARRANTY (แบบเดิมเป๊ะ) --- */
         .card {
             background: #111111;
             border: 1px solid #2a2415;
             border-radius: 20px;
             padding: 25px 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 15px rgba(212, 175, 55, 0.1);
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .badge-verified {
             display: inline-block;
@@ -86,14 +88,14 @@
             margin: 15px 0 20px;
         }
         
-        /* ฟอร์มกรอกข้อมูล */
+        /* ฟอร์มกรอกข้อมูล (กรณีสแกนครั้งแรก) */
         .form-section {
             background: #161616;
             border: 1px solid #332a18;
             border-radius: 14px;
             padding: 20px;
             text-align: left;
-            margin-top: 15px;
+            margin-bottom: 15px;
         }
         .form-group {
             margin-bottom: 14px;
@@ -113,14 +115,9 @@
             border-radius: 8px;
             font-size: 14px;
             outline: none;
-            transition: 0.3s;
-        }
-        .form-control:focus {
-            border-color: #d4af37;
-            box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
         }
 
-        /* ข้อมูลในใบ Certificate */
+        /* ข้อมูลในใบ Certificate (ดีไซน์เดิม) */
         .details-box {
             background: #161616;
             border: 1px solid #282113;
@@ -154,15 +151,15 @@
             border: 1px solid #382d17;
             border-radius: 14px;
             padding: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .timer-title {
-            font-size: 12px;
+            font-size: 11px;
             color: #b38b32;
             margin-bottom: 6px;
         }
         .timer-countdown {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #f3e5ab;
             font-family: 'Cinzel', serif;
@@ -179,12 +176,6 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.3s;
-            letter-spacing: 0.5px;
-        }
-        .btn-gold:hover {
-            opacity: 0.9;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
         }
         .btn-line {
             width: 100%;
@@ -196,15 +187,18 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
+            margin-top: 5px;
         }
+
         .footer-text {
             font-size: 10px;
             color: #555;
             margin-top: 15px;
             letter-spacing: 1px;
         }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -216,19 +210,18 @@
         <div class="welcome-sub">WELCOME TO TALLY MiL</div>
         <div class="quote-en">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</div>
         <div class="quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
-        <button class="btn-gold" onclick="proceedToVerification()">เข้าสู่ระบบการันตีสินค้า</button>
     </div>
 
-    <!-- 2. หน้า CERTIFICATE & WARRANTY CARD -->
+    <!-- 2. หน้า CERTIFICATE & WARRANTY CARD (ซ่อนไว้ก่อนจนกว่าจะครบ 7 วิ) -->
     <div id="cert-screen" class="card" style="display: none;">
         <div class="brand-logo" style="font-size: 24px;">TALLY MiL</div>
         <div class="welcome-sub" style="font-size: 10px; margin-bottom: 10px;">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
         
         <div class="badge-verified">✓ AUTHENTIC & GUARANTEED PRODUCT</div>
 
-        <!-- ฟอร์มลงทะเบียนสแกนครั้งแรก -->
+        <!-- ฟอร์มลงทะเบียน (แสดงเฉพาะสแกนครั้งแรก) -->
         <div id="reg-form-section" class="form-section" style="display: none;">
-            <h4 style="color: #f3e5ab; margin-bottom: 12px; text-align: center; font-size: 14px;">ลงทะเบียนผู้ครอบครองเพื่อเปิดประกัน</h4>
+            <h4 style="color: #f3e5ab; margin-bottom: 12px; text-align: center; font-size: 13px;">ลงทะเบียนผู้ครอบครองเพื่อเปิดประกัน</h4>
             <div class="form-group">
                 <label>ชื่อ-นามสกุล ผู้ถือครอง</label>
                 <input type="text" id="cust-name" class="form-control" placeholder="กรอกชื่อ-นามสกุล">
@@ -244,30 +237,30 @@
             <button class="btn-gold" id="btn-save" onclick="submitRegistration()">ยืนยันและรับใบการันตี</button>
         </div>
 
-        <!-- กล่องแสดงรายละเอียด Certificate -->
+        <!-- รายละเอียดใบ Certificate (ดีไซน์ตามภาพของคุณ 100%) -->
         <div id="cert-details" class="details-box" style="display: none;">
             <div class="detail-item">
-                <div class="detail-label">รุ่นสินค้า / MODEL</div>
+                <div class="detail-label">รุ่นสินค้า / MODEL:</div>
                 <div class="detail-val">Hexag Bovin</div>
             </div>
             <div class="detail-item">
-                <div class="detail-label">ไซส์ / SIZE</div>
+                <div class="detail-label">ไซส์ / SIZE:</div>
                 <div class="detail-val">S</div>
             </div>
             <div class="detail-item">
-                <div class="detail-label">สี / COLOR</div>
+                <div class="detail-label">สี / COLOR:</div>
                 <div class="detail-val">Onyx Black</div>
             </div>
             <div class="detail-item">
-                <div class="detail-label">รหัสสินค้า / PRODUCT CODE</div>
+                <div class="detail-label">รหัสสินค้า / PRODUCT CODE:</div>
                 <div class="detail-val" id="disp-chip">-</div>
             </div>
             <div class="detail-item">
-                <div class="detail-label">ชื่อผู้ถือครอง / REGISTERED OWNER</div>
+                <div class="detail-label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
                 <div class="detail-val" id="disp-owner">-</div>
             </div>
             <div class="detail-item">
-                <div class="detail-label">วันเริ่มรับประกัน / START DATE</div>
+                <div class="detail-label">วันเริ่มรับประกัน / START DATE:</div>
                 <div class="detail-val" id="disp-date">-</div>
             </div>
         </div>
@@ -278,7 +271,7 @@
             <div class="timer-countdown" id="disp-timer">กำลังคำนวณ...</div>
         </div>
 
-        <!-- ปุ่มติดต่อ LINE OA -->
+        <!-- ปุ่ม LINE OA -->
         <button id="btn-line-oa" class="btn-line" style="display: none;" onclick="window.location.href='https://line.me/R/ti/p/@962dvbat'">
             🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP
         </button>
@@ -290,4 +283,4 @@
 <script>
     const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
-    const supabaseClient = s
+    const supabaseClient = supabase.createClient(SUPABASE_URL, S
