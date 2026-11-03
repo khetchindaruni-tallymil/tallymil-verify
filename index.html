@@ -1,244 +1,233 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TALLY MiL - Digital Authenticity & Warranty</title>
-  <link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Young Serif', serif;
-      background: #000000;
-      color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 12px;
-      overflow-x: hidden;
-    }
-    #splash-screen {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: #080808;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      padding: 0 28px;
-      text-align: center;
-      animation: fadeOutSplash 0.8s ease 9s forwards;
-    }
-    .splash-brand {
-      font-family: 'Young Serif', serif;
-      font-size: 28px; font-weight: 800; letter-spacing: 4px; color: #fbf0b9; margin-bottom: 8px;
-      text-shadow: 0 0 10px rgba(251, 240, 185, 0.3);
-    }
-    .splash-sub {
-      font-family: 'Young Serif', serif;
-      font-size: 11px; color: #b87333; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 600;
-      margin-bottom: 20px;
-    }
-    .splash-quote-en {
-      font-family: 'Young Serif', serif;
-      font-size: 13px; color: #fbf0b9; letter-spacing: 0.6px; line-height: 1.6; max-width: 340px;
-      margin-bottom: 12px;
-    }
-    .splash-quote-th {
-      font-family: 'Young Serif', serif;
-      font-size: 11px; color: #827b73; letter-spacing: 0.5px; line-height: 1.5; max-width: 320px;
-    }
-    @keyframes fadeOutSplash {
-      0% { opacity: 1; visibility: visible; }
-      99% { opacity: 0; visibility: visible; }
-      100% { opacity: 0; visibility: hidden; display: none; pointer-events: none; }
-    }
-    .card {
-      width: 100%; max-width: 410px; background: #11100e; border: 1px solid #2a241c;
-      border-radius: 26px; padding: 24px 20px; box-shadow: 0 12px 35px rgba(0,0,0,0.9);
-      font-family: 'Young Serif', serif;
-    }
-    .header { text-align: center; margin-bottom: 20px; }
-    .brand { font-family: 'Young Serif', serif; font-size: 28px; font-weight: 700; letter-spacing: 3px; color: #fbf0b9; }
-    .subtitle { font-family: 'Young Serif', serif; font-size: 10px; color: #b87333; letter-spacing: 1.5px; margin-top: 5px; text-transform: uppercase; }
-    .badge {
-      font-family: 'Young Serif', serif;
-      border: 1px solid #10b981; color: #34d399; background: rgba(16, 185, 129, 0.08);
-      border-radius: 40px; padding: 11px; text-align: center; font-size: 12px; font-weight: 600;
-      letter-spacing: 0.5px; margin-bottom: 20px;
-    }
-    .info-box { background: #181614; border-radius: 18px; padding: 20px 18px; margin-bottom: 16px; border: 1px solid #24201a; }
-    .info-item { margin-bottom: 14px; font-size: 12px; }
-    .info-item:last-child { margin-bottom: 0; }
-    .label { font-family: 'Young Serif', serif; color: #827b73; display: block; margin-bottom: 3px; font-size: 11px; }
-    .value { font-family: 'Young Serif', serif; color: #fbf0b9; font-size: 15px; font-weight: 500; }
-    .warranty-box { background: #181614; border: 1px solid #4a2e16; border-radius: 18px; padding: 18px 12px; text-align: center; }
-    .warranty-title { font-family: 'Young Serif', serif; font-size: 11px; color: #b87333; margin-bottom: 8px; letter-spacing: 0.3px; line-height: 1.4; }
-    .warranty-days { font-family: 'Young Serif', serif; font-size: 18px; font-weight: bold; color: #fbf0b9; }
-    .footer { font-family: 'Young Serif', serif; text-align: center; margin-top: 20px; font-size: 9px; color: #615a52; line-height: 1.5; letter-spacing: 0.5px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TALLY MiL - Digital Authenticity & Privilege</title>
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        .brand-title { 
+            font-size: 24px; 
+            font-weight: 700; 
+            letter-spacing: 2px; 
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 15px 0;
+        }
+        .status-success { background-color: #e6f4ea; color: #137333; }
+        .status-loading { background-color: #e8f0fe; color: #1a73e8; }
+        .status-error { background-color: #fce8e6; color: #c5221f; }
+        
+        .form-group { text-align: left; margin-bottom: 12px; }
+        .form-group label { font-size: 13px; color: #666; font-weight: 600; }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            margin-top: 4px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .btn-submit {
+            width: 100%;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-submit:hover { background-color: #333; }
+
+        .info-group {
+            text-align: left;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .info-label { color: #666; }
+        .info-value { font-weight: 600; }
+    </style>
 </head>
 <body>
 
-  <div id="splash-screen">
-    <div class="splash-brand">TALLY MiL</div>
-    <div class="splash-sub">WELCOME TO TALLY MiL</div>
-    <div class="splash-quote-en">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</div>
-    <div class="splash-quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
-  </div>
+<div class="card">
+    <div class="brand-title">TALLY MiL</div>
+    <p style="font-size: 12px; color: #777; margin-top: 4px;">OFFICIAL WARRANTY & PRIVILEGE</p>
+    
+    <div id="status-badge" class="status-badge status-loading">กำลังตรวจสอบชิป...</div>
+    <p id="message" style="font-size: 14px; color: #555;">กรุณารอสักครู่ ระบบกำลังยืนยันข้อมูล</p>
 
-  <div class="card">
-    <div class="header">
-      <div class="brand">TALLY MiL</div>
-      <div class="subtitle">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
+    <!-- ฟอร์มกรอกข้อมูลลูกค้า (แสดงเฉพาะเมื่อสแกนชิปครั้งแรก) -->
+    <div id="reg-form-section" style="display: none; margin-top: 20px;">
+        <h4 style="margin-bottom: 15px; color: #111;">ลงทะเบียนรับประกัน & รับสิทธิพิเศษ</h4>
+        <div class="form-group">
+            <label>ชื่อ-นามสกุล</label>
+            <input type="text" id="cust-name" class="form-control" placeholder="กรอกชื่อ-นามสกุล" required>
+        </div>
+        <div class="form-group">
+            <label>เบอร์โทรศัพท์</label>
+            <input type="tel" id="cust-phone" class="form-control" placeholder="08X-XXX-XXXX" required>
+        </div>
+        <div class="form-group">
+            <label>LINE ID (ถ้ามี)</label>
+            <input type="text" id="cust-line" class="form-control" placeholder="สำหรับรับโปรโมชั่นพิเศษ">
+        </div>
+        <button class="btn-submit" onclick="submitRegistration()">ยืนยันการลงทะเบียน</button>
     </div>
 
-    <div class="badge" id="auth-status">✓ AUTHENTIC & GUARANTEED PRODUCT</div>
-
-    <div class="info-box">
-      <div class="info-item">
-        <span class="label">รุ่นสินค้า / MODEL:</span>
-        <span class="value" id="model">-</span>
-      </div>
-      <div class="info-item">
-        <span class="label">ไซส์ / SIZE:</span>
-        <span class="value" id="size">-</span>
-      </div>
-      <div class="info-item">
-        <span class="label">สี / COLOR:</span>
-        <span class="value" id="color">-</span>
-      </div>
-      <div class="info-item">
-        <span class="label">รหัสสินค้า / PRODUCT CODE:</span>
-        <span class="value" id="code">-</span>
-      </div>
-      <div class="info-item">
-        <span class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-        <span class="value" id="owner">-</span>
-      </div>
-      <div class="info-item">
-        <span class="label">วันเริ่มรับประกัน / START DATE:</span>
-        <span class="value" id="startDate">กำลังตรวจสอบ...</span>
-      </div>
+    <!-- ส่วนแสดงข้อมูลประกัน (แสดงเมื่อสแกนซ้ำ หรือลงทะเบียนสำเร็จ) -->
+    <div class="info-group" id="info-section" style="display: none;">
+        <div class="info-row">
+            <span class="info-label">Chip ID:</span>
+            <span class="info-value" id="disp-chip">-</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">เจ้าของสินค้า:</span>
+            <span class="info-value" id="disp-owner">-</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">วันที่ลงทะเบียนครั้งแรก:</span>
+            <span class="info-value" id="disp-date">-</span>
+        </div>
+        
+        <button class="btn-submit" style="background-color: #06C755; margin-top: 15px;" onclick="window.location.href='https://line.me/ti/p/@yourlineid'">
+            🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP
+        </button>
     </div>
+</div>
 
-    <div class="warranty-box">
-      <div class="warranty-title">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</div>
-      <div class="warranty-days" id="warrantyDays">คำนวณเวลา . . .</div>
-    </div>
+<script>
+    // ตั้งค่าการเชื่อมต่อ Supabase ด้วยข้อมูลโปรเจกต์ของคุณ
+    const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    <div class="footer">
-      OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL
-    </div>
-  </div>
+    let currentChipId = null;
 
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const rawId = urlParams.get('id') || urlParams.get('code') || 'BVSS1';
-    const productId = rawId.trim().toUpperCase();
+    async function processWarranty() {
+        const badge = document.getElementById('status-badge');
+        const message = document.getElementById('message');
 
-    const rawOwner = urlParams.get('owner');
-    const ownerName = rawOwner ? decodeURIComponent(rawOwner) : 'Minta Pumdokmai';
+        // อ่านค่าชิปจากลิงก์ URL (เช่น ?chip=CKtallymil1428)
+        const urlParams = new URLSearchParams(window.location.search);
+        currentChipId = urlParams.get('chip');
 
-    function parseProduct(code) {
-      const isVegan = code.startsWith('VG');
-      const model = isVegan ? 'Hexag Vegan' : 'Hexag Bovin';
-      
-      let size = 'S';
-      let colorNum = parseInt(code.slice(-1)) || 1;
+        if (!currentChipId) {
+            badge.className = 'status-badge status-error';
+            badge.innerText = 'ไม่พบชิป';
+            message.innerText = 'กรุณาสแกนชิป NFC ที่ถูกต้อง';
+            return;
+        }
 
-      if (code.includes('XS')) {
-        size = 'XS';
-      } else if (code.includes('TM')) {
-        size = 'Travel M';
-      } else if (code.includes('TL')) {
-        size = 'Travel L';
-      } else if (code.includes('SL')) {
-        size = 'Medium';
-      } else if (code.startsWith('BVL') || code.startsWith('VGL')) {
-        size = 'Large';
-      } else if (code.includes('SS')) {
-        size = 'S';
-      }
+        document.getElementById('disp-chip').innerText = currentChipId;
 
-      const bovinColors = {
-        1: 'Onyx Black',
-        2: 'Glacier Mist',
-        3: 'Cashmere Ivory',
-        4: 'Burgundy Rouge',
-        5: 'Camel Suede'
-      };
+        // ดึงข้อมูลชิปจากฐานข้อมูล Supabase
+        let { data, error } = await supabaseClient
+            .from('warranties')
+            .select('*')
+            .eq('chip_id', currentChipId)
+            .maybeSingle();
 
-      const veganColors = {
-        1: 'Onyx Wave',
-        2: 'Navy Obsidian',
-        3: 'Emerald Forest',
-        4: 'Terracotta Spice',
-        5: 'Pigeon Grey'
-      };
+        if (error) {
+            badge.className = 'status-badge status-error';
+            badge.innerText = 'เกิดข้อผิดพลาด';
+            message.innerText = 'ไม่สามารถเชื่อมต่อระบบได้';
+            return;
+        }
 
-      const colorMap = isVegan ? veganColors : bovinColors;
-      const color = colorMap[colorNum] || 'Onyx Black';
-
-      // ใช้ Key เจาะจงรหัสชิปใบนั้นๆ แบบแยกขาดจากกันเด็ดขาด
-      const chipKey = 'tally_chip_activated_' + code;
-      let startTime = localStorage.getItem(chipKey);
-
-      if (!startTime) {
-        startTime = new Date().getTime().toString();
-        localStorage.setItem(chipKey, startTime);
-      }
-
-      const parsedStartTime = parseInt(startTime, 10);
-      const startDateObj = new Date(parsedStartTime);
-      const year = startDateObj.getFullYear();
-      const month = String(startDateObj.getMonth() + 1).padStart(2, '0');
-      const day = String(startDateObj.getDate()).padStart(2, '0');
-      const formattedDate = `${year}-${month}-${day}`;
-
-      return {
-        model: model,
-        size: size,
-        color: color,
-        startDate: formattedDate,
-        owner: ownerName,
-        startTime: parsedStartTime
-      };
+        if (!data) {
+            // ยังไม่เคยลงทะเบียน -> แสดงฟอร์มให้กรอกข้อมูล
+            badge.className = 'status-badge status-loading';
+            badge.innerText = 'สินค้าแท้ (ยังไม่ได้ลงทะเบียน)';
+            message.innerText = 'กรุณากรอกข้อมูลเพื่อเปิดใช้งานประกันและรับสิทธิพิเศษ';
+            document.getElementById('reg-form-section').style.display = 'block';
+        } else {
+            // เคยลงทะเบียนแล้ว -> ดึงวันที่สแกนครั้งแรกและชื่อลูกค้ามาแสดงถาวร
+            showSuccessCard(data.customer_name || 'ลูกค้า TALLY MiL', data.activated_at);
+        }
     }
 
-    const item = parseProduct(productId);
+    async function submitRegistration() {
+        const name = document.getElementById('cust-name').value;
+        const phone = document.getElementById('cust-phone').value;
+        const line = document.getElementById('cust-line').value;
 
-    document.getElementById('model').innerText = item.model;
-    document.getElementById('size').innerText = item.size;
-    document.getElementById('color').innerText = item.color;
-    document.getElementById('code').innerText = productId;
-    document.getElementById('owner').innerText = item.owner;
-    document.getElementById('startDate').innerText = item.startDate;
+        if (!name || !phone) {
+            alert('กรุณากรอกชื่อและเบอร์โทรศัพท์ให้ครบถ้วนจ้า');
+            return;
+        }
 
-    const startTime = item.startTime;
-    const endTime = startTime + (365 * 24 * 60 * 60 * 1000);
+        const currentTime = Math.floor(Date.now() / 1000).toString();
 
-    function updateTimer() {
-      const now = new Date().getTime();
-      const diff = endTime - now;
+        // บันทึกข้อมูลลงฐานข้อมูล Supabase
+        let { error } = await supabaseClient
+            .from('warranties')
+            .insert([{ 
+                chip_id: currentChipId, 
+                activated_at: currentTime,
+                customer_name: name,
+                phone: phone,
+                line_id: line
+            }]);
 
-      if (diff > 0) {
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((diff / 1000 / 60) % 60);
-        const seconds = Math.floor((diff / 1000) % 60);
-
-        document.getElementById('warrantyDays').innerText = 
-          `${days} วัน ${hours}ชม. ${minutes}น. ${seconds}วินาที`;
-      } else {
-        document.getElementById('warrantyDays').innerText = 'หมดระยะเวลารับประกัน';
-      }
+        if (error) {
+            alert('เกิดข้อผิดพลาดในการลงทะเบียน กรุณาลองใหม่อีกครั้ง');
+        } else {
+            document.getElementById('reg-form-section').style.display = 'none';
+            showSuccessCard(name, currentTime);
+        }
     }
 
-    updateTimer();
-    setInterval(updateTimer, 1000);
-  </script>
+    function showSuccessCard(name, actTimeStr) {
+        const badge = document.getElementById('status-badge');
+        const message = document.getElementById('message');
+        const infoSection = document.getElementById('info-section');
+
+        badge.className = 'status-badge status-success';
+        badge.innerText = 'แท้ 100% (รับประกันแล้ว)';
+        message.innerText = 'สินค้าชิ้นนี้ได้รับการลงทะเบียนเรียบร้อยแล้ว';
+        
+        document.getElementById('disp-owner').innerText = name;
+        const actTime = parseInt(actTimeStr);
+        document.getElementById('disp-date').innerText = isNaN(actTime) ? '-' : new Date(actTime * 1000).toLocaleString('th-TH');
+        
+        infoSection.style.display = 'block';
+    }
+
+    processWarranty();
+</script>
+
 </body>
 </html>
