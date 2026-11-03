@@ -111,45 +111,4 @@
         <span class="value" id="color">-</span>
       </div>
       <div class="info-item">
-        <span class="label">รหัสสินค้า / PRODUCT CODE:</span>
-        <span class="value" id="code">-</span>
-      </div>
-      <div class="info-item">
-        <span class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-        <span class="value" id="owner">-</span>
-      </div>
-      <div class="info-item">
-        <span class="label">วันเริ่มรับประกัน / START DATE:</span>
-        <span class="value" id="startDate">กำลังตรวจสอบ...</span>
-      </div>
-    </div>
-
-    <div class="warranty-box">
-      <div class="warranty-title">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</div>
-      <div class="warranty-days" id="warrantyDays">คำนวณเวลา . . .</div>
-    </div>
-
-    <div class="footer">
-      OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL
-    </div>
-  </div>
-
-  <script>
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      let rawId = urlParams.get('id') || urlParams.get('code') || urlParams.get('MODEL') || urlParams.get('product') || 'BVSS1';
-      let productId = rawId.trim().toUpperCase();
-
-      const rawOwner = urlParams.get('owner') || urlParams.get('name');
-      const ownerName = rawOwner ? decodeURIComponent(rawOwner) : 'คุณมินตา';
-
-      const database = {
-        'BVXS1': { model: 'Hexag Bovin', size: 'XS', color: 'Onyx Black' },
-        'BVXS2': { model: 'Hexag Bovin', size: 'XS', color: 'Glacier Mist' },
-        'BVXS3': { model: 'Hexag Bovin', size: 'XS', color: 'Cashmere Ivory' },
-        'BVXS4': { model: 'Hexag Bovin', size: 'XS', color: 'Burgundy Rouge' },
-        'BVXS5': { model: 'Hexag Bovin', size: 'XS', color: 'Camel Suede' },
-
-        'BVSS1': { model: 'Hexag Bovin', size: 'S', color: 'Onyx Black' },
-        'BVSS2': { model: 'Hexag Bovin', size: 'S', color: 'Glacier Mist' },
-        'BVSS3': { model: 'Hex
+        <span class="label">รหัสสินค้า
