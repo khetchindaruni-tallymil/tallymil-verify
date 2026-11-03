@@ -66,7 +66,7 @@
             margin-bottom: 20px;
         }
 
-        /* --- 2. หน้า CERTIFICATE & WARRANTY CARD (พรีเมี่ยมตัวเต็มแบบยาวสวยงาม) --- */
+        /* --- 2. หน้า CERTIFICATE & WARRANTY CARD (พรีเมี่ยมตัวเต็ม) --- */
         #cert-screen {
             background: #111111;
             border: 1px solid #2a2415;
@@ -91,7 +91,7 @@
             margin: 15px 0 20px;
         }
         
-        /* ฟอร์มกรอกข้อมูล (ซ่อนไว้ก่อน เปิดเฉพาะตอนสแกนครั้งแรก) */
+        /* ฟอร์มกรอกข้อมูล (กรณีสแกนครั้งแรก) */
         .form-section {
             display: none;
             background: #161616;
@@ -114,7 +114,7 @@
             outline: none;
         }
 
-        /* รายละเอียดใบ Certificate (บังคับแสดงผลตัวเต็มเสมอ) */
+        /* รายละเอียดใบ Certificate */
         .details-box {
             display: block;
             background: #161616;
@@ -129,7 +129,7 @@
         .detail-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
         .detail-val { font-size: 15px; color: #f3e5ab; font-weight: 500; margin-top: 2px; }
 
-        /* กล่องนับถอยหลังประกัน 1 ปี (บังคับแสดงผลเสมอ) */
+        /* กล่องนับถอยหลังประกัน 1 ปี */
         .timer-box {
             display: block;
             background: rgba(212, 175, 55, 0.05);
@@ -213,19 +213,19 @@
             <button class="btn-gold" id="btn-save" onclick="submitRegistration()">ยืนยันและรับใบการันตี</button>
         </div>
 
-        <!-- รายละเอียดใบ Certificate (แสดงตัวเต็มยาวสวยงาม) -->
+        <!-- รายละเอียดใบ Certificate (ดึงข้อมูลจริงจาก Supabase) -->
         <div id="cert-details" class="details-box">
             <div class="detail-item">
                 <div class="detail-label">รุ่นสินค้า / MODEL:</div>
-                <div class="detail-val">Hexag Bovin</div>
+                <div class="detail-val" id="disp-model">-</div>
             </div>
             <div class="detail-item">
                 <div class="detail-label">ไซส์ / SIZE:</div>
-                <div class="detail-val">S</div>
+                <div class="detail-val" id="disp-size">-</div>
             </div>
             <div class="detail-item">
                 <div class="detail-label">สี / COLOR:</div>
-                <div class="detail-val">Onyx Black</div>
+                <div class="detail-val" id="disp-color">-</div>
             </div>
             <div class="detail-item">
                 <div class="detail-label">รหัสสินค้า / PRODUCT CODE:</div>
@@ -264,4 +264,5 @@
     let currentChipId = "BVSS1";
     let timerInterval = null;
 
-    c
+    // ดึงรหัสชิปจาก URL อัตโนมัติ
+    const urlP
