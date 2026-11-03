@@ -60,4 +60,186 @@
       border-radius: 26px; padding: 24px 20px; box-shadow: 0 12px 35px rgba(0,0,0,0.9);
       font-family: 'Young Serif', serif;
     }
-    .header { text-align:
+    .header { text-align: center; margin-bottom: 20px; }
+    .brand { font-family: 'Young Serif', serif; font-size: 28px; font-weight: 700; letter-spacing: 3px; color: #fbf0b9; }
+    .subtitle { font-family: 'Young Serif', serif; font-size: 10px; color: #b87333; letter-spacing: 1.5px; margin-top: 5px; text-transform: uppercase; }
+    .badge {
+      font-family: 'Young Serif', serif;
+      border: 1px solid #10b981; color: #34d399; background: rgba(16, 185, 129, 0.08);
+      border-radius: 40px; padding: 11px; text-align: center; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.5px; margin-bottom: 20px;
+    }
+    .info-box { background: #181614; border-radius: 18px; padding: 20px 18px; margin-bottom: 16px; border: 1px solid #24201a; }
+    .info-item { margin-bottom: 14px; font-size: 12px; }
+    .info-item:last-child { margin-bottom: 0; }
+    .label { font-family: 'Young Serif', serif; color: #827b73; display: block; margin-bottom: 3px; font-size: 11px; }
+    .value { font-family: 'Young Serif', serif; color: #fbf0b9; font-size: 15px; font-weight: 500; }
+    .warranty-box { background: #181614; border: 1px solid #4a2e16; border-radius: 18px; padding: 18px 12px; text-align: center; }
+    .warranty-title { font-family: 'Young Serif', serif; font-size: 11px; color: #b87333; margin-bottom: 8px; letter-spacing: 0.3px; line-height: 1.4; }
+    .warranty-days { font-family: 'Young Serif', serif; font-size: 18px; font-weight: bold; color: #fbf0b9; }
+    .footer { font-family: 'Young Serif', serif; text-align: center; margin-top: 20px; font-size: 9px; color: #615a52; line-height: 1.5; letter-spacing: 0.5px; }
+  </style>
+</head>
+<body>
+
+  <div id="splash-screen">
+    <div class="splash-brand">TALLY MiL</div>
+    <div class="splash-sub">WELCOME TO TALLY MiL</div>
+    <div class="splash-quote-en">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</div>
+    <div class="splash-quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
+  </div>
+
+  <div class="card">
+    <div class="header">
+      <div class="brand">TALLY MiL</div>
+      <div class="subtitle">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
+    </div>
+
+    <div class="badge" id="auth-status">✓ AUTHENTIC & GUARANTEED PRODUCT</div>
+
+    <div class="info-box">
+      <div class="info-item">
+        <span class="label">รุ่นสินค้า / MODEL:</span>
+        <span class="value" id="model">-</span>
+      </div>
+      <div class="info-item">
+        <span class="label">ไซส์ / SIZE:</span>
+        <span class="value" id="size">-</span>
+      </div>
+      <div class="info-item">
+        <span class="label">สี / COLOR:</span>
+        <span class="value" id="color">-</span>
+      </div>
+      <div class="info-item">
+        <span class="label">รหัสสินค้า / PRODUCT CODE:</span>
+        <span class="value" id="code">-</span>
+      </div>
+      <div class="info-item">
+        <span class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
+        <span class="value" id="owner">-</span>
+      </div>
+      <div class="info-item">
+        <span class="label">วันเริ่มรับประกัน / START DATE:</span>
+        <span class="value" id="startDate">กำลังตรวจสอบ...</span>
+      </div>
+    </div>
+
+    <div class="warranty-box">
+      <div class="warranty-title">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</div>
+      <div class="warranty-days" id="warrantyDays">คำนวณเวลา . . .</div>
+    </div>
+
+    <div class="footer">
+      OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawId = urlParams.get('id') || urlParams.get('code') || 'BVSS1';
+    const productId = rawId.trim().toUpperCase();
+
+    const rawOwner = urlParams.get('owner');
+    const ownerName = rawOwner ? decodeURIComponent(rawOwner) : 'Minta Pumdokmai';
+
+    function parseProduct(code) {
+      const isVegan = code.startsWith('VG');
+      const model = isVegan ? 'Hexag Vegan' : 'Hexag Bovin';
+      
+      let size = 'S';
+      let colorNum = parseInt(code.slice(-1)) || 1;
+
+      if (code.includes('XS')) {
+        size = 'XS';
+      } else if (code.includes('TM')) {
+        size = 'Travel M';
+      } else if (code.includes('TL')) {
+        size = 'Travel L';
+      } else if (code.includes('SL')) {
+        size = 'Medium';
+      } else if (code.startsWith('BVL') || code.startsWith('VGL')) {
+        size = 'Large';
+      } else if (code.includes('SS')) {
+        size = 'S';
+      }
+
+      const bovinColors = {
+        1: 'Onyx Black',
+        2: 'Glacier Mist',
+        3: 'Cashmere Ivory',
+        4: 'Burgundy Rouge',
+        5: 'Camel Suede'
+      };
+
+      const veganColors = {
+        1: 'Onyx Wave',
+        2: 'Navy Obsidian',
+        3: 'Emerald Forest',
+        4: 'Terracotta Spice',
+        5: 'Pigeon Grey'
+      };
+
+      const colorMap = isVegan ? veganColors : bovinColors;
+      const color = colorMap[colorNum] || 'Onyx Black';
+
+      const storageKey = 'tally_warranty_stable_v9_' + code;
+      let savedStartTime = localStorage.getItem(storageKey);
+      let startTime;
+
+      if (!savedStartTime) {
+        startTime = new Date().getTime();
+        localStorage.setItem(storageKey, startTime);
+      } else {
+        startTime = parseInt(savedStartTime, 10);
+      }
+
+      const startDateObj = new Date(startTime);
+      const year = startDateObj.getFullYear();
+      const month = String(startDateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(startDateObj.getDate()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`;
+
+      return {
+        model: model,
+        size: size,
+        color: color,
+        startDate: formattedDate,
+        owner: ownerName,
+        startTime: startTime
+      };
+    }
+
+    const item = parseProduct(productId);
+
+    document.getElementById('model').innerText = item.model;
+    document.getElementById('size').innerText = item.size;
+    document.getElementById('color').innerText = item.color;
+    document.getElementById('code').innerText = productId;
+    document.getElementById('owner').innerText = item.owner;
+    document.getElementById('startDate').innerText = item.startDate;
+
+    const startTime = item.startTime;
+    const endTime = startTime + (365 * 24 * 60 * 60 * 1000);
+
+    function updateTimer() {
+      const now = new Date().getTime();
+      const diff = endTime - now;
+
+      if (diff > 0) {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / 1000 / 60) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        document.getElementById('warrantyDays').innerText = 
+          `${days} วัน ${hours}ชม. ${minutes}น. ${seconds}วินาที`;
+      } else {
+        document.getElementById('warrantyDays').innerText = 'หมดระยะเวลารับประกัน';
+      }
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
