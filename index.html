@@ -23,7 +23,7 @@
         }
         .container { width: 100%; max-width: 420px; text-align: center; position: relative; }
 
-        /* --- 1. หน้า WELCOME SCREEN (โชว์ 8 วินาทีแล้วหายไป) --- */
+        /* --- 1. หน้า WELCOME SCREEN (โชว์อัตโนมัติ 8 วินาทีแล้วหายไป) --- */
         #welcome-screen {
             position: absolute;
             top: 50%;
@@ -66,7 +66,7 @@
             margin-bottom: 20px;
         }
 
-        /* --- 2. การ์ด CERTIFICATE & WARRANTY (ดีไซน์พรีเมี่ยมเต็มใบแบบรูปที่ 2) --- */
+        /* --- 2. หน้า CERTIFICATE & WARRANTY CARD (พรีเมี่ยมตัวเต็ม) --- */
         #cert-screen {
             background: #111111;
             border: 1px solid #2a2415;
@@ -114,7 +114,7 @@
             outline: none;
         }
 
-        /* รายละเอียดใบ Certificate (พรีเมี่ยมเต็มกรอบแบบรูปที่ 2) */
+        /* รายละเอียดใบ Certificate ตัวเต็ม */
         .details-box {
             display: none;
             background: #161616;
@@ -188,7 +188,7 @@
         <div class="quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
     </div>
 
-    <!-- 2. หน้า CERTIFICATE & WARRANTY CARD (ดีไซน์พรีเมี่ยมเต็มใบ) -->
+    <!-- 2. หน้า CERTIFICATE & WARRANTY CARD -->
     <div id="cert-screen">
         <div class="brand-logo" style="font-size: 24px;">TALLY MiL</div>
         <div class="welcome-sub" style="font-size: 10px; margin-bottom: 10px;">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
@@ -264,4 +264,4 @@
     let currentChipId = "BVSS1";
     let timerInterval = null;
 
-    const urlParams =
+    // ระบบดึงรหัสชิปอัตโนมัติรองรับทุกพารามิเตอร์ (UID หรือ Chip Code)
