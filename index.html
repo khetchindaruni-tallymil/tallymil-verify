@@ -30,9 +30,9 @@
             text-align: center;
         }
 
-        /* --- 1. หน้า WELCOME SCREEN --- */
+        /* --- 1. หน้า WELCOME SCREEN (โชว์อัตโนมัติ 9 วินาที) --- */
         #welcome-screen {
-            padding: 30px 20px;
+            padding: 40px 20px;
             animation: fadeIn 1.2s ease-in-out;
         }
         .brand-logo {
@@ -49,35 +49,22 @@
             font-size: 13px;
             letter-spacing: 2px;
             color: #b38b32;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
         .quote-en {
             font-size: 14px;
             color: #e2d1a3;
             font-style: italic;
             line-height: 1.6;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .quote-th {
             font-size: 13px;
             color: #888;
             font-weight: 300;
             line-height: 1.6;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
-        .btn-enter {
-            background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
-            color: #000;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-            transition: 0.3s;
-        }
-        .btn-enter:hover { opacity: 0.9; }
 
         /* --- 2. การ์ด CERTIFICATE & WARRANTY --- */
         .card {
@@ -217,16 +204,15 @@
 <body>
 
 <div class="container">
-    <!-- 1. หน้า WELCOME SCREEN (มีระบบจับเวลา 7 วิ + ปุ่มกดเผื่อกรณีเบราว์เซอร์บล็อกเวลา) -->
+    <!-- 1. หน้า WELCOME SCREEN -->
     <div id="welcome-screen">
         <div class="brand-logo">TALLY MiL</div>
         <div class="welcome-sub">WELCOME TO TALLY MiL</div>
         <div class="quote-en">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</div>
         <div class="quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
-        <button class="btn-enter" onclick="showCardScreen()">แตะเพื่อดูใบการันตีสินค้า</button>
     </div>
 
-    <!-- 2. หน้า CERTIFICATE & WARRANTY CARD -->
+    <!-- 2. หน้า CERTIFICATE & WARRANTY CARD (ซ่อนไว้ก่อน) -->
     <div id="cert-screen" class="card" style="display: none;">
         <div class="brand-logo" style="font-size: 24px;">TALLY MiL</div>
         <div class="welcome-sub" style="font-size: 10px; margin-bottom: 10px;">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
@@ -286,4 +272,18 @@
         </div>
 
         <!-- ปุ่ม LINE OA -->
-        <button id="btn-line-oa" class="btn-line" style="display: none;"
+        <button id="btn-line-oa" class="btn-line" style="display: none;" onclick="window.location.href='https://line.me/R/ti/p/@962dvbat'">
+            🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP
+        </button>
+
+        <div class="footer-text">OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL</div>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentChipId = null;
+    let
