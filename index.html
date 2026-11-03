@@ -29,7 +29,6 @@
       z-index: 9999;
       padding: 0 28px;
       text-align: center;
-      /* ขยายเวลาหน้าต้อนรับเป็น 9 วินาที */
       animation: fadeOutSplash 0.8s ease 9s forwards;
     }
     .splash-brand {
@@ -183,8 +182,8 @@
       const colorMap = isVegan ? veganColors : bovinColors;
       const color = colorMap[colorNum] || 'Onyx Black';
 
-      // ล็อกเวลาเริ่มต้นประกันถาวรด้วย localStorage จากการสแกนครั้งแรก
-      const storageKey = 'tally_warranty_start_' + productId;
+      // ใช้คีย์ใหม่ล็อกเวลาเริ่มประกันครั้งแรกถาวรแบบไม่ให้รีเซ็ตอีก
+      const storageKey = 'tally_warranty_fixed_v2_' + productId;
       let savedStartTime = localStorage.getItem(storageKey);
       let startTime;
 
