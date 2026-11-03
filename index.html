@@ -19,11 +19,11 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            overflow: hidden;
+            overflow-x: hidden;
         }
         .container { width: 100%; max-width: 420px; text-align: center; position: relative; }
 
-        /* --- 1. หน้า WELCOME SCREEN (ใช้ CSS Animation หายไปเองในวินาทีที่ 8) --- */
+        /* --- 1. หน้า WELCOME SCREEN (โชว์ 8 วินาทีแล้วหายไป) --- */
         #welcome-screen {
             position: absolute;
             top: 50%;
@@ -33,7 +33,7 @@
             padding: 40px 20px;
             background-color: #050505;
             z-index: 10;
-            animation: hideWelcome 0.5s ease 8s forwards; /* 8 วินาทีแล้วซ่อนตัวเองทันที */
+            animation: hideWelcome 0.5s ease 8s forwards;
         }
         .brand-logo {
             font-family: 'Cinzel', serif;
@@ -66,7 +66,7 @@
             margin-bottom: 20px;
         }
 
-        /* --- 2. หน้า CERTIFICATE & WARRANTY CARD --- */
+        /* --- 2. การ์ด CERTIFICATE & WARRANTY (ดีไซน์พรีเมี่ยมเต็มใบแบบรูปที่ 2) --- */
         #cert-screen {
             background: #111111;
             border: 1px solid #2a2415;
@@ -75,7 +75,8 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 15px rgba(212, 175, 55, 0.1);
             text-align: center;
             opacity: 0;
-            animation: showCert 0.5s ease 8s forwards; /* โผล่ขึ้นมาตอนวินาทีที่ 8 */
+            animation: showCert 0.5s ease 8s forwards;
+            width: 100%;
         }
         .badge-verified {
             display: inline-block;
@@ -90,6 +91,7 @@
             margin: 15px 0 20px;
         }
         
+        /* ฟอร์มกรอกข้อมูล (กรณีสแกนครั้งแรก) */
         .form-section {
             display: none;
             background: #161616;
@@ -112,6 +114,7 @@
             outline: none;
         }
 
+        /* รายละเอียดใบ Certificate (พรีเมี่ยมเต็มกรอบแบบรูปที่ 2) */
         .details-box {
             display: none;
             background: #161616;
@@ -126,6 +129,7 @@
         .detail-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
         .detail-val { font-size: 15px; color: #f3e5ab; font-weight: 500; margin-top: 2px; }
 
+        /* กล่องนับถอยหลังประกัน 1 ปี */
         .timer-box {
             display: none;
             background: rgba(212, 175, 55, 0.05);
@@ -184,7 +188,7 @@
         <div class="quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
     </div>
 
-    <!-- 2. หน้า CERTIFICATE & WARRANTY CARD -->
+    <!-- 2. หน้า CERTIFICATE & WARRANTY CARD (ดีไซน์พรีเมี่ยมเต็มใบ) -->
     <div id="cert-screen">
         <div class="brand-logo" style="font-size: 24px;">TALLY MiL</div>
         <div class="welcome-sub" style="font-size: 10px; margin-bottom: 10px;">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
@@ -260,7 +264,4 @@
     let currentChipId = "BVSS1";
     let timerInterval = null;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    currentChipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || "BVSS1";
-    
-    con
+    const urlParams =
