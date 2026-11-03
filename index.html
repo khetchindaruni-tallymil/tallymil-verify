@@ -9,11 +9,7 @@
     <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Prompt', sans-serif;
             background-color: #050505;
@@ -24,11 +20,7 @@
             align-items: center;
             padding: 20px;
         }
-        .container {
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
-        }
+        .container { width: 100%; max-width: 420px; text-align: center; }
 
         /* --- 1. หน้า WELCOME SCREEN --- */
         #welcome-screen {
@@ -67,7 +59,7 @@
             margin-bottom: 20px;
         }
 
-        /* --- 2. การ์ด CERTIFICATE & WARRANTY --- */
+        /* --- 2. หน้า CERTIFICATE & WARRANTY CARD --- */
         #cert-screen {
             display: none;
             background: #111111;
@@ -91,7 +83,6 @@
             margin: 15px 0 20px;
         }
         
-        /* ฟอร์มกรอกข้อมูล (กรณีสแกนครั้งแรก) */
         .form-section {
             display: none;
             background: #161616;
@@ -101,15 +92,8 @@
             text-align: left;
             margin-bottom: 15px;
         }
-        .form-group {
-            margin-bottom: 14px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: #c5a059;
-            margin-bottom: 6px;
-        }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 12px; color: #c5a059; margin-bottom: 6px; }
         .form-control {
             width: 100%;
             background: #080808;
@@ -121,7 +105,6 @@
             outline: none;
         }
 
-        /* ข้อมูลในใบ Certificate */
         .details-box {
             display: none;
             background: #161616;
@@ -131,26 +114,11 @@
             text-align: left;
             margin-bottom: 15px;
         }
-        .detail-item {
-            margin-bottom: 12px;
-        }
-        .detail-item:last-child {
-            margin-bottom: 0;
-        }
-        .detail-label {
-            font-size: 11px;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .detail-val {
-            font-size: 15px;
-            color: #f3e5ab;
-            font-weight: 500;
-            margin-top: 2px;
-        }
+        .detail-item { margin-bottom: 12px; }
+        .detail-item:last-child { margin-bottom: 0; }
+        .detail-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+        .detail-val { font-size: 15px; color: #f3e5ab; font-weight: 500; margin-top: 2px; }
 
-        /* กล่องนับถอยหลังรับประกัน */
         .timer-box {
             display: none;
             background: rgba(212, 175, 55, 0.05);
@@ -160,19 +128,9 @@
             margin-bottom: 15px;
             text-align: left;
         }
-        .timer-title {
-            font-size: 11px;
-            color: #b38b32;
-            margin-bottom: 6px;
-        }
-        .timer-countdown {
-            font-size: 16px;
-            font-weight: 600;
-            color: #f3e5ab;
-            font-family: 'Cinzel', serif;
-        }
+        .timer-title { font-size: 11px; color: #b38b32; margin-bottom: 6px; }
+        .timer-countdown { font-size: 16px; font-weight: 600; color: #f3e5ab; font-family: 'Cinzel', serif; }
 
-        /* ปุ่มกด */
         .btn-gold {
             width: 100%;
             background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
@@ -198,12 +156,7 @@
             margin-top: 5px;
         }
 
-        .footer-text {
-            font-size: 10px;
-            color: #555;
-            margin-top: 15px;
-            letter-spacing: 1px;
-        }
+        .footer-text { font-size: 10px; color: #555; margin-top: 15px; letter-spacing: 1px; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -227,7 +180,7 @@
         
         <div class="badge-verified">✓ AUTHENTIC & GUARANTEED PRODUCT</div>
 
-        <!-- ฟอร์มลงทะเบียน (แสดงเมื่อสแกนครั้งแรก) -->
+        <!-- ฟอร์มลงทะเบียน (กรณีสแกนครั้งแรก) -->
         <div id="reg-form-section" class="form-section">
             <h4 style="color: #f3e5ab; margin-bottom: 12px; text-align: center; font-size: 13px;">ลงทะเบียนผู้ครอบครองเพื่อเปิดประกัน</h4>
             <div class="form-group">
@@ -245,7 +198,7 @@
             <button class="btn-gold" id="btn-save" onclick="submitRegistration()">ยืนยันและรับใบการันตี</button>
         </div>
 
-        <!-- รายละเอียดใบ Certificate -->
+        <!-- รายละเอียดใบ Certificate (กรณีลงทะเบียนแล้ว) -->
         <div id="cert-details" class="details-box">
             <div class="detail-item">
                 <div class="detail-label">รุ่นสินค้า / MODEL:</div>
@@ -289,6 +242,17 @@
 </div>
 
 <script>
+    // -------------------------------------------------------------------------
+    // หัวใจสำคัญ: ระบบบังคับเปลี่ยนหน้า 9 วินาทีแบบอิสระ 100% (ไม่มีวันค้าง)
+    // -------------------------------------------------------------------------
+    setTimeout(() => {
+        const welcome = document.getElementById('welcome-screen');
+        const cert = document.getElementById('cert-screen');
+        if (welcome) welcome.style.display = 'none';
+        if (cert) cert.style.display = 'block';
+    }, 9000); // 9 วินาทีเป๊ะ
+
+    // -------------------------------------------------------------------------
+    // ส่วนจัดการฐานข้อมูล Supabase และสถานะลูกค้า
+    // -------------------------------------------------------------------------
     const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
-    const supabaseClient = supabase.createClient(SUPABASE
