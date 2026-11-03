@@ -33,7 +33,6 @@
         /* --- หน้า Welcome Screen --- */
         #welcome-screen {
             padding: 40px 20px;
-            animation: fadeIn 1s ease-in-out;
         }
         .brand-logo {
             font-family: 'Cinzel', serif;
@@ -73,7 +72,6 @@
             border-radius: 20px;
             padding: 25px 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 15px rgba(212, 175, 55, 0.1);
-            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .badge-verified {
             display: inline-block;
@@ -201,16 +199,12 @@
             transition: 0.3s;
             margin-top: 10px;
         }
-
         .footer-text {
             font-size: 10px;
             color: #555;
             margin-top: 15px;
             letter-spacing: 1px;
         }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -289,4 +283,11 @@
             🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP
         </button>
 
-        <div c
+        <div class="footer-text">OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL</div>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
+    const supabaseClient = s
