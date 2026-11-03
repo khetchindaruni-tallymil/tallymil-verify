@@ -100,105 +100,17 @@
     <div class="info-box">
       <div class="info-item">
         <span class="label">รุ่นสินค้า / MODEL:</span>
-        <span class="value" id="model">Hexag Bovin</span>
+        <span class="value" id="model">-</span>
       </div>
       <div class="info-item">
         <span class="label">ไซส์ / SIZE:</span>
-        <span class="value" id="size">S</span>
+        <span class="value" id="size">-</span>
       </div>
       <div class="info-item">
         <span class="label">สี / COLOR:</span>
-        <span class="value" id="color">Onyx Black</span>
+        <span class="value" id="color">-</span>
       </div>
       <div class="info-item">
         <span class="label">รหัสสินค้า / PRODUCT CODE:</span>
-        <span class="value" id="code">BVSS1</span>
+        <span class="value" id="code">-</span>
       </div>
-      <div class="info-item">
-        <span class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-        <span class="value" id="owner">คุณมินตา</span>
-      </div>
-      <div class="info-item">
-        <span class="label">วันเริ่มรับประกัน / START DATE:</span>
-        <span class="value" id="startDate">กำลังตรวจสอบ...</span>
-      </div>
-    </div>
-
-    <div class="warranty-box">
-      <div class="warranty-title">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</div>
-      <div class="warranty-days" id="warrantyDays">คำนวณเวลา . . .</div>
-    </div>
-
-    <div class="footer">
-      OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL
-    </div>
-  </div>
-
-  <script>
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      let rawId = urlParams.get('id') || urlParams.get('code') || urlParams.get('product') || urlParams.get('item');
-      
-      if (!rawId) {
-        const pathSegments = window.location.pathname.split('/');
-        rawId = pathSegments[pathSegments.length - 1];
-      }
-      
-      const productId = (rawId && rawId.trim() !== '' && rawId.trim() !== '/') ? rawId.trim().toUpperCase() : 'BVSS1';
-
-      const rawOwner = urlParams.get('owner');
-      const ownerName = rawOwner ? decodeURIComponent(rawOwner) : 'คุณมินตา';
-
-      const database = {
-        'BVXS1': { model: 'Hexag Bovin', size: 'XS', color: 'Onyx Black' },
-        'BVXS2': { model: 'Hexag Bovin', size: 'XS', color: 'Glacier Mist' },
-        'BVXS3': { model: 'Hexag Bovin', size: 'XS', color: 'Cashmere Ivory' },
-        'BVXS4': { model: 'Hexag Bovin', size: 'XS', color: 'Burgundy Rouge' },
-        'BVXS5': { model: 'Hexag Bovin', size: 'XS', color: 'Camel Suede' },
-
-        'BVSS1': { model: 'Hexag Bovin', size: 'S', color: 'Onyx Black' },
-        'BVSS2': { model: 'Hexag Bovin', size: 'S', color: 'Glacier Mist' },
-        'BVSS3': { model: 'Hexag Bovin', size: 'S', color: 'Cashmere Ivory' },
-        'BVSS4': { model: 'Hexag Bovin', size: 'S', color: 'Burgundy Rouge' },
-        'BVSS5': { model: 'Hexag Bovin', size: 'S', color: 'Camel Suede' },
-
-        'BVSL1': { model: 'Hexag Bovin', size: 'Medium', color: 'Onyx Black' },
-        'BVSL2': { model: 'Hexag Bovin', size: 'Medium', color: 'Glacier Mist' },
-        'BVSL3': { model: 'Hexag Bovin', size: 'Medium', color: 'Cashmere Ivory' },
-        'BVSL4': { model: 'Hexag Bovin', size: 'Medium', color: 'Burgundy Rouge' },
-        'BVSL5': { model: 'Hexag Bovin', size: 'Medium', color: 'Camel Suede' },
-
-        'BVL1': { model: 'Hexag Bovin', size: 'Large', color: 'Onyx Black' },
-        'BVL2': { model: 'Hexag Bovin', size: 'Large', color: 'Glacier Mist' },
-        'BVL3': { model: 'Hexag Bovin', size: 'Large', color: 'Cashmere Ivory' },
-        'BVL4': { model: 'Hexag Bovin', size: 'Large', color: 'Burgundy Rouge' },
-        'BVL5': { model: 'Hexag Bovin', size: 'Large', color: 'Camel Suede' },
-
-        'BVTM1': { model: 'Hexag Bovin', size: 'Travel M', color: 'Onyx Black' },
-        'BVTM5': { model: 'Hexag Bovin', size: 'Travel M', color: 'Camel Suede' },
-        'BVTL1': { model: 'Hexag Bovin', size: 'Travel L', color: 'Onyx Black' },
-        'BVTL5': { model: 'Hexag Bovin', size: 'Travel L', color: 'Camel Suede' },
-
-        'VGXS1': { model: 'Hexag Vegan', size: 'XS', color: 'Onyx Wave' },
-        'VGXS2': { model: 'Hexag Vegan', size: 'XS', color: 'Navy Obsidian' },
-        'VGXS3': { model: 'Hexag Vegan', size: 'XS', color: 'Emerald Forest' },
-        'VGXS4': { model: 'Hexag Vegan', size: 'XS', color: 'Terracotta Spice' },
-        'VGXS5': { model: 'Hexag Vegan', size: 'XS', color: 'Pigeon Grey' },
-
-        'VGSS1': { model: 'Hexag Vegan', size: 'S', color: 'Onyx Wave' },
-        'VGSS2': { model: 'Hexag Vegan', size: 'S', color: 'Navy Obsidian' },
-        'VGSS3': { model: 'Hexag Vegan', size: 'S', color: 'Emerald Forest' },
-        'VGSS4': { model: 'Hexag Vegan', size: 'S', color: 'Terracotta Spice' },
-        'VGSS5': { model: 'Hexag Vegan', size: 'S', color: 'Pigeon Grey' },
-
-        'VGSL1': { model: 'Hexag Vegan', size: 'Medium', color: 'Onyx Wave' },
-        'VGSL2': { model: 'Hexag Vegan', size: 'Medium', color: 'Navy Obsidian' },
-        'VGSL3': { model: 'Hexag Vegan', size: 'Medium', color: 'Emerald Forest' },
-        'VGSL4': { model: 'Hexag Vegan', size: 'Medium', color: 'Terracotta Spice' },
-        'VGSL5': { model: 'Hexag Vegan', size: 'Medium', color: 'Pigeon Grey' },
-
-        'VGL1': { model: 'Hexag Vegan', size: 'Large', color: 'Onyx Wave' },
-        'VGL2': { model: 'Hexag Vegan', size: 'Large', color: 'Navy Obsidian' },
-        'VGL3': { model: 'Hexag Vegan', size: 'Large', color: 'Emerald Forest' },
-        'VGL4': { model: 'Hexag Vegan', size: 'Large', color: 'Terracotta Spice' },
-        'VGL5': {
