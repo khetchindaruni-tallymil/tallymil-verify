@@ -182,18 +182,17 @@
       const colorMap = isVegan ? veganColors : bovinColors;
       const color = colorMap[colorNum] || 'Onyx Black';
 
-      const storageKey = 'tally_warranty_stable_v9_' + code;
-      let savedStartTime = localStorage.getItem(storageKey);
-      let startTime;
+      // ใช้ Key เจาะจงรหัสชิปใบนั้นๆ แบบแยกขาดจากกันเด็ดขาด
+      const chipKey = 'tally_chip_activated_' + code;
+      let startTime = localStorage.getItem(chipKey);
 
-      if (!savedStartTime) {
-        startTime = new Date().getTime();
-        localStorage.setItem(storageKey, startTime);
-      } else {
-        startTime = parseInt(savedStartTime, 10);
+      if (!startTime) {
+        startTime = new Date().getTime().toString();
+        localStorage.setItem(chipKey, startTime);
       }
 
-      const startDateObj = new Date(startTime);
+      const parsedStartTime = parseInt(startTime, 10);
+      const startDateObj = new Date(parsedStartTime);
       const year = startDateObj.getFullYear();
       const month = String(startDateObj.getMonth() + 1).padStart(2, '0');
       const day = String(startDateObj.getDate()).padStart(2, '0');
@@ -205,7 +204,7 @@
         color: color,
         startDate: formattedDate,
         owner: ownerName,
-        startTime: startTime
+        startTime: parsedStartTime
       };
     }
 
