@@ -1,98 +1,185 @@
-export default function handler(req, res) {
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.status(200).send(`
-<!DOCTYPE html>
+
+         <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TALLY MiL - NFC Admin Generator</title>
+    <title>TALLY MiL - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0c0a09; color: #f5f5f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .admin-card { background: #1c1917; padding: 32px 24px; border-radius: 24px; width: 100%; max-width: 420px; border: 1px solid rgba(212, 175, 55, 0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
-        .brand-header { font-family: serif; font-size: 28px; font-weight: 800; color: #fef3c7; letter-spacing: 3px; text-align: center; margin-bottom: 4px; }
-        .brand-sub { font-size: 10px; color: #d4af37; text-transform: uppercase; letter-spacing: 2px; text-align: center; margin-bottom: 24px; }
-        .form-group { margin-bottom: 16px; }
-        label { color: #a8a29e; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
-        input { width: 100%; padding: 12px 16px; background: #0c0a09; border: 1px solid #383531; border-radius: 12px; color: #fff; font-size: 14px; outline: none; }
-        input:focus { border-color: #d4af37; }
-        .btn { width: 100%; background: linear-gradient(135deg, #d4af37, #996515); color: #0c0a09; font-weight: 700; padding: 14px; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; }
-        .result-box { margin-top: 24px; background: #0c0a09; border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 14px; padding: 16px; display: none; }
-        .result-title { font-size: 10px; color: #d4af37; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-        .result-input { font-family: monospace; font-size: 12px; color: #34d399; width: 100%; background: rgba(0,0,0,0.8); border: 1px solid #383531; padding: 10px; border-radius: 8px; margin-bottom: 12px; outline: none; text-align: center; }
-        .btn-copy { background: #10b981; color: #fff; padding: 10px 12px; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 600; width: 100%; text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-copy:active { background: #059669; }
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #050505;
+            color: #d4af37;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .admin-card {
+            width: 100%;
+            max-width: 420px;
+            background: #111111;
+            border: 1px solid #2a2415;
+            border-radius: 20px;
+            padding: 25px 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+        }
+        .brand-title {
+            font-family: 'Cinzel', serif;
+            font-size: 22px;
+            text-align: center;
+            color: #f3e5ab;
+            margin-bottom: 5px;
+        }
+        .sub-title {
+            font-size: 12px;
+            text-align: center;
+            color: #b38b32;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        .form-group { margin-bottom: 14px; text-align: left; }
+        .form-group label { display: block; font-size: 12px; color: #c5a059; margin-bottom: 6px; }
+        .form-control {
+            width: 100%;
+            background: #080808;
+            border: 1px solid #44371e;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+        .form-control:focus { border-color: #d4af37; }
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
+            color: #000;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .status-msg {
+            margin-top: 15px;
+            font-size: 13px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <div class="admin-card">
-        <div class="brand-header">TALLY MiL</div>
-        <div class="brand-sub">NFC Tag Generation Admin</div>
 
-        <div class="form-group">
-            <label>รหัสสินค้า / Product Code (เช่น BVXS5):</label>
-            <input type="text" id="productCode" value="BVXS5" placeholder="พิมพ์รหัสสินค้าที่นี่" style="text-transform: uppercase;">
-        </div>
+<div class="admin-card">
+    <div class="brand-title">TALLY MiL</div>
+    <div class="sub-title">ADMINISTRATOR SYSTEM - REGISTER WARRANTY</div>
 
-        <div class="form-group">
-            <label>ชื่อผู้ถือครอง / Registered Owner:</label>
-            <input type="text" id="ownerName" value="Minta Pumdokmai" placeholder="ระบุชื่อ-นามสกุลลูกค้า">
-        </div>
-
-        <button class="btn" onclick="generateLink()">สร้างลิงก์สำหรับเขียน NFC</button>
-
-        <div class="result-box" id="resultBox">
-            <div class="result-title">Generated NFC Link (แตะเพื่อคัดลอก):</div>
-            <!-- เปลี่ยนเป็น input แบบ readonly เพื่อให้จิ้มเลือกง่ายและกดคัดลอกได้ทันที -->
-            <input type="text" id="outputLink" class="result-input" readonly onclick="this.select(); copyLinkDirect();">
-            <button class="btn-copy" onclick="copyLinkDirect()">📋 คัดลอกลิงก์อัตโนมัติ</button>
-        </div>
+    <div class="form-group">
+        <label>รหัสชิป / CHIP ID (สแกนหรือระบุรหัส)</label>
+        <input type="text" id="chip_id" class="form-control" placeholder="เช่น BVSS1 หรือ UID ชิป">
     </div>
 
-    <script>
-        function generateLink() {
-            const code = document.getElementById('productCode').value.trim().toUpperCase();
-            const owner = document.getElementById('ownerName').value.trim() || 'Valued Customer';
-            const baseUrl = window.location.origin;
-            const finalLink = \`\${baseUrl}/?code=\${code}&owner=\${encodeURIComponent(owner)}\`;
+    <div class="form-group">
+        <label>รุ่นสินค้า / MODEL</label>
+        <input type="text" id="model" class="form-control" value="Bovin" placeholder="เช่น Bovin">
+    </div>
 
-            const outputField = document.getElementById('outputLink');
-            outputField.value = finalLink;
-            document.getElementById('resultBox').style.display = 'block';
-            
-            // Auto generate และคัดลอกให้ทันทีรอบแรก
-            outputField.select();
-            copyLinkDirect();
+    <div class="form-group">
+        <label>ไซส์ / SIZE</label>
+        <input type="text" id="size" class="form-control" value="XS" placeholder="เช่น XS, S, M">
+    </div>
+
+    <div class="form-group">
+        <label>สี / COLOR</label>
+        <input type="text" id="color" class="form-control" value="Camel Suede" placeholder="เช่น Camel Suede">
+    </div>
+
+    <div class="form-group">
+        <label>ชื่อ-นามสกุล ลูกค้า / CUSTOMER NAME</label>
+        <input type="text" id="customer_name" class="form-control" placeholder="กรอกชื่อ-นามสกุลลูกค้า">
+    </div>
+
+    <div class="form-group">
+        <label>เบอร์โทรศัพท์ / PHONE</label>
+        <input type="tel" id="phone" class="form-control" placeholder="08X-XXX-XXXX">
+    </div>
+
+    <div class="form-group">
+        <label>LINE ID (ถ้ามี)</label>
+        <input type="text" id="line_id" class="form-control" placeholder="LINE ID ลูกค้า">
+    </div>
+
+    <button class="btn-submit" id="btn-save" onclick="saveWarrantyData()">บันทึกข้อมูลและเปิดประกันทันที</button>
+    <div id="status-msg" class="status-msg"></div>
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ดึง Chip ID จาก URL อัตโนมัติเผื่อแอดมินใช้มือถือสแกนเปิดเข้ามา
+    const urlParams = new URLSearchParams(window.location.search);
+    const chipParam = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
+    if (chipParam) {
+        document.getElementById('chip_id').value = chipParam;
+    }
+
+    async function saveWarrantyData() {
+        const chipId = document.getElementById('chip_id').value.trim();
+        const model = document.getElementById('model').value.trim();
+        const size = document.getElementById('size').value.trim();
+        const color = document.getElementById('color').value.trim();
+        const custName = document.getElementById('customer_name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const lineId = document.getElementById('line_id').value.trim();
+        const msgEl = document.getElementById('status-msg');
+        const btn = document.getElementById('btn-save');
+
+        if (!chipId || !custName) {
+            alert('กรุณากรอกรหัสชิปและชื่อลูกค้าให้เรียบร้อยครับ');
+            return;
         }
 
-        function copyLinkDirect() {
-            const outputField = document.getElementById('outputLink');
-            outputField.select();
-            outputField.setSelectionRange(0, 99999); // สำหรับมือถือ
-            
-            navigator.clipboard.writeText(outputField.value).then(() => {
-                // แจ้งเตือนเบาๆ หรือเปลี่ยนปุ่มชั่วคราวให้รู้ว่าก๊อปแล้ว
-                const btn = document.querySelector('.btn-copy');
-                const originalText = btn.innerText;
-                btn.innerText = '✨ คัดลอกสำเร็จแล้ว!';
-                btn.style.background = '#059669';
-                setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.style.background = '#10b981';
-                }, 1500);
-            }).catch(err => {
-                // Fallback เผื่อเบราว์เซอร์เก่า
-                document.execCommand('copy');
-            });
-        }
+        btn.innerText = 'กำลังบันทึกข้อมูล...';
+        btn.disabled = true;
 
-        // กดสร้างให้อัตโนมัติทันทีที่เข้าหน้าเว็บ
-        window.onload = function() {
-            generateLink();
-        };
-    </script>
+        const currentTime = Math.floor(Date.now() / 1000).toString();
+
+        const { error } = await supabaseClient
+            .from('warranties')
+            .upsert({
+                chip_id: chipId,
+                model: model,
+                size: size,
+                color: color,
+                customer_name: custName,
+                phone: phone,
+                line_id: lineId,
+                activated_at: currentTime
+            }, { onConflict: 'chip_id' });
+
+        if (error) {
+            msgEl.style.color = '#ef4444';
+            msgEl.innerText = 'เกิดข้อผิดพลาด: ' + error.message;
+            btn.innerText = 'บันทึกข้อมูลและเปิดประกันทันที';
+            btn.disabled = false;
+        } else {
+            msgEl.style.color = '#10b981';
+            msgEl.innerText = '✓ บันทึกข้อมูลสำเร็จ! การันตีพร้อมใช้งานแล้ว';
+            btn.innerText = 'บันทึกสำเร็จ!';
+            setTimeout(() => {
+                btn.innerText = 'บันทึกข้อมูลและเปิดประกันทันที';
+                btn.disabled = false;
+            }, 3000);
+        }
+    }
+</script>
+
 </body>
-</html>
-  `);
-}
