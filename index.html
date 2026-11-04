@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TALLY MiL - Digital Authenticity & Warranty</title>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,190 +16,186 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            overflow-x: hidden;
+            padding: 15px;
         }
-        .container { width: 100%; max-width: 420px; text-align: center; position: relative; }
 
-        /* --- 1. หน้า WELCOME SCREEN (โชว์อัตโนมัติ 8 วินาทีแล้วหายไป) --- */
+        /* WELCOME OVERLAY */
         #welcome-screen {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            padding: 40px 20px;
-            background-color: #050505;
-            z-index: 10;
-            animation: hideWelcome 0.5s ease 8s forwards;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease, visibility 1s ease;
         }
-        .brand-logo {
+        .welcome-title {
             font-family: 'Cinzel', serif;
-            font-size: 32px;
-            font-weight: 700;
+            font-size: 28px;
             letter-spacing: 4px;
             color: #f3e5ab;
-            text-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
-            margin-bottom: 8px;
+            text-shadow: 0 0 15px rgba(212,175,55,0.4);
+            animation: fadeIn 2s ease-in-out infinite alternate;
         }
         .welcome-sub {
-            font-family: 'Cinzel', serif;
             font-size: 13px;
+            color: #a88a38;
+            margin-top: 10px;
             letter-spacing: 2px;
-            color: #b38b32;
-            margin-bottom: 40px;
         }
-        .quote-en {
-            font-size: 14px;
-            color: #e2d1a3;
-            font-style: italic;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        .quote-th {
-            font-size: 13px;
-            color: #888;
-            font-weight: 300;
-            line-height: 1.6;
-            margin-bottom: 20px;
+        @keyframes fadeIn {
+            from { opacity: 0.4; }
+            to { opacity: 1; }
         }
 
-        /* --- 2. หน้า CERTIFICATE & WARRANTY CARD (พรีเมี่ยมตัวเต็ม) --- */
-        #cert-screen {
-            background: #111111;
+        /* MAIN CARD */
+        .card {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(145deg, #121212 0%, #080808 100%);
             border: 1px solid #2a2415;
             border-radius: 20px;
             padding: 25px 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 15px rgba(212, 175, 55, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.9), 0 0 15px rgba(212,175,55,0.1);
             text-align: center;
+            display: none;
             opacity: 0;
-            animation: showCert 0.5s ease 8s forwards;
-            width: 100%;
+            transition: opacity 1s ease;
         }
-        .badge-verified {
-            display: inline-block;
-            border: 1px solid #10b981;
+        .brand-header {
+            font-family: 'Cinzel', serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #f3e5ab;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+        .brand-sub {
+            font-size: 11px;
+            color: #c5a059;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+        }
+        .auth-badge {
             background: rgba(16, 185, 129, 0.1);
-            color: #34d399;
-            padding: 8px 18px;
-            border-radius: 30px;
-            font-size: 12px;
+            border: 1px solid #10b981;
+            color: #10b981;
+            font-size: 13px;
             font-weight: 600;
-            letter-spacing: 1px;
-            margin: 15px 0 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 20px;
         }
-        
-        /* รายละเอียดใบ Certificate */
-        .details-box {
-            display: block;
-            background: #161616;
-            border: 1px solid #282113;
-            border-radius: 14px;
-            padding: 18px;
-            text-align: left;
-            margin-bottom: 15px;
-        }
-        .detail-item { margin-bottom: 12px; }
-        .detail-item:last-child { margin-bottom: 0; }
-        .detail-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
-        .detail-val { font-size: 15px; color: #f3e5ab; font-weight: 500; margin-top: 2px; }
-
-        /* กล่องนับถอยหลังประกัน 1 ปี */
-        .timer-box {
-            display: block;
-            background: rgba(212, 175, 55, 0.05);
-            border: 1px solid #382d17;
-            border-radius: 14px;
+        .info-box {
+            background: #0d0d0d;
+            border: 1px solid #221e14;
+            border-radius: 12px;
             padding: 15px;
-            margin-bottom: 15px;
             text-align: left;
+            margin-bottom: 15px;
         }
-        .timer-title { font-size: 11px; color: #b38b32; margin-bottom: 6px; }
-        .timer-countdown { font-size: 16px; font-weight: 600; color: #f3e5ab; font-family: 'Cinzel', serif; }
-
-        .btn-line {
-            display: block;
-            width: 100%;
-            background: #06C755;
+        .info-item {
+            margin-bottom: 10px;
+        }
+        .info-item:last-child { margin-bottom: 0; }
+        .label {
+            font-size: 11px;
+            color: #8c733e;
+            text-transform: uppercase;
+        }
+        .value {
+            font-size: 15px;
+            color: #ffffff;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+        .warranty-box {
+            background: linear-gradient(135deg, #1c180e 0%, #0d0b06 100%);
+            border: 1px solid #d4af37;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .w-title {
+            font-size: 12px;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+        .w-time {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .btn-vip {
+            background: #10b981;
             color: #fff;
             border: none;
+            width: 100%;
             padding: 14px;
             border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 5px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
-
-        .footer-text { font-size: 10px; color: #555; margin-top: 15px; letter-spacing: 1px; }
-
-        @keyframes hideWelcome {
-            to { opacity: 0; visibility: hidden; pointer-events: none; }
-        }
-        @keyframes showCert {
-            to { opacity: 1; }
+        .footer-note {
+            font-size: 10px;
+            color: #555;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- 1. หน้า WELCOME SCREEN (โชว์ 8 วินาที) -->
-    <div id="welcome-screen">
-        <div class="brand-logo">TALLY MiL</div>
-        <div class="welcome-sub">WELCOME TO TALLY MiL</div>
-        <div class="quote-en">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</div>
-        <div class="quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
+<div id="welcome-screen">
+    <div class="welcome-title">TALLY MiL</div>
+    <div class="welcome-sub">DIGITAL AUTHENTICITY</div>
+</div>
+
+<div class="card" id="main-card">
+    <div class="brand-header">TALLY MiL</div>
+    <div class="brand-sub">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
+
+    <div class="auth-badge">✓ AUTHENTIC & GUARANTEED PRODUCT</div>
+
+    <div class="info-box">
+        <div class="info-item">
+            <div class="label">รุ่นสินค้า / MODEL</div>
+            <div class="value" id="disp-model">-</div>
+        </div>
+        <div class="info-item">
+            <div class="label">ไซส์ / SIZE</div>
+            <div class="value" id="disp-size">-</div>
+        </div>
+        <div class="info-item">
+            <div class="label">สี / COLOR</div>
+            <div class="value" id="disp-color">-</div>
+        </div>
+        <div class="info-item">
+            <div class="label">รหัสชิป / CHIP ID</div>
+            <div class="value" id="disp-chip">-</div>
+        </div>
+        <div class="info-item">
+            <div class="label">ชื่อผู้ถือครอง / REGISTERED OWNER</div>
+            <div class="value" id="disp-owner">-</div>
+        </div>
+        <div class="info-item">
+            <div class="label">วันเริ่มรับประกัน / START DATE</div>
+            <div class="value" id="disp-date">-</div>
+        </div>
     </div>
 
-    <!-- 2. หน้า CERTIFICATE & WARRANTY CARD -->
-    <div id="cert-screen">
-        <div class="brand-logo" style="font-size: 24px;">TALLY MiL</div>
-        <div class="welcome-sub" style="font-size: 10px; margin-bottom: 10px;">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
-        
-        <div class="badge-verified">✓ AUTHENTIC & GUARANTEED PRODUCT</div>
-
-        <!-- รายละเอียดใบ Certificate (ดึงข้อมูลที่แอดมินกรอกไว้มาแสดงอัตโนมัติ) -->
-        <div id="cert-details" class="details-box">
-            <div class="detail-item">
-                <div class="detail-label">รุ่นสินค้า / MODEL:</div>
-                <div class="detail-val" id="disp-model">กำลังโหลด...</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">ไซส์ / SIZE:</div>
-                <div class="detail-val" id="disp-size">กำลังโหลด...</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">สี / COLOR:</div>
-                <div class="detail-val" id="disp-color">กำลังโหลด...</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">รหัสสินค้า / PRODUCT CODE:</div>
-                <div class="detail-val" id="disp-chip">-</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
-                <div class="detail-val" id="disp-owner">กำลังโหลด...</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">วันเริ่มรับประกัน / START DATE:</div>
-                <div class="detail-val" id="disp-date">กำลังโหลด...</div>
-            </div>
-        </div>
-
-        <!-- กล่องนับถอยหลังประกัน 1 ปี -->
-        <div id="timer-box" class="timer-box">
-            <div class="timer-title">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</div>
-            <div class="timer-countdown" id="disp-timer">กำลังคำนวณ...</div>
-        </div>
-
-        <!-- ปุ่ม LINE OA -->
-        <button id="btn-line-oa" class="btn-line" onclick="window.location.href='https://line.me/R/ti/p/@962dvbat'">
-            🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP
-        </button>
-
-        <div class="footer-text">OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL</div>
+    <div class="warranty-box">
+        <div class="w-title">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</div>
+        <div class="w-time" id="disp-remaining">กำลังคำนวณ...</div>
     </div>
+
+    <button class="btn-vip">🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</button>
+
+    <div class="footer-note">OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL</div>
 </div>
 
 <script>
@@ -209,41 +203,73 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let timerInterval = null;
-
-    // ดึงรหัสชิปจากลิงก์ URL (เช่น ?chip=BVSS1)
     const urlParams = new URLSearchParams(window.location.search);
-    let currentChipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid') || "BVSS1";
-    
-    document.getElementById('disp-chip').innerText = currentChipId;
+    const chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
 
-    // ดึงข้อมูลจาก Supabase ตามรหัสชิปที่แอดมินบันทึกไว้
-    supabaseClient
-        .from('warranties')
-        .select('*')
-        .eq('chip_id', currentChipId)
-        .maybeSingle()
-        .then(({ data }) => {
-            if (!data) {
-                // หากยังไม่ได้บันทึกข้อมูล
-                document.getElementById('disp-model').innerText = "Bovin";
-                document.getElementById('disp-size').innerText = "XS";
-                document.getElementById('disp-color').innerText = "Camel Suede";
-                document.getElementById('disp-owner').innerText = "รอดำเนินการเปิดประกันโดยแอดมิน";
-                document.getElementById('disp-date').innerText = "-";
-                document.getElementById('disp-timer').innerText = "ยังไม่เปิดใช้งาน";
+    async function loadData() {
+        if (!chipId) {
+            document.getElementById('disp-owner').innerText = 'ไม่พบรหัสชิป';
+            return;
+        }
+
+        const { data, error } = await supabaseClient
+            .from('warranties')
+            .select('*')
+            .eq('chip_id', chipId)
+            .single();
+
+        if (error || !data) {
+            document.getElementById('disp-model').innerText = 'ไม่พบข้อมูล';
+            document.getElementById('disp-owner').innerText = 'สินค้านี้ยังไม่ได้ลงทะเบียนประกัน';
+            document.getElementById('disp-remaining').innerText = 'ไม่มีข้อมูลประกัน';
+            return;
+        }
+
+        document.getElementById('disp-model').innerText = data.model || '-';
+        document.getElementById('disp-size').innerText = data.size || '-';
+        document.getElementById('disp-color').innerText = data.color || '-';
+        document.getElementById('disp-chip').innerText = data.chip_id || '-';
+        document.getElementById('disp-owner').innerText = data.customer_name || '-';
+
+        if (data.activated_at) {
+            const actTimestamp = parseInt(data.activated_at) * 1000;
+            const startDate = new Date(actTimestamp);
+            document.getElementById('disp-date').innerText = startDate.toLocaleDateString('th-TH', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            // คำนวณวันหมดอายุ (1 ปี)
+            const expireDate = new Date(startDate);
+            expireDate.setFullYear(expireDate.getFullYear() + 1);
+
+            const now = new Date();
+            const diffTime = expireDate - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays > 0) {
+                document.getElementById('disp-remaining').innerText = `เหลืออีก ${diffDays} วัน`;
             } else {
-                // แสดงข้อมูลจริงที่แอดมินกรอกไว้ครบถ้วน
-                document.getElementById('disp-model').innerText = data.model || "Bovin";
-                document.getElementById('disp-size').innerText = data.size || "XS";
-                document.getElementById('disp-color').innerText = data.color || "Camel Suede";
-                document.getElementById('disp-owner').innerText = data.customer_name || "ไม่ระบุชื่อ";
-                
-                const actTime = parseInt(data.activated_at || Math.floor(Date.now() / 1000));
-                if (!isNaN(actTime)) {
-                    const dateObj = new Date(actTime * 1000);
-                    document.getElementById('disp-date').innerText = dateObj.toISOString().split('T')[0];
-                    
-                    const expiryTime = actTime + (365 * 24 * 60 * 60);
-                    startCountdown(expiryTime);
-                } else {
+                document.getElementById('disp-remaining').innerText = 'หมดอายุการรับประกัน';
+                document.getElementById('disp-remaining').style.color = '#ef4444';
+            }
+        }
+    }
+
+    // แอนิเมชันต้อนรับ 8 วินาที
+    setTimeout(() => {
+        const welcome = document.getElementById('welcome-screen');
+        const card = document.getElementById('main-card');
+        
+        welcome.style.opacity = '0';
+        setTimeout(() => {
+            welcome.style.display = 'none';
+            card.style.display = 'block';
+            setTimeout(() => card.style.opacity = '1', 50);
+        }, 1000);
+    }, 7000);
+
+    loadData();
+</script>
+
+</body>
+</html>
