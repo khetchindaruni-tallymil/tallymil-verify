@@ -23,7 +23,7 @@
         }
         .container { width: 100%; max-width: 420px; text-align: center; position: relative; }
 
-        /* --- 1. หน้า WELCOME SCREEN (โชว์ 8 วินาทีแล้วหายไป) --- */
+        /* --- 1. หน้า WELCOME SCREEN (โชว์อัตโนมัติ 8 วินาทีแล้วหายไป) --- */
         #welcome-screen {
             position: absolute;
             top: 50%;
@@ -91,29 +91,6 @@
             margin: 15px 0 20px;
         }
         
-        /* ฟอร์มกรอกข้อมูล (กรณีสแกนครั้งแรก) */
-        .form-section {
-            display: none;
-            background: #161616;
-            border: 1px solid #332a18;
-            border-radius: 14px;
-            padding: 20px;
-            text-align: left;
-            margin-bottom: 15px;
-        }
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 12px; color: #c5a059; margin-bottom: 6px; }
-        .form-control {
-            width: 100%;
-            background: #080808;
-            border: 1px solid #44371e;
-            color: #fff;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-        }
-
         /* รายละเอียดใบ Certificate */
         .details-box {
             display: block;
@@ -142,17 +119,6 @@
         .timer-title { font-size: 11px; color: #b38b32; margin-bottom: 6px; }
         .timer-countdown { font-size: 16px; font-weight: 600; color: #f3e5ab; font-family: 'Cinzel', serif; }
 
-        .btn-gold {
-            width: 100%;
-            background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
-            color: #000;
-            border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
         .btn-line {
             display: block;
             width: 100%;
@@ -180,7 +146,7 @@
 <body>
 
 <div class="container">
-    <!-- 1. หน้า WELCOME SCREEN -->
+    <!-- 1. หน้า WELCOME SCREEN (โชว์ 8 วินาที) -->
     <div id="welcome-screen">
         <div class="brand-logo">TALLY MiL</div>
         <div class="welcome-sub">WELCOME TO TALLY MiL</div>
@@ -195,37 +161,19 @@
         
         <div class="badge-verified">✓ AUTHENTIC & GUARANTEED PRODUCT</div>
 
-        <!-- ฟอร์มลงทะเบียน (กรณีสแกนครั้งแรก) -->
-        <div id="reg-form-section" class="form-section">
-            <h4 style="color: #f3e5ab; margin-bottom: 12px; text-align: center; font-size: 13px;">ลงทะเบียนผู้ครอบครองเพื่อเปิดประกัน</h4>
-            <div class="form-group">
-                <label>ชื่อ-นามสกุล ผู้ถือครอง</label>
-                <input type="text" id="cust-name" class="form-control" placeholder="กรอกชื่อ-นามสกุล">
-            </div>
-            <div class="form-group">
-                <label>เบอร์โทรศัพท์</label>
-                <input type="tel" id="cust-phone" class="form-control" placeholder="08X-XXX-XXXX">
-            </div>
-            <div class="form-group">
-                <label>LINE ID (ถ้ามี)</label>
-                <input type="text" id="cust-line" class="form-control" placeholder="สำหรับรับสิทธิพิเศษ VIP">
-            </div>
-            <button class="btn-gold" id="btn-save" onclick="submitRegistration()">ยืนยันและรับใบการันตี</button>
-        </div>
-
-        <!-- รายละเอียดใบ Certificate (ดึงข้อมูลจริงจาก Supabase) -->
+        <!-- รายละเอียดใบ Certificate (ดึงข้อมูลที่แอดมินกรอกไว้มาแสดงอัตโนมัติ) -->
         <div id="cert-details" class="details-box">
             <div class="detail-item">
                 <div class="detail-label">รุ่นสินค้า / MODEL:</div>
-                <div class="detail-val" id="disp-model">-</div>
+                <div class="detail-val" id="disp-model">กำลังโหลด...</div>
             </div>
             <div class="detail-item">
                 <div class="detail-label">ไซส์ / SIZE:</div>
-                <div class="detail-val" id="disp-size">-</div>
+                <div class="detail-val" id="disp-size">กำลังโหลด...</div>
             </div>
             <div class="detail-item">
                 <div class="detail-label">สี / COLOR:</div>
-                <div class="detail-val" id="disp-color">-</div>
+                <div class="detail-val" id="disp-color">กำลังโหลด...</div>
             </div>
             <div class="detail-item">
                 <div class="detail-label">รหัสสินค้า / PRODUCT CODE:</div>
@@ -233,11 +181,11 @@
             </div>
             <div class="detail-item">
                 <div class="detail-label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
-                <div class="detail-val" id="disp-owner">-</div>
+                <div class="detail-val" id="disp-owner">กำลังโหลด...</div>
             </div>
             <div class="detail-item">
                 <div class="detail-label">วันเริ่มรับประกัน / START DATE:</div>
-                <div class="detail-val" id="disp-date">-</div>
+                <div class="detail-val" id="disp-date">กำลังโหลด...</div>
             </div>
         </div>
 
@@ -261,8 +209,41 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let currentChipId = "BVSS1";
     let timerInterval = null;
 
-    // ดึงรหัสชิปจาก URL อัตโนมัติ
-    const urlP
+    // ดึงรหัสชิปจากลิงก์ URL (เช่น ?chip=BVSS1)
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentChipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid') || "BVSS1";
+    
+    document.getElementById('disp-chip').innerText = currentChipId;
+
+    // ดึงข้อมูลจาก Supabase ตามรหัสชิปที่แอดมินบันทึกไว้
+    supabaseClient
+        .from('warranties')
+        .select('*')
+        .eq('chip_id', currentChipId)
+        .maybeSingle()
+        .then(({ data }) => {
+            if (!data) {
+                // หากยังไม่ได้บันทึกข้อมูล
+                document.getElementById('disp-model').innerText = "Bovin";
+                document.getElementById('disp-size').innerText = "XS";
+                document.getElementById('disp-color').innerText = "Camel Suede";
+                document.getElementById('disp-owner').innerText = "รอดำเนินการเปิดประกันโดยแอดมิน";
+                document.getElementById('disp-date').innerText = "-";
+                document.getElementById('disp-timer').innerText = "ยังไม่เปิดใช้งาน";
+            } else {
+                // แสดงข้อมูลจริงที่แอดมินกรอกไว้ครบถ้วน
+                document.getElementById('disp-model').innerText = data.model || "Bovin";
+                document.getElementById('disp-size').innerText = data.size || "XS";
+                document.getElementById('disp-color').innerText = data.color || "Camel Suede";
+                document.getElementById('disp-owner').innerText = data.customer_name || "ไม่ระบุชื่อ";
+                
+                const actTime = parseInt(data.activated_at || Math.floor(Date.now() / 1000));
+                if (!isNaN(actTime)) {
+                    const dateObj = new Date(actTime * 1000);
+                    document.getElementById('disp-date').innerText = dateObj.toISOString().split('T')[0];
+                    
+                    const expiryTime = actTime + (365 * 24 * 60 * 60);
+                    startCountdown(expiryTime);
+                } else {
