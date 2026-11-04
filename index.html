@@ -19,7 +19,7 @@
             padding: 15px;
         }
 
-        /* WELCOME OVERLAY */
+        /* หน้าต้อนรับ คุมด้วย JavaScript */
         #welcome-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -31,7 +31,8 @@
             padding: 30px;
             text-align: center;
             z-index: 9999;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
+            cursor: pointer;
+            transition: opacity 0.8s ease;
         }
         .welcome-title {
             font-family: 'Cinzel', serif;
@@ -61,8 +62,15 @@
             line-height: 1.6;
             max-width: 320px;
         }
+        .skip-hint {
+            position: absolute;
+            bottom: 30px;
+            font-size: 10px;
+            color: #666;
+            letter-spacing: 1px;
+        }
 
-        /* MAIN CARD */
+        /* หน้าการ์ดข้อมูล */
         .card {
             width: 100%;
             max-width: 400px;
@@ -166,11 +174,12 @@
 <body>
 
 <!-- หน้าต้อนรับ -->
-<div id="welcome-screen">
+<div id="welcome-screen" onclick="dismissWelcome()">
     <div class="welcome-title">TALLY MiL</div>
     <div class="welcome-sub">WELCOME TO TALLY MIL</div>
     <div class="welcome-quote-en">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</div>
     <div class="welcome-quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
+    <div class="skip-hint">(แตะที่หน้าจอเพื่อข้าม)</div>
 </div>
 
 <!-- หน้าการ์ดข้อมูล -->
@@ -225,22 +234,23 @@
     const urlParams = new URLSearchParams(window.location.search);
     const chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
 
-    // ฟังก์ชันซ่อนหน้าต้อนรับและแสดงการ์ด (ทำงานแน่นอนเมื่อครบ 3.5 วินาที)
-    function showMainCard() {
+    let dismissed = false;
+    function dismissWelcome() {
+        if (dismissed) return;
+        dismissed = true;
         const welcome = document.getElementById('welcome-screen');
         const card = document.getElementById('main-card');
-        if (welcome && card && welcome.style.display !== 'none') {
-            welcome.style.opacity = '0';
-            setTimeout(() => {
-                welcome.style.display = 'none';
-                card.style.display = 'block';
-                setTimeout(() => card.style.opacity = '1', 50);
-            }, 800);
-        }
+        
+        welcome.style.opacity = '0';
+        setTimeout(() => {
+            welcome.style.display = 'none';
+            card.style.display = 'block';
+            setTimeout(() => card.style.opacity = '1', 50);
+        }, 800);
     }
 
-    // ตั้งเวลาบังคับเปลี่ยนหน้าภายใน 3.5 วินาที
-    setTimeout(showMainCard, 3500);
+    // ตั้งเวลาให้ซ่อนเองอัตโนมัติเมื่อครบ 8 วินาที
+    setTimeout(dismissWelcome, 8000);
 
     async function loadData() {
         if (!chipId) {
@@ -279,7 +289,3 @@
                 const year = startDate.getFullYear();
                 const month = String(startDate.getMonth() + 1).padStart(2, '0');
                 const day = String(startDate.getDate()).padStart(2, '0');
-                document.getElementById('disp-date').innerText = `${year}-${month}-${day}`;
-
-                const expireDate = new Date(startDate);
-                expireDate.setFullYear(expireDate.getFullYear() + 1);
