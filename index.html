@@ -19,7 +19,7 @@
             padding: 15px;
         }
 
-        /* WELCOME OVERLAY (ตามภาพแรก) */
+        /* WELCOME OVERLAY */
         #welcome-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -31,7 +31,7 @@
             padding: 30px;
             text-align: center;
             z-index: 9999;
-            transition: opacity 1s ease, visibility 1s ease;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
         }
         .welcome-title {
             font-family: 'Cinzel', serif;
@@ -62,7 +62,7 @@
             max-width: 320px;
         }
 
-        /* MAIN CARD (ตามภาพที่สอง) */
+        /* MAIN CARD */
         .card {
             width: 100%;
             max-width: 400px;
@@ -74,7 +74,7 @@
             text-align: center;
             display: none;
             opacity: 0;
-            transition: opacity 1s ease;
+            transition: opacity 0.8s ease;
         }
         .brand-header {
             font-family: 'Cinzel', serif;
@@ -165,7 +165,7 @@
 </head>
 <body>
 
-<!-- หน้าต้อนรับ (ตรงตามภาพแรก) -->
+<!-- หน้าต้อนรับ -->
 <div id="welcome-screen">
     <div class="welcome-title">TALLY MiL</div>
     <div class="welcome-sub">WELCOME TO TALLY MIL</div>
@@ -173,7 +173,7 @@
     <div class="welcome-quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
 </div>
 
-<!-- หน้าการ์ดข้อมูล (ตรงตามภาพที่สอง) -->
+<!-- หน้าการ์ดข้อมูล -->
 <div class="card" id="main-card">
     <div class="brand-header">TALLY MiL</div>
     <div class="brand-sub">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
@@ -225,6 +225,23 @@
     const urlParams = new URLSearchParams(window.location.search);
     const chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
 
+    // ฟังก์ชันซ่อนหน้าต้อนรับและแสดงการ์ด (ทำงานแน่นอนเมื่อครบ 3.5 วินาที)
+    function showMainCard() {
+        const welcome = document.getElementById('welcome-screen');
+        const card = document.getElementById('main-card');
+        if (welcome && card && welcome.style.display !== 'none') {
+            welcome.style.opacity = '0';
+            setTimeout(() => {
+                welcome.style.display = 'none';
+                card.style.display = 'block';
+                setTimeout(() => card.style.opacity = '1', 50);
+            }, 800);
+        }
+    }
+
+    // ตั้งเวลาบังคับเปลี่ยนหน้าภายใน 3.5 วินาที
+    setTimeout(showMainCard, 3500);
+
     async function loadData() {
         if (!chipId) {
             document.getElementById('disp-owner').innerText = 'ไม่พบรหัสชิป';
@@ -252,7 +269,6 @@
 
         if (data.activated_at) {
             let startDate;
-            // รองรับทั้งแบบ Timestamp ตัวเลขและแบบ YYYY-MM-DD
             if (!isNaN(data.activated_at) && data.activated_at.length >= 10) {
                 startDate = new Date(parseInt(data.activated_at) * 1000);
             } else {
@@ -267,13 +283,3 @@
 
                 const expireDate = new Date(startDate);
                 expireDate.setFullYear(expireDate.getFullYear() + 1);
-
-                // ระบบนับถอยหลังแบบเรียลไทม์ (วัน ชม. นีนาที วินาที)
-                function updateCountdown() {
-                    const now = new Date();
-                    const diffTime = expireDate - now;
-
-                    if (diffTime > 0) {
-                        const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                        const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
