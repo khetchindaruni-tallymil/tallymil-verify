@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TALLY MiL - Digital Authenticity & Warranty</title>
-    <!-- นำเข้าฟอนต์ Young Serif จาก Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -19,7 +18,6 @@
             align-items: center;
             justify-content: center;
         }
-        /* หน้าต้อนรับ */
         #welcome-view {
             position: fixed;
             inset: 0;
@@ -30,7 +28,7 @@
             justify-content: center;
             padding: 32px;
             text-align: center;
-            z-index: 999;
+            z-index: 9999;
             cursor: pointer;
         }
         .welcome-title {
@@ -67,8 +65,6 @@
             font-size: 11px;
             letter-spacing: 0.15em;
         }
-
-        /* หน้าการ์ดรับประกัน */
         .card-container {
             background-color: #0f0f0f;
             border: 1px solid rgba(212, 175, 55, 0.2);
@@ -106,148 +102,91 @@
 </head>
 <body>
 
-    <!-- ================= 1. หน้าต้อนรับ ================= -->
-    <div id="welcome-view" onclick="enterCertificate()">
+    <!-- หน้าต้อนรับ -->
+    <div id="welcome-view" onclick="goToCard()">
         <div class="space-y-4">
             <div>
                 <h1 class="welcome-title">TALLY MIL</h1>
                 <p class="welcome-subtitle">WELCOME TO TALLY MIL</p>
             </div>
-
             <div class="quote-container">
                 <p class="quote-en">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</p>
                 <p class="quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษ ที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</p>
             </div>
-
             <div>
                 <p class="action-text animate-pulse">[ แตะเพื่อเข้าสู่ใบรับประกัน ]</p>
             </div>
         </div>
     </div>
 
-
-    <!-- ================= 2. หน้าการ์ดรับประกัน ================= -->
+    <!-- หน้าการ์ดรับประกัน -->
     <div id="card-view" class="card-container hidden-section">
-        
-        <!-- Header Brand -->
         <div class="text-center mb-5">
             <h1 class="text-base tracking-[0.25em] text-white">TALLY MIL</h1>
             <p class="text-[9px] tracking-[0.15em] text-gray-400 mt-1">CERTIFICATE OF AUTHENTICITY & WARRANTY</p>
         </div>
 
-        <!-- Authenticated Badge -->
         <div class="flex items-center justify-center gap-2 auth-badge py-2 px-4 rounded-full text-[11px] font-medium mb-5">
             <span>✓</span>
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- ข้อมูลสินค้า -->
         <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-4">
             <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
                 <span class="text-gray-400 text-[11px]">รุ่นสินค้า / MODEL</span>
-                <span id="data-model" class="font-semibold text-white tracking-wide">กำลังโหลด...</span>
+                <span id="data-model" class="font-semibold text-white tracking-wide">Hexag Vegan</span>
             </div>
             <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
                 <span class="text-gray-400 text-[11px]">ไซส์ / SIZE</span>
-                <span id="data-size" class="font-semibold text-white tracking-wide">--</span>
+                <span id="data-size" class="font-semibold text-white tracking-wide">XS</span>
             </div>
             <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
                 <span class="text-gray-400 text-[11px]">สี / COLOR</span>
-                <span id="data-color" class="font-semibold text-white tracking-wide">--</span>
+                <span id="data-color" class="font-semibold text-white tracking-wide">Navy Obsidian</span>
             </div>
             <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
                 <span class="text-gray-400 text-[11px]">รหัสชิป / CHIP ID</span>
-                <span id="data-chip" class="font-mono text-gray-300 text-[11px]">--</span>
+                <span id="data-chip" class="font-mono text-gray-300 text-[11px]">0480F7B2AD1E90</span>
             </div>
             <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
                 <span class="text-gray-400 text-[11px]">ชื่อผู้ถือครอง / REGISTERED OWNER</span>
-                <span id="data-owner" class="font-semibold text-white tracking-wide">--</span>
+                <span id="data-owner" class="font-semibold text-white tracking-wide">Minta Pumdokmai</span>
             </div>
             <div class="flex justify-between items-center">
                 <span class="text-gray-400 text-[11px]">วันเริ่มรับประกัน / START DATE</span>
-                <span id="data-start-date" class="font-mono text-white text-[11px]">--</span>
+                <span id="data-start-date" class="font-mono text-white text-[11px]">8 พฤศจิกายน 2569</span>
             </div>
         </div>
 
-        <!-- กล่องนับถอยหลังประกันคงเหลือ -->
         <div class="inner-box gold-border-box rounded-xl p-3.5 text-center mb-4">
             <p class="text-[9px] text-gray-400 tracking-wider mb-1">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</p>
             <div id="countdown-text" class="text-xs sm:text-sm font-bold gold-text font-mono">
-                กำลังคำนวณเวลา...
+                364 วัน 23 ชม. 59 นาที 50 วินาที
             </div>
         </div>
 
-        <!-- ปุ่ม VIP -->
         <button class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
             <span>🎁</span>
             <span>รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</span>
         </button>
 
-        <!-- Footer -->
         <div class="text-center mt-4 space-y-0.5">
             <p class="text-[8px] text-gray-500 tracking-widest">OFFICIAL DIGITAL CERTIFICATE - TALLY MIL</p>
             <p class="text-[8px] text-gray-600">ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MIL</p>
         </div>
     </div>
 
-
-    <!-- ================= SCRIPT ควบคุมการสลับหน้า ================= -->
     <script>
-        let hasSwitched = false;
+        // ตั้งเวลาอัตโนมัติ 5 วินาทีเปลี่ยนหน้าให้ทันที และเผื่อปุ่มกด
+        setTimeout(goToCard, 5000);
 
-        // ระบบสำรอง: ถ้าไม่แตะจอ 6 วินาที จะสลับไปหน้าการ์ดให้อัตโนมัติทันที
-        const autoSlideTimer = setTimeout(() => {
-            enterCertificate();
-        }, 6000);
-
-        function enterCertificate() {
-            if (hasSwitched) return;
-            hasSwitched = true;
-            clearTimeout(autoSlideTimer);
-
-            const welcomeEl = document.getElementById('welcome-view');
-            const cardEl = document.getElementById('card-view');
-
-            if (welcomeEl) {
-                welcomeEl.style.display = 'none'; // ซ่อนแบบฉับพลัน ป้องกันค้าง
-            }
-            if (cardEl) {
-                cardEl.classList.remove('hidden-section'); // แสดงหน้าการ์ด
-            }
-
-            // โหลดข้อมูลและเริ่มนับเวลา
-            loadProductAndWarrantyData();
+        function goToCard() {
+            const welcome = document.getElementById('welcome-view');
+            const card = document.getElementById('card-view');
+            
+            if (welcome) welcome.style.display = 'none';
+            if (card) card.classList.remove('hidden-section');
         }
-
-        async function loadProductAndWarrantyData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const chipId = urlParams.get('chip') || "0480F7B2AD1E90";
-
-            try {
-                const productData = {
-                    model: "Hexag Vegan",
-                    size: "XS",
-                    color: "Navy Obsidian",
-                    chipId: chipId,
-                    owner: "Minta Pumdokmai",
-                    startDate: localStorage.getItem(`start_${chipId}`) || new Date().toISOString()
-                };
-
-                if (!localStorage.getItem(`start_${chipId}`)) {
-                    localStorage.setItem(`start_${chipId}`, productData.startDate);
-                }
-
-                document.getElementById('data-model').innerText = productData.model;
-                document.getElementById('data-size').innerText = productData.size;
-                document.getElementById('data-color').innerText = productData.color;
-                document.getElementById('data-chip').innerText = productData.chipId;
-                document.getElementById('data-owner').innerText = productData.owner;
-
-                const startDateObj = new Date(productData.startDate);
-                const thaiMonths = [
-                    "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-                    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
-                ];
-                const tDay = startDateObj.getDate();
-                const tMonth = thaiMonths[startDateObj.getMonth()];
-               
+    </script>
+</body>
+</html>
