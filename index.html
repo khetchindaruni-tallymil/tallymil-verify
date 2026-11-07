@@ -15,7 +15,7 @@
             margin: 0;
             padding: 0;
         }
-        /* หน้าต้อนรับ (แสดงอัตโนมัติ 8 วินาที) */
+        /* หน้าต้อนรับ */
         #welcome-view {
             position: fixed;
             inset: 0;
@@ -27,7 +27,8 @@
             padding: 32px;
             text-align: center;
             z-index: 50;
-            transition: opacity 0.8s ease-out;
+            cursor: pointer;
+            transition: opacity 0.6s ease-out;
         }
         .welcome-title {
             color: #e2c068;
@@ -58,10 +59,14 @@
             font-size: 13px;
             line-height: 1.7;
         }
-        .loading-text {
-            color: #6b7280;
-            font-size: 10px;
+        .action-text {
+            color: #e2c068;
+            font-size: 11px;
             letter-spacing: 0.15em;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-family: 'Young Serif', serif;
         }
 
         /* หน้าการ์ดรับประกัน */
@@ -94,8 +99,8 @@
 </head>
 <body class="min-h-screen flex items-center justify-center p-3">
 
-    <!-- ================= 1. หน้าต้อนรับ (แสดงอัตโนมัติ 8 วินาที) ================= -->
-    <div id="welcome-view">
+    <!-- ================= 1. หน้าต้อนรับ (กดได้ หรือรอ 7 วิเปลี่ยนเอง) ================= -->
+    <div id="welcome-view" onclick="enterCertificate()">
         <div class="space-y-4">
             <div>
                 <h1 class="welcome-title">TALLY MIL</h1>
@@ -108,7 +113,7 @@
             </div>
 
             <div>
-                <p class="loading-text animate-pulse">[ กำลังโหลดเข้าสู่ใบรับประกัน... ]</p>
+                <button class="action-text animate-pulse">[ แตะเพื่อเข้าสู่ใบรับประกัน ]</button>
             </div>
         </div>
     </div>
@@ -179,20 +184,24 @@
     </div>
 
 
-    <!-- ================= SCRIPT ตั้งเวลา 8 วินาทีอัตโนมัติ ================= -->
+    <!-- ================= SCRIPT แก้ไขปัญหาค้าง & ตั้งเวลาอัตโนมัติ ================= -->
     <script>
-        // ตั้งเวลาให้หน้าต้อนรับแสดง 8 วินาที แล้วสลับไปหน้าการ์ดอัตโนมัติ
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                transitionToCertificate();
-            }, 8000); // 8000 มิลลิวินาที = 8 วินาที
-        });
+        let isEntered = false;
 
-        function transitionToCertificate() {
+        // ให้สลับหน้าเองอัตโนมัติใน 7 วินาที (เผื่อไม่ได้กด)
+        const autoTimer = setTimeout(() => {
+            enterCertificate();
+        }, 7000);
+
+        function enterCertificate() {
+            if (isEntered) return;
+            isEntered = true;
+            clearTimeout(autoTimer); // ยกเลิกเวลาออโต้ถ้ามีการกดแล้ว
+
             const welcomeEl = document.getElementById('welcome-view');
             const cardEl = document.getElementById('card-view');
 
-            if (!welcomeEl || welcomeEl.style.display === 'none') return;
+            if (!welcomeEl) return;
 
             welcomeEl.style.opacity = '0';
             setTimeout(() => {
@@ -201,7 +210,7 @@
                 setTimeout(() => {
                     cardEl.style.opacity = '1';
                 }, 50);
-            }, 800);
+            }, 500);
 
             loadProductAndWarrantyData();
         }
@@ -235,7 +244,4 @@
                     "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
                     "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
                 ];
-                const tDay = startDateObj.getDate();
-                const tMonth = thaiMonths[startDateObj.getMonth()];
-                const tYear = startDateObj.getFullYear() + 543;
-                document.getElementById('data-start-d
+                const tDay = startDateObj.getDate()
