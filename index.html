@@ -231,7 +231,11 @@
     function startCountdown(startDateStr) {
         let startDate = new Date(startDateStr);
         if (isNaN(startDate.getTime())) {
-            startDate = new Date();
+            // รองรับกรณีเป็น Unix Timestamp ตัวเลข
+            startDate = new Date(Number(startDateStr) * 1000);
+            if (isNaN(startDate.getTime())) {
+                startDate = new Date();
+            }
         }
 
         const expireDate = new Date(startDate);
@@ -259,10 +263,9 @@
 
     async function loadData() {
         try {
-            // ดึงข้อมูลโดยใช้ชื่อคอลัมน์จริงจากตาราง warranties
             const { data, error } = await supabaseClient
                 .from('warranties')
-                .select('chip_id, model, size, color, customer_name, activated_at')
+                .select('*')
                 .ilike('chip_id', `%${chipId}%`)
                 .limit(1);
 
@@ -270,10 +273,11 @@
             if (data && data.length > 0) {
                 item = data[0];
             } else {
-                // ถ้าไม่เจอตามชิด ให้ดึงข้อมูลล่าสุดแถวแรกมาแสดงแทน
+                // ถ้าค้นหาตามชิปไม่เจอ ให้ดึงข้อมูลล่าสุดแถวแรกมาแสดงแทนทันที
                 const { data: fallback } = await supabaseClient
                     .from('warranties')
-                    .select('chip_id, model, size, color, customer_name, activated_at')
+                    .select('*')
+                    .order('activated_at', { ascending: false })
                     .limit(1);
                 if (fallback && fallback.length > 0) {
                     item = fallback[0];
@@ -282,5 +286,4 @@
 
             if (item) {
                 document.getElementById('disp-model').innerText = item.model || '-';
-                document.getElementById('disp-size').innerText = item.size || '-';
-                document.getElementById('disp-color').innerText =
+                document.getElementById('disp-size').innerText = item.
