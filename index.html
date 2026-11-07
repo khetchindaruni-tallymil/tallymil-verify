@@ -136,7 +136,7 @@
             letter-spacing: 0.5px;
         }
         .w-time {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             color: #fff;
         }
@@ -221,13 +221,15 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     function startCountdown(dateStr) {
-        let startDate = new Date(dateStr);
+        // กำหนดเวลาหมดอายุให้บวกไป 1 ปีเต็มจากวันที่เริ่มต้น (ตั้งไว้ที่เวลา 23:59:59 ของวันสิ้นสุดประกัน)
+        let startDate = new Date(dateStr + 'T00:00:00');
         if (isNaN(startDate.getTime())) {
             startDate = new Date();
         }
 
         const expireDate = new Date(startDate);
         expireDate.setFullYear(expireDate.getFullYear() + 1);
+        expireDate.setHours(23, 59, 59, 999);
 
         setInterval(() => {
             const now = new Date();
@@ -248,7 +250,6 @@
 
     async function loadDirectly() {
         try {
-            // ดึงข้อมูลแถวแรกสุดจากตาราง warranties มาแสดงผลทันทีแบบชัวร์ๆ
             const { data, error } = await supabaseClient
                 .from('warranties')
                 .select('*')
