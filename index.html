@@ -3,165 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TALLY MiL - Certificate of Authenticity</title>
+    <title>TALLY MiL - Digital Authenticity & Warranty</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            background-color: #0b0b0b;
+            background-color: #050505;
             color: #e5e5e5;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
+        /* หน้าต้อนรับสไตล์พรีเมียมตามเรฟแรก */
+        #welcome-view {
+            position: fixed;
+            inset: 0;
+            background-color: #050505;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            text-align: center;
+            z-index: 50;
+            cursor: pointer;
+            transition: opacity 0.6s ease-out;
+        }
+        .gold-title {
+            color: #e2c068;
+            letter-spacing: 0.3em;
+        }
+        .quote-text {
+            color: #b3b3b3;
+            font-style: italic;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .quote-th {
+            color: #8c8c8c;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+
+        /* หน้าการ์ดรับประกันตามเรฟที่สอง */
         .card-container {
-            background-color: #141414;
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            background-color: #0f0f0f;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
         }
         .inner-box {
-            background-color: #1a1a1a;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background-color: #141414;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .gold-border-box {
-            border: 1px solid rgba(212, 175, 55, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.35);
         }
         .auth-badge {
-            background-color: #112618;
-            border: 1px solid rgba(34, 197, 94, 0.3);
+            background-color: #0a1c10;
+            border: 1px solid rgba(34, 197, 94, 0.25);
             color: #4ade80;
         }
         .gold-text {
             color: #e2c068;
         }
         .vip-btn {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-        }
-        .welcome-btn {
-            background: linear-gradient(135deg, #e2c068 0%, #c59b27 100%);
-            color: #0b0b0b;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body class="min-h-screen flex items-center justify-center p-3">
 
-    <!-- ================= 1. หน้าต้อนรับ (WELCOME VIEW) ================= -->
-    <div id="welcome-view" class="w-full max-w-sm card-container rounded-2xl p-6 text-center space-y-6">
-        <div>
-            <h1 class="text-xl font-bold tracking-[0.25em] text-white">TALLY MIL</h1>
-            <p class="text-[10px] tracking-widest text-gray-400 mt-1">LUXURY HANDBAG COLLECTION</p>
-        </div>
-
-        <div class="py-8 space-y-3">
-            <div class="w-16 h-16 mx-auto rounded-full bg-[#1c1c1c] gold-border-box flex items-center justify-center text-2xl">
-                👜
+    <!-- ================= 1. หน้าต้อนรับ (WELCOME VIEW - ตามรูปที่ 1) ================= -->
+    <div id="welcome-view" onclick="enterCertificate()">
+        <div class="max-w-xs space-y-6">
+            <div>
+                <h1 class="text-lg font-semibold gold-title tracking-[0.3em]">TALLY MIL</h1>
+                <p class="text-[9px] tracking-[0.25em] text-gray-400 mt-1.5 uppercase">WELCOME TO TALLY MIL</p>
             </div>
-            <h2 class="text-sm font-semibold text-white">ยินดีต้อนรับสู่ความเอ็กซ์คลูซีฟ</h2>
-            <p class="text-xs text-gray-400 px-4">แตะเพื่อตรวจสอบความแท้และเปิดใช้งานสิทธิ์การรับประกันผลิตภัณฑ์ของคุณ</p>
+
+            <div class="py-4 space-y-2">
+                <p class="quote-text">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</p>
+                <p class="quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษ ที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</p>
+            </div>
+
+            <p class="text-[9px] text-gray-600 tracking-widest pt-6 animate-pulse">[ แตะหน้าจอเพื่อดำเนินการต่อ ]</p>
         </div>
-
-        <button onclick="openCertificateCard()" class="w-full welcome-btn font-bold py-3.5 px-4 rounded-xl text-xs tracking-wider shadow-lg active:scale-[0.98] transition-all">
-            ตรวจสอบความแท้ & เปิดดูใบรับประกัน
-        </button>
-
-        <p class="text-[9px] text-gray-500">OFFICIAL NFC VERIFICATION SYSTEM</p>
     </div>
 
 
-    <!-- ================= 2. หน้าการ์ดรับประกัน (CERTIFICATE VIEW - ซ่อนไว้ก่อน) ================= -->
-    <div id="card-view" class="w-full max-w-sm card-container rounded-2xl p-6 relative hidden">
+    <!-- ================= 2. หน้าการ์ดรับประกัน (CERTIFICATE VIEW - ตามรูปที่ 2) ================= -->
+    <div id="card-view" class="w-full max-w-sm card-container rounded-2xl p-5 relative hidden opacity-0 transition-opacity duration-700">
         
         <!-- Header Brand -->
-        <div class="text-center mb-6">
-            <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
-            <p class="text-[10px] tracking-widest text-gray-400 mt-1">CERTIFICATE OF AUTHENTICITY & WARRANTY</p>
+        <div class="text-center mb-5">
+            <h1 class="text-base font-bold tracking-[0.25em] text-white">TALLY MIL</h1>
+            <p class="text-[9px] tracking-[0.15em] text-gray-400 mt-1">CERTIFICATE OF AUTHENTICITY & WARRANTY</p>
         </div>
 
         <!-- Authenticated Badge -->
-        <div class="flex items-center justify-center gap-2 auth-badge py-2 px-4 rounded-full text-xs font-medium mb-6">
+        <div class="flex items-center justify-center gap-2 auth-badge py-2 px-4 rounded-full text-[11px] font-medium mb-5">
             <span>✓</span>
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- กล่องข้อมูลสินค้า (ดีไซน์เป๊ะตามต้นฉบับ[span_1](start_span)[span_1](end_span)) -->
-        <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-6">
-            <div class="flex justify-between items-center pb-2 border-b border-gray-800">
-                <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
-                <span class="font-semibold text-white">Hexag Bovin</span>
+        <!-- ข้อมูลสินค้า (ตามรูปที่ 2) -->
+        <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-4">
+            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
+                <span class="text-gray-400 text-[11px]">รุ่นสินค้า / MODEL</span>
+                <span class="font-semibold text-white tracking-wide">Hexag Vegan</span>
             </div>
-            <div class="flex justify-between items-center pb-2 border-b border-gray-800">
-                <span class="text-gray-400">ไซส์ / SIZE:</span>
-                <span class="font-semibold text-white">XS</span>
+            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
+                <span class="text-gray-400 text-[11px]">ไซส์ / SIZE</span>
+                <span class="font-semibold text-white tracking-wide">XS</span>
             </div>
-            <div class="flex justify-between items-center pb-2 border-b border-gray-800">
-                <span class="text-gray-400">สี / COLOR:</span>
-                <span class="font-semibold text-white">Camel Suede</span>
+            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
+                <span class="text-gray-400 text-[11px]">สี / COLOR</span>
+                <span class="font-semibold text-white tracking-wide">Navy Obsidian</span>
             </div>
-            <div class="flex justify-between items-center pb-2 border-b border-gray-800">
-                <span class="text-gray-400">รหัสสินค้า / PRODUCT CODE:</span>
-                <span class="font-mono text-gray-300">040ADD81B1291</span>
+            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
+                <span class="text-gray-400 text-[11px]">รหัสชิป / CHIP ID</span>
+                <span class="font-mono text-gray-300 text-[11px]">0480F7B2AD1E90</span>
             </div>
-            <div class="flex justify-between items-center pb-2 border-b border-gray-800">
-                <span class="text-gray-400">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-                <span class="font-semibold text-white">Minta Pumdokmai</span>
+            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
+                <span class="text-gray-400 text-[11px]">ชื่อผู้ถือครอง / REGISTERED OWNER</span>
+                <span class="font-semibold text-white tracking-wide">Minta Pumdokmai</span>
             </div>
             <div class="flex justify-between items-center">
-                <span class="text-gray-400">วันเริ่มรับประกัน / START DATE:</span>
-                <span id="display-start-date" class="font-mono text-white">--</span>
+                <span class="text-gray-400 text-[11px]">วันเริ่มรับประกัน / START DATE</span>
+                <span id="display-start-date" class="font-mono text-white text-[11px]">4 พฤศจิกายน 2569</span>
             </div>
         </div>
 
-        <!-- กล่องนับถอยหลังประกันคงเหลือ (กรอบทองละมุน) -->
-        <div class="inner-box gold-border-box rounded-xl p-4 text-center mb-6">
-            <p class="text-[10px] text-gray-400 tracking-wider mb-1">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</p>
-            <div id="countdown-text" class="text-xs font-bold gold-text font-mono">
-                กำลังโหลดเวลา...
+        <!-- กล่องนับถอยหลังประกันคงเหลือ (ตามรูปที่ 2) -->
+        <div class="inner-box gold-border-box rounded-xl p-3.5 text-center mb-4">
+            <p class="text-[9px] text-gray-400 tracking-wider mb-1">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</p>
+            <div id="countdown-text" class="text-sm font-bold gold-text font-mono">
+                เหลืออีก 365 วัน
             </div>
         </div>
 
         <!-- ปุ่ม VIP -->
-        <button class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg hover:opacity-95 transition-opacity">
+        <button class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
             <span>🎁</span>
             <span>รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</span>
         </button>
 
         <!-- Footer -->
-        <div class="text-center mt-6 space-y-1">
-            <p class="text-[9px] text-gray-500 tracking-widest">OFFICIAL DIGITAL CERTIFICATE - TALLY MIL</p>
-            <p class="text-[9px] text-gray-600">ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MIL</p>
+        <div class="text-center mt-4 space-y-0.5">
+            <p class="text-[8px] text-gray-500 tracking-widest">OFFICIAL DIGITAL CERTIFICATE - TALLY MIL</p>
+            <p class="text-[8px] text-gray-600">ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MIL</p>
         </div>
     </div>
 
 
-    <!-- ================= JAVASCRIPT ล็อกเวลาครั้งแรก & สลับหน้า ================= -->
+    <!-- ================= JAVASCRIPT ควบคุมการแสดงผล & เวลา ================= -->
     <script>
-        const PRODUCT_CODE = "040ADD81B1291";
-        const STORAGE_KEY = `tally_warranty_${PRODUCT_CODE}`;
+        const CHIP_ID = "0480F7B2AD1E90";
+        const STORAGE_KEY = `tally_warranty_${CHIP_ID}`;
 
-        function openCertificateCard() {
-            // ซ่อนหน้าต้อนรับ แสดงหน้าการ์ด
-            document.getElementById('welcome-view').classList.add('hidden');
-            document.getElementById('card-view').classList.remove('hidden');
+        function enterCertificate() {
+            const welcomeEl = document.getElementById('welcome-view');
+            const cardEl = document.getElementById('card-view');
 
-            // จัดการเรื่องวันเริ่มประกัน (จำลองระบบฐานข้อมูล Backend)
+            // เฟดหน้าต้อนรับออก
+            welcomeEl.style.opacity = '0';
+            setTimeout(() => {
+                welcomeEl.style.display = 'none';
+                cardEl.classList.remove('hidden');
+                setTimeout(() => {
+                    cardEl.style.opacity = '1';
+                }, 50);
+            }, 500);
+
+            // จัดการเรื่องเวลาประกัน (ล็อกวันแรกไว้ตลอดกาล)
+            initWarrantySystem();
+        }
+
+        function initWarrantySystem() {
             let savedStartTime = localStorage.getItem(STORAGE_KEY);
 
             if (!savedStartTime) {
-                // ถ้าสแกนครั้งแรก: บันทึกเวลาปัจจุบันลงไปทันที (และจะไม่มีการเปลี่ยนอีกแล้ว)
+                // สแกนครั้งแรก: บันทึกเวลาปัจจุบันไว้ทันที
                 savedStartTime = new Date().toISOString();
                 localStorage.setItem(STORAGE_KEY, savedStartTime);
             }
 
-            // แสดงวันที่เริ่มต้น (ตัดเอาเฉพาะ YYYY-MM-DD มาโชว์)
             const startDateObj = new Date(savedStartTime);
-            const dateString = startDateObj.toISOString().split('T')[0];
-            document.getElementById('display-start-date').innerText = dateString;
+            
+            // แปลงวันเริ่มประกันเป็นภาษาไทย (เช่น 4 พฤศจิกายน 2569)
+            const thaiMonths = [
+                "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+                "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+            ];
+            const tDay = startDateObj.getDate();
+            const tMonth = thaiMonths[startDateObj.getMonth()];
+            const tYear = startDateObj.getFullYear() + 543;
+            document.getElementById('display-start-date').innerText = `${tDay} ${tMonth} ${tYear}`;
 
-            // เริ่มรันระบบนับถอยหลัง 365 วันเป๊ะๆ จากวินาทีแรกที่สแกนครั้งแรก
-            startExactCountdown(startDateObj);
-        }
-
-        function startExactCountdown(startDateObj) {
-            // วันหมดอายุ = วันเริ่ม + 365 วันเต็ม
+            // คำนวณวันหมดอายุ (+365 วันเต็ม)
             const expireTime = new Date(startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000)).getTime();
 
+            // รันตัวนับถอยหลัง
             const timer = setInterval(() => {
                 const now = new Date().getTime();
                 const distance = expireTime - now;
@@ -172,13 +215,12 @@
                     return;
                 }
 
-                // คำนวณ วัน, ชม., นาที, วินาที แบบเรียลไทม์
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                // แสดงผลลัพธ์บนการ์ด
+                // แสดงผลลัพธ์แบบละเอียดเรียลไทม์ (หรือจะโชว์จำนวนวันหลักแบบในรูป)
                 document.getElementById('countdown-text').innerText = 
                     `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วินาที`;
             }, 1000);
