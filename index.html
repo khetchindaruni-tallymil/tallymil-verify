@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TALLY MiL - Certificate of Authenticity & Warranty</title>
+    <title>TALLY MiL - Certificate of Authenticity</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -11,111 +11,160 @@
             color: #e5e5e5;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        .main-card {
-            background-color: #121212;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        .card-container {
+            background-color: #141414;
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
         }
         .inner-box {
-            background-color: #171717;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background-color: #1a1a1a;
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
         .gold-border-box {
-            border: 1px solid rgba(212, 175, 55, 0.35);
+            border: 1px solid rgba(212, 175, 55, 0.4);
         }
         .auth-badge {
-            background-color: #0d2314;
-            border: 1px solid rgba(34, 197, 94, 0.25);
+            background-color: #112618;
+            border: 1px solid rgba(34, 197, 94, 0.3);
             color: #4ade80;
         }
         .gold-text {
             color: #e2c068;
         }
         .vip-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+        .welcome-btn {
+            background: linear-gradient(135deg, #e2c068 0%, #c59b27 100%);
+            color: #0b0b0b;
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-3 sm:p-4">
+<body class="min-h-screen flex items-center justify-center p-4">
 
-    <!-- การ์ดหลักโครงสร้างเป๊ะตามต้นฉบับ -->
-    <div class="w-full max-w-sm main-card rounded-2xl p-5 sm:p-6 relative">
+    <!-- ================= 1. หน้าต้อนรับ (WELCOME VIEW) ================= -->
+    <div id="welcome-view" class="w-full max-w-sm card-container rounded-2xl p-6 text-center space-y-6">
+        <div>
+            <h1 class="text-xl font-bold tracking-[0.25em] text-white">TALLY MIL</h1>
+            <p class="text-[10px] tracking-widest text-gray-400 mt-1">LUXURY HANDBAG COLLECTION</p>
+        </div>
+
+        <div class="py-8 space-y-3">
+            <div class="w-16 h-16 mx-auto rounded-full bg-[#1c1c1c] gold-border-box flex items-center justify-center text-2xl">
+                👜
+            </div>
+            <h2 class="text-sm font-semibold text-white">ยินดีต้อนรับสู่ความเอ็กซ์คลูซีฟ</h2>
+            <p class="text-xs text-gray-400 px-4">แตะเพื่อตรวจสอบความแท้และเปิดใช้งานสิทธิ์การรับประกันผลิตภัณฑ์ของคุณ</p>
+        </div>
+
+        <button onclick="openCertificateCard()" class="w-full welcome-btn font-bold py-3.5 px-4 rounded-xl text-xs tracking-wider shadow-lg active:scale-[0.98] transition-all">
+            ตรวจสอบความแท้ & เปิดดูใบรับประกัน
+        </button>
+
+        <p class="text-[9px] text-gray-500">OFFICIAL NFC VERIFICATION SYSTEM</p>
+    </div>
+
+
+    <!-- ================= 2. หน้าการ์ดรับประกัน (CERTIFICATE VIEW - ซ่อนไว้ก่อน) ================= -->
+    <div id="card-view" class="w-full max-w-sm card-container rounded-2xl p-6 relative hidden">
         
         <!-- Header Brand -->
-        <div class="text-center mb-5">
-            <h1 class="text-lg font-bold tracking-[0.25em] text-white">TALLY MIL</h1>
-            <p class="text-[9px] tracking-[0.15em] text-gray-400 mt-1">CERTIFICATE OF AUTHENTICITY & WARRANTY</p>
+        <div class="text-center mb-6">
+            <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
+            <p class="text-[10px] tracking-widest text-gray-400 mt-1">CERTIFICATE OF AUTHENTICITY & WARRANTY</p>
         </div>
 
         <!-- Authenticated Badge -->
-        <div class="flex items-center justify-center gap-2 auth-badge py-2 px-4 rounded-full text-[11px] font-medium mb-5">
+        <div class="flex items-center justify-center gap-2 auth-badge py-2 px-4 rounded-full text-xs font-medium mb-6">
             <span>✓</span>
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- ข้อมูลสินค้า (Model, Size, Color, Code, Owner, Start Date) -->
-        <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-4">
-            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
-                <span class="text-gray-400 text-[11px]">รุ่นสินค้า / MODEL:</span>
-                <span class="font-semibold text-white tracking-wide">Hexag Bovin</span>
+        <!-- กล่องข้อมูลสินค้า (ดีไซน์เป๊ะตามต้นฉบับ[span_1](start_span)[span_1](end_span)) -->
+        <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-6">
+            <div class="flex justify-between items-center pb-2 border-b border-gray-800">
+                <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
+                <span class="font-semibold text-white">Hexag Bovin</span>
             </div>
-            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
-                <span class="text-gray-400 text-[11px]">ไซส์ / SIZE:</span>
-                <span class="font-semibold text-white tracking-wide">XS</span>
+            <div class="flex justify-between items-center pb-2 border-b border-gray-800">
+                <span class="text-gray-400">ไซส์ / SIZE:</span>
+                <span class="font-semibold text-white">XS</span>
             </div>
-            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
-                <span class="text-gray-400 text-[11px]">สี / COLOR:</span>
-                <span class="font-semibold text-white tracking-wide">Camel Suede</span>
+            <div class="flex justify-between items-center pb-2 border-b border-gray-800">
+                <span class="text-gray-400">สี / COLOR:</span>
+                <span class="font-semibold text-white">Camel Suede</span>
             </div>
-            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
-                <span class="text-gray-400 text-[11px]">รหัสสินค้า / PRODUCT CODE:</span>
-                <span class="font-mono text-gray-300 text-[11px]">040ADD81B1291</span>
+            <div class="flex justify-between items-center pb-2 border-b border-gray-800">
+                <span class="text-gray-400">รหัสสินค้า / PRODUCT CODE:</span>
+                <span class="font-mono text-gray-300">040ADD81B1291</span>
             </div>
-            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
-                <span class="text-gray-400 text-[11px]">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-                <span class="font-semibold text-white tracking-wide">Minta Pumdokmai</span>
+            <div class="flex justify-between items-center pb-2 border-b border-gray-800">
+                <span class="text-gray-400">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
+                <span class="font-semibold text-white">Minta Pumdokmai</span>
             </div>
             <div class="flex justify-between items-center">
-                <span class="text-gray-400 text-[11px]">วันเริ่มรับประกัน / START DATE:</span>
-                <span id="start-date" class="font-mono text-white text-[11px]">2026-11-07</span>
+                <span class="text-gray-400">วันเริ่มรับประกัน / START DATE:</span>
+                <span id="display-start-date" class="font-mono text-white">--</span>
             </div>
         </div>
 
-        <!-- กล่องนับถอยหลังประกันคงเหลือ (กรอบทองละมุนตามต้นฉบับ) -->
-        <div class="inner-box gold-border-box rounded-xl p-3.5 text-center mb-4">
-            <p class="text-[9px] text-gray-400 tracking-wider mb-1">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</p>
-            <div id="countdown-text" class="text-xs sm:text-sm font-bold gold-text font-mono">
-                กำลังคำนวณเวลา...
+        <!-- กล่องนับถอยหลังประกันคงเหลือ (กรอบทองละมุน) -->
+        <div class="inner-box gold-border-box rounded-xl p-4 text-center mb-6">
+            <p class="text-[10px] text-gray-400 tracking-wider mb-1">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</p>
+            <div id="countdown-text" class="text-xs font-bold gold-text font-mono">
+                กำลังโหลดเวลา...
             </div>
         </div>
 
         <!-- ปุ่ม VIP -->
-        <button class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all">
+        <button class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg hover:opacity-95 transition-opacity">
             <span>🎁</span>
             <span>รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</span>
         </button>
 
         <!-- Footer -->
-        <div class="text-center mt-5 space-y-0.5">
-            <p class="text-[8px] text-gray-500 tracking-widest">OFFICIAL DIGITAL CERTIFICATE - TALLY MIL</p>
-            <p class="text-[8px] text-gray-600">ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MIL</p>
+        <div class="text-center mt-6 space-y-1">
+            <p class="text-[9px] text-gray-500 tracking-widest">OFFICIAL DIGITAL CERTIFICATE - TALLY MIL</p>
+            <p class="text-[9px] text-gray-600">ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MIL</p>
         </div>
     </div>
 
-    <!-- Script คำนวณเวลาแบบเป๊ะ 365 วันเต็ม โดยอิงจากวันเริ่มประกันครั้งแรก -->
-    <script>
-        function initWarrantyCountdown() {
-            // วันเริ่มรับประกัน (ล็อกตายตัวจากครั้งแรกที่สแกน)
-            const startDateStr = "2026-11-07T00:00:00";
-            const startDate = new Date(startDateStr);
 
+    <!-- ================= JAVASCRIPT ล็อกเวลาครั้งแรก & สลับหน้า ================= -->
+    <script>
+        const PRODUCT_CODE = "040ADD81B1291";
+        const STORAGE_KEY = `tally_warranty_${PRODUCT_CODE}`;
+
+        function openCertificateCard() {
+            // ซ่อนหน้าต้อนรับ แสดงหน้าการ์ด
+            document.getElementById('welcome-view').classList.add('hidden');
+            document.getElementById('card-view').classList.remove('hidden');
+
+            // จัดการเรื่องวันเริ่มประกัน (จำลองระบบฐานข้อมูล Backend)
+            let savedStartTime = localStorage.getItem(STORAGE_KEY);
+
+            if (!savedStartTime) {
+                // ถ้าสแกนครั้งแรก: บันทึกเวลาปัจจุบันลงไปทันที (และจะไม่มีการเปลี่ยนอีกแล้ว)
+                savedStartTime = new Date().toISOString();
+                localStorage.setItem(STORAGE_KEY, savedStartTime);
+            }
+
+            // แสดงวันที่เริ่มต้น (ตัดเอาเฉพาะ YYYY-MM-DD มาโชว์)
+            const startDateObj = new Date(savedStartTime);
+            const dateString = startDateObj.toISOString().split('T')[0];
+            document.getElementById('display-start-date').innerText = dateString;
+
+            // เริ่มรันระบบนับถอยหลัง 365 วันเป๊ะๆ จากวินาทีแรกที่สแกนครั้งแรก
+            startExactCountdown(startDateObj);
+        }
+
+        function startExactCountdown(startDateObj) {
             // วันหมดอายุ = วันเริ่ม + 365 วันเต็ม
-            const expireDate = new Date(startDate);
-            expireDate.setDate(expireDate.getDate() + 365);
+            const expireTime = new Date(startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000)).getTime();
 
             const timer = setInterval(() => {
                 const now = new Date().getTime();
-                const distance = expireDate.getTime() - now;
+                const distance = expireTime - now;
 
                 if (distance <= 0) {
                     clearInterval(timer);
@@ -123,20 +172,17 @@
                     return;
                 }
 
-                // คำนวณ วัน, ชม., นาที, วินาที
+                // คำนวณ วัน, ชม., นาที, วินาที แบบเรียลไทม์
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                // แสดงผลลัพธ์ลงการ์ด
+                // แสดงผลลัพธ์บนการ์ด
                 document.getElementById('countdown-text').innerText = 
                     `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วินาที`;
             }, 1000);
         }
-
-        // รันฟังก์ชันทันทีที่โหลดหน้าเว็บ
-        window.onload = initWarrantyCountdown;
     </script>
 </body>
 </html>
