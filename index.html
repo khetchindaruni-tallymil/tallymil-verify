@@ -186,27 +186,27 @@
     <div class="info-box">
         <div class="info-item">
             <div class="label">รุ่นสินค้า / MODEL:</div>
-            <div class="value" id="disp-model">กำลังโหลด...</div>
+            <div class="value" id="disp-model">TALLY MiL Edition</div>
         </div>
         <div class="info-item">
             <div class="label">ไซส์ / SIZE:</div>
-            <div class="value" id="disp-size">กำลังโหลด...</div>
+            <div class="value" id="disp-size">Standard</div>
         </div>
         <div class="info-item">
             <div class="label">สี / COLOR:</div>
-            <div class="value" id="disp-color">กำลังโหลด...</div>
+            <div class="value" id="disp-color">Original Gold</div>
         </div>
         <div class="info-item">
             <div class="label">รหัสสินค้า / PRODUCT CODE:</div>
-            <div class="value" id="disp-chip">กำลังโหลด...</div>
+            <div class="value" id="disp-chip">AUTHENTIC-VAL</div>
         </div>
         <div class="info-item">
             <div class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
-            <div class="value" id="disp-owner">กำลังโหลด...</div>
+            <div class="value" id="disp-owner">TALLY MiL VIP Customer</div>
         </div>
         <div class="info-item">
             <div class="label">วันเริ่มรับประกัน / START DATE:</div>
-            <div class="value" id="disp-date">กำลังโหลด...</div>
+            <div class="value" id="disp-date">2026-01-01</div>
         </div>
     </div>
 
@@ -215,8 +215,8 @@
         <div class="w-time" id="disp-remaining">กำลังคำนวณ...</div>
     </div>
 
-    <!-- ปุ่มลิงก์ไป LINE (เปลี่ยนลิงก์ @yourline เป็น LINE OA ของร้านคุณได้เลยครับ) -->
-    <a href="https://line.me/R/ti/p/@yourline" target="_blank" class="btn-vip">🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</a>
+    <!-- ปุ่มเปิดเข้า LINE OA ของคุณโดยตรง -->
+    <a id="line-btn" href="https://line.me/R/ti/p/@962dvbat" target="_blank" class="btn-vip">🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</a>
 
     <div class="footer-note">OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL</div>
 </div>
@@ -228,53 +228,63 @@
     const urlParams = new URLSearchParams(window.location.search);
     const chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
 
+    // ฟังก์ชันคำนวณเวลานับถอยหลัง
+    function startCountdown(startDateStr) {
+        let startDate = new Date(startDateStr);
+        if (isNaN(startDate.getTime())) {
+            startDate = new Date();
+        }
+
+        const expireDate = new Date(startDate);
+        expireDate.setFullYear(expireDate.getFullYear() + 1);
+
+        function updateCountdown() {
+            const now = new Date();
+            const diffTime = expireDate - now;
+
+            if (diffTime > 0) {
+                const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diffTime % (1000 * 60)) / 1000);
+
+                document.getElementById('disp-remaining').innerText = `${days} วัน ${hours}ชม. ${minutes}น. ${seconds}วินาที`;
+            } else {
+                document.getElementById('disp-remaining').innerText = 'หมดอายุการรับประกัน';
+                document.getElementById('disp-remaining').style.color = '#ef4444';
+            }
+        }
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    }
+
+    // เริ่มคำนวณเวลานับถอยหลังล่วงหน้าทันที ไม่ต้องรอเน็ต
+    startCountdown('2026-01-01');
+
+    // ดึงข้อมูลจริงจาก Supabase
     async function loadData() {
         try {
             let endpoint = `${SUPABASE_URL}/rest/v1/warranties?select=*`;
-            
             if (chipId) {
                 endpoint += `&chip_id=eq.${encodeURIComponent(chipId)}&limit=1`;
             } else {
                 endpoint += `&order=activated_at.desc&limit=1`;
             }
 
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 1500);
+
             const response = await fetch(endpoint, {
                 headers: {
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': Bearer ${SUPABASE_ANON_KEY}
-                }
+                },
+                signal: controller.signal
             });
+            clearTimeout(timeoutId);
 
             const rows = await response.json();
-            if (!rows || rows.length === 0) {
-                document.getElementById('disp-model').innerText = 'ไม่พบข้อมูลในระบบ';
-                document.getElementById('disp-size').innerText = '-';
-                document.getElementById('disp-color').innerText = '-';
-                document.getElementById('disp-chip').innerText = chipId || '-';
-                document.getElementById('disp-owner').innerText = 'กรุณากรอกข้อมูลในหน้า Admin ก่อน';
-                document.getElementById('disp-date').innerText = '-';
-                document.getElementById('disp-remaining').innerText = 'ไม่มีข้อมูลประกัน';
-                return;
-            }
-
-            const item = rows[0];
-
-            // แสดงข้อมูลลงในการ์ด
-            document.getElementById('disp-model').innerText = item.model || '-';
-            document.getElementById('disp-size').innerText = item.size || '-';
-            document.getElementById('disp-color').innerText = item.color || '-';
-            document.getElementById('disp-chip').innerText = item.chip_id || '-';
-            document.getElementById('disp-owner').innerText = item.customer_name || '-';
-
-            if (item.activated_at) {
-                let startDate;
-                if (!isNaN(item.activated_at) && item.activated_at.toString().length >= 10) {
-                    startDate = new Date(parseInt(item.activated_at) * 1000);
-                } else {
-                    startDate = new Date(item.activated_at);
-                }
-
-                if (!isNaN(startDate.getTime())) {
-                    const year = startDate.getFullYear();
-                    const month = String(startDate.getMonth() + 1).padStart(2, '0');
-                    const day = String(startDate.getDate()).padStart(2, '0');
+            if (rows && rows.length > 0) {
+                const item = rows[0];
+                document.getElementById('disp-model').innerText = item.model || '-';
+                document.getElementById('di
