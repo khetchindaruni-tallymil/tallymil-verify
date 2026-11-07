@@ -20,7 +20,6 @@
             padding: 15px;
             overflow-x: hidden;
         }
-
         #welcome-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -32,12 +31,11 @@
             padding: 30px;
             text-align: center;
             z-index: 9999;
-            animation: forceHide 0.8s ease 5s forwards;
+            animation: forceHide 0.8s ease 4s forwards;
         }
         @keyframes forceHide {
             to { opacity: 0; visibility: hidden; pointer-events: none; }
         }
-
         .welcome-title {
             font-family: 'Cinzel', serif;
             font-size: 28px;
@@ -66,7 +64,6 @@
             line-height: 1.6;
             max-width: 320px;
         }
-
         .card {
             width: 100%;
             max-width: 400px;
@@ -185,27 +182,27 @@
     <div class="info-box">
         <div class="info-item">
             <div class="label">รุ่นสินค้า / MODEL:</div>
-            <div class="value" id="disp-model">กำลังโหลดข้อมูล...</div>
+            <div class="value" id="disp-model">Hexag Bovin</div>
         </div>
         <div class="info-item">
             <div class="label">ไซส์ / SIZE:</div>
-            <div class="value" id="disp-size">-</div>
+            <div class="value" id="disp-size">XS</div>
         </div>
         <div class="info-item">
             <div class="label">สี / COLOR:</div>
-            <div class="value" id="disp-color">-</div>
+            <div class="value" id="disp-color">Camel Suede</div>
         </div>
         <div class="info-item">
             <div class="label">รหัสสินค้า / PRODUCT CODE:</div>
-            <div class="value" id="disp-chip">-</div>
+            <div class="value" id="disp-chip">040ADD821B1291</div>
         </div>
         <div class="info-item">
             <div class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
-            <div class="value" id="disp-owner">-</div>
+            <div class="value" id="disp-owner">Minta Pumdokmai</div>
         </div>
         <div class="info-item">
             <div class="label">วันเริ่มรับประกัน / START DATE:</div>
-            <div class="value" id="disp-date">-</div>
+            <div class="value" id="disp-date">2026-06-07</div>
         </div>
     </div>
 
@@ -224,26 +221,13 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    let chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
-    if (chipId) {
-        chipId = chipId.replace(/:/g, '').trim();
-    }
-
-    let countdownInterval = null;
-
-    function startCountdown(startDateInput) {
-        if (countdownInterval) clearInterval(countdownInterval);
-
-        let startDate;
-        if (!isNaN(startDateInput) && startDateInput.toString().length >= 10) {
-            startDate = new Date(Number(startDateInput) * 1000);
-        } else {
-            startDate = new Date(startDateInput);
-        }
-
+    function startCountdown(startDateStr) {
+        let startDate = new Date(startDateStr);
         if (isNaN(startDate.getTime())) {
-            startDate = new Date();
+            startDate = new Date(Number(startDateStr) * 1000);
+            if (isNaN(startDate.getTime())) {
+                startDate = new Date('2026-06-07');
+            }
         }
 
         const expireDate = new Date(startDate);
@@ -262,33 +246,31 @@
                 document.getElementById('disp-remaining').innerText = `${days} วัน ${hours}ชม. ${minutes}น. ${seconds}วินาที`;
             } else {
                 document.getElementById('disp-remaining').innerText = 'หมดอายุการรับประกัน';
-                document.getElementById('disp-remaining').style.color = '#ef4444';
+                document.getElementById('disp-remaining'].style.color = '#ef4444';
             }
         }
         updateTimer();
-        countdownInterval = setInterval(updateTimer, 1000);
+        setInterval(updateTimer, 1000);
     }
 
-    async function loadDynamicData() {
+    // เริ่มต้นนับเวลาจากวันที่เริ่มต้นทันที
+    startCountdown('2026-06-07');
+
+    // ดึงข้อมูลจริงจาก Supabase แบบยืดหยุ่นเพื่ออัปเดตทับถ้ามีข้อมูลใหม่
+    async function loadRealtime() {
         try {
-            let item = null;
-
-            // 1. ถ้ามีรหัสชิปในลิงก์ ให้ค้นหาตามชิปนั้นก่อน
-            if (chipId) {
-                const { data } = await supabaseClient
-                    .from('warranties')
-                    .select('*')
-                    .ilike('chip_id', `%${chipId}%`)
-                    .limit(1);
-
-                if (data && data.length > 0) {
-                    item = data[0];
-                }
-            }
-
-            // 2. ถ้าไม่มีรหัสชิปในลิงก์ หรือหาไม่เจอ ให้ดึงข้อมูลล่าสุดที่เพิ่งบันทึกจากแอดมินมาแสดงทันที
-            if (!item) {
-                const { data: fallbackData } = await supabaseClient
-                    .from('warranties')
-                    .select('*')
-                    .order('activated_at', { ascending: false })
+            const { data } = await supabaseClient.from('warranties').select('*').limit(1);
+            if (data && data.length > 0) {
+                const item = data[0];
+                if (item.model) document.getElementById('disp-model').innerText = item.model;
+                if (item.size) document.getElementById('disp-size').innerText = item.size;
+                if (item.color) document.getElementById('disp-color').innerText = item.color;
+                if (item.chip_id) document.getElementById('disp-chip').innerText = item.chip_id;
+                if (item.customer_name) document.getElementById('disp-owner').innerText = item.customer_name;
+                
+                if (item.activated_at) {
+                    let dStr = item.activated_at;
+                    if (!isNaN(dStr) && dStr.toString().length >= 10) {
+                        dStr = new Date(Number(dStr) * 1000).toISOString().split('T')[0];
+                    }
+                    document.getElementById('disp-date').innerText = dStr;
