@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TALLY MiL - Digital Authenticity & Warranty</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -155,6 +154,9 @@
             font-weight: 600;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            text-decoration: none;
+            display: block;
+            text-align: center;
         }
         .footer-note {
             font-size: 10px;
@@ -213,7 +215,8 @@
         <div class="w-time" id="disp-remaining">กำลังคำนวณ...</div>
     </div>
 
-    <button class="btn-vip">🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</button>
+    <!-- ปุ่มลิงก์ไป LINE (เปลี่ยนลิงก์ @yourline เป็น LINE OA ของร้านคุณได้เลยครับ) -->
+    <a href="https://line.me/R/ti/p/@yourline" target="_blank" class="btn-vip">🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</a>
 
     <div class="footer-note">OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL</div>
 </div>
@@ -221,65 +224,57 @@
 <script>
     const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const urlParams = new URLSearchParams(window.location.search);
     const chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
 
     async function loadData() {
-        let item = null;
-
-        if (chipId) {
-            const { data } = await supabaseClient
-                .from('warranties')
-                .select('*')
-                .eq('chip_id', chipId)
-                .maybeSingle();
-            item = data;
-        }
-
-        // ถ้าไม่พบจาก chip หรือไม่ได้ส่ง chip มา ให้ดึงข้อมูลล่าสุดในระบบมาแสดงทันที
-        if (!item) {
-            const { data: latestData } = await supabaseClient
-                .from('warranties')
-                .select('*')
-                .order('activated_at', { ascending: false })
-                .limit(1);
-            if (latestData && latestData.length > 0) {
-                item = latestData[0];
-            }
-        }
-
-        if (!item) {
-            document.getElementById('disp-model').innerText = 'ไม่พบข้อมูลในระบบ';
-            document.getElementById('disp-size').innerText = '-';
-            document.getElementById('disp-color').innerText = '-';
-            document.getElementById('disp-chip').innerText = chipId || '-';
-            document.getElementById('disp-owner').innerText = 'กรุณากรอกข้อมูลในหน้า Admin ก่อน';
-            document.getElementById('disp-date').innerText = '-';
-            document.getElementById('disp-remaining').innerText = 'ไม่มีข้อมูลประกัน';
-            return;
-        }
-
-        // แสดงข้อมูลลงในการ์ด
-        document.getElementById('disp-model').innerText = item.model || '-';
-        document.getElementById('disp-size').innerText = item.size || '-';
-        document.getElementById('disp-color').innerText = item.color || '-';
-        document.getElementById('disp-chip').innerText = item.chip_id || '-';
-        document.getElementById('disp-owner').innerText = item.customer_name || '-';
-
-        if (item.activated_at) {
-            let startDate;
-            if (!isNaN(item.activated_at) && item.activated_at.toString().length >= 10) {
-                startDate = new Date(parseInt(item.activated_at) * 1000);
+        try {
+            let endpoint = `${SUPABASE_URL}/rest/v1/warranties?select=*`;
+            
+            if (chipId) {
+                endpoint += `&chip_id=eq.${encodeURIComponent(chipId)}&limit=1`;
             } else {
-                startDate = new Date(item.activated_at);
+                endpoint += `&order=activated_at.desc&limit=1`;
             }
 
-            if (!isNaN(startDate.getTime())) {
-                const year = startDate.getFullYear();
-                const month = String(startDate.getMonth() + 1).padStart(2, '0');
-                const day = String(startDate.getDate()).padStart(2, '0');
-                document.getElementById('disp-date').innerText = `${year}-${month}-${day}`;
+            const response = await fetch(endpoint, {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': Bearer ${SUPABASE_ANON_KEY}
+                }
+            });
 
-                co
+            const rows = await response.json();
+            if (!rows || rows.length === 0) {
+                document.getElementById('disp-model').innerText = 'ไม่พบข้อมูลในระบบ';
+                document.getElementById('disp-size').innerText = '-';
+                document.getElementById('disp-color').innerText = '-';
+                document.getElementById('disp-chip').innerText = chipId || '-';
+                document.getElementById('disp-owner').innerText = 'กรุณากรอกข้อมูลในหน้า Admin ก่อน';
+                document.getElementById('disp-date').innerText = '-';
+                document.getElementById('disp-remaining').innerText = 'ไม่มีข้อมูลประกัน';
+                return;
+            }
+
+            const item = rows[0];
+
+            // แสดงข้อมูลลงในการ์ด
+            document.getElementById('disp-model').innerText = item.model || '-';
+            document.getElementById('disp-size').innerText = item.size || '-';
+            document.getElementById('disp-color').innerText = item.color || '-';
+            document.getElementById('disp-chip').innerText = item.chip_id || '-';
+            document.getElementById('disp-owner').innerText = item.customer_name || '-';
+
+            if (item.activated_at) {
+                let startDate;
+                if (!isNaN(item.activated_at) && item.activated_at.toString().length >= 10) {
+                    startDate = new Date(parseInt(item.activated_at) * 1000);
+                } else {
+                    startDate = new Date(item.activated_at);
+                }
+
+                if (!isNaN(startDate.getTime())) {
+                    const year = startDate.getFullYear();
+                    const month = String(startDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(startDate.getDate()).padStart(2, '0');
