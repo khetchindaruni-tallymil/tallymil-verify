@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TALLY MiL - Certificate of Authenticity & Warranty</title>
-    <!-- นำเข้าฟอนต์ Young Serif จาก Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -13,62 +12,12 @@
             color: #e5e5e5;
             font-family: 'Young Serif', serif;
             margin: 0;
-            padding: 0;
+            padding: 16px;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        /* หน้าต้อนรับ (จัดวรรคอ่านง่าย + ฟอนต์ Young Serif) */
-        #welcome-view {
-            position: fixed;
-            inset: 0;
-            background-color: #050505;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 32px;
-            text-align: center;
-            z-index: 99999;
-            cursor: pointer;
-        }
-        .welcome-title {
-            color: #e2c068;
-            letter-spacing: 0.25em;
-            font-size: 1.5rem;
-        }
-        .welcome-subtitle {
-            color: #9ca3af;
-            letter-spacing: 0.2em;
-            font-size: 10px;
-            margin-top: 8px;
-            text-transform: uppercase;
-        }
-        .quote-container {
-            margin-top: 28px;
-            margin-bottom: 36px;
-            max-width: 320px;
-        }
-        .quote-en {
-            color: #d1d5db;
-            font-style: italic;
-            font-size: 14px;
-            line-height: 1.7;
-            margin-bottom: 16px;
-        }
-        .quote-th {
-            color: #9ca3af;
-            font-size: 13px;
-            line-height: 1.7;
-        }
-        .action-text {
-            color: #e2c068;
-            font-size: 11px;
-            letter-spacing: 0.15em;
-        }
-
-        /* หน้าการ์ดรับประกัน (ดีไซน์ดั้งเดิมเป๊ะ) */
         .card-container {
             background-color: #141414;
             border: 1px solid rgba(212, 175, 55, 0.3);
@@ -103,32 +52,12 @@
             align-items: center;
             justify-content: center;
         }
-        .hidden-section {
-            display: none !important;
-        }
     </style>
 </head>
 <body>
 
-    <!-- ================= 1. หน้าต้อนรับ ================= -->
-    <div id="welcome-view" onclick="goToCard()">
-        <div class="space-y-4">
-            <div>
-                <h1 class="welcome-title">TALLY MIL</h1>
-                <p class="welcome-subtitle">WELCOME TO TALLY MIL</p>
-            </div>
-            <div class="quote-container">
-                <p class="quote-en">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</p>
-                <p class="quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษ ที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</p>
-            </div>
-            <div>
-                <p class="action-text animate-pulse">[ แตะเพื่อเข้าสู่ใบรับประกัน ]</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= 2. หน้าการ์ดรับประกัน ================= -->
-    <div id="card-view" class="card-container hidden-section">
+    <!-- หน้าการ์ดรับประกัน (แสดงผลทันทีแบบไม่มีหน้าต้อนรับมากวนใจและไม่ค้าง) -->
+    <div class="card-container">
         <div class="text-center mb-6">
             <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
             <p class="text-[10px] tracking-widest text-gray-400 mt-1">CERTIFICATE OF AUTHENTICITY & WARRANTY</p>
@@ -139,31 +68,31 @@
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- ข้อมูลสินค้า (ดึงตรงตาม Supabase ในรูป) -->
+        <!-- ข้อมูลสินค้า -->
         <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
-                <span id="data-model" class="font-semibold text-white">Hexag Bovin</span>
+                <span class="font-semibold text-white">Hexag Bovin</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ไซส์ / SIZE:</span>
-                <span id="data-size" class="font-semibold text-white">XS</span>
+                <span class="font-semibold text-white">XS</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">สี / COLOR:</span>
-                <span id="data-color" class="font-semibold text-white">Camel Suede</span>
+                <span class="font-semibold text-white">Camel Suede</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รหัสสินค้า / PRODUCT CODE:</span>
-                <span id="data-code" class="font-mono text-gray-300">040ADD81B1291</span>
+                <span class="font-mono text-gray-300">040ADD81B1291</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-                <span id="data-owner" class="font-semibold text-white">Minta Pumdokmai</span>
+                <span class="font-semibold text-white">Minta Pumdokmai</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-400">วันเริ่มรับประกัน / START DATE:</span>
-                <span id="data-start-date" class="font-mono text-white">2026-11-07</span>
+                <span class="font-mono text-white">2026-11-07</span>
             </div>
         </div>
 
@@ -175,7 +104,7 @@
             </div>
         </div>
 
-        <!-- ปุ่ม VIP ไปยัง LINE Official (@962dvbat) -->
+        <!-- ปุ่ม VIP ไปยัง LINE Official -->
         <a href="https://line.me/R/ti/p/@962dvbat" target="_blank" class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all">
             <span>🎁</span>
             <span>รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</span>
@@ -187,56 +116,31 @@
         </div>
     </div>
 
-    <!-- ================= SCRIPT ดึงข้อมูลจากฐานข้อมูลจริง ================= -->
+    <!-- SCRIPT ระบบนับถอยหลัง -->
     <script>
-        function goToCard() {
-            const welcome = document.getElementById('welcome-view');
-            const card = document.getElementById('card-view');
-            
-            if (welcome) welcome.style.display = 'none';
-            if (card) card.classList.remove('hidden-section');
-            
-            fetchWarrantyDataFromDatabase();
+        const startDateObj = new Date("2026-11-07T00:00:00");
+        const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = expireTime - now;
+
+            if (distance <= 0) {
+                document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown-text').innerText = 
+                `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วินาที`;
         }
 
-        // ตั้งเวลาอัตโนมัติ 5 วินาทีสลับไปหน้าการ์ด
-        setTimeout(goToCard, 5000);
-
-        async function fetchWarrantyDataFromDatabase() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const productCode = urlParams.get('code') || urlParams.get('chip') || "040ADD81B1291";
-
-            try {
-                // ข้อมูลจริงจากตาราง warranties ใน Supabase ตามภาพ (activated_at: 2026-11-07)[span_2](start_span)[span_2](end_span)
-                const dbRecord = {
-                    model: "Hexag Bovin",
-                    size: "XS",
-                    color: "Camel Suede",
-                    productCode: productCode,
-                    owner: "Minta Pumdokmai",
-                    startDate: "2026-11-07T00:00:00" // ตรงกับฐานข้อมูลแอดมิน[span_3](start_span)[span_3](end_span)
-                };
-
-                // แสดงผลข้อมูลลงในการ์ด
-                document.getElementById('data-model').innerText = dbRecord.model;
-                document.getElementById('data-size').innerText = dbRecord.size;
-                document.getElementById('data-color').innerText = dbRecord.color;
-                document.getElementById('data-code').innerText = dbRecord.productCode;
-                document.getElementById('data-owner').innerText = dbRecord.owner;
-                document.getElementById('data-start-date').innerText = "2026-11-07";
-
-                const startDateObj = new Date(dbRecord.startDate);
-                // วันหมดอายุ = วันเริ่มประกัน + 365 วันเต็ม
-                const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
-
-                const timer = setInterval(() => {
-                    const now = new Date().getTime();
-                    const distance = expireTime - now;
-
-                    if (distance <= 0) {
-                        clearInterval(timer);
-                        document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
-                        return;
-                    }
-
-                    const days = Math.floor(distance / (1
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
