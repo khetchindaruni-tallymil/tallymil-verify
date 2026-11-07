@@ -29,7 +29,7 @@
             justify-content: center;
             padding: 32px;
             text-align: center;
-            z-index: 9999;
+            z-index: 99999;
             cursor: pointer;
         }
         .welcome-title {
@@ -67,7 +67,7 @@
             letter-spacing: 0.15em;
         }
 
-        /* หน้าการ์ดรับประกัน (ดีไซน์ฟอร์แมตดั้งเดิมตามรูปแรกๆ) */
+        /* หน้าการ์ดรับประกัน (ดีไซน์ดั้งเดิมตามรูปแรกๆ) */
         .card-container {
             background-color: #141414;
             border: 1px solid rgba(212, 175, 55, 0.3);
@@ -134,31 +134,31 @@
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- ข้อมูลสินค้า (ดึงจากตาราง warranties) -->
+        <!-- ข้อมูลสินค้า -->
         <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
-                <span id="data-model" class="font-semibold text-white">กำลังโหลด...</span>
+                <span id="data-model" class="font-semibold text-white">Hexag Bovin</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ไซส์ / SIZE:</span>
-                <span id="data-size" class="font-semibold text-white">--</span>
+                <span id="data-size" class="font-semibold text-white">XS</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">สี / COLOR:</span>
-                <span id="data-color" class="font-semibold text-white">--</span>
+                <span id="data-color" class="font-semibold text-white">Camel Suede</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รหัสสินค้า / PRODUCT CODE:</span>
-                <span id="data-code" class="font-mono text-gray-300">--</span>
+                <span id="data-code" class="font-mono text-gray-300">040ADD81B1291</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-                <span id="data-owner" class="font-semibold text-white">--</span>
+                <span id="data-owner" class="font-semibold text-white">Minta Pumdokmai</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-400">วันเริ่มรับประกัน / START DATE:</span>
-                <span id="data-start-date" class="font-mono text-white">--</span>
+                <span id="data-start-date" class="font-mono text-white">2026-11-07</span>
             </div>
         </div>
 
@@ -182,65 +182,60 @@
     </div>
 
     <script>
-        // ตั้งเวลา 5 วินาที หรือกดหน้าจอเพื่อเข้าสู่หน้าการ์ด
-        const autoTimer = setTimeout(goToCard, 5000);
-
+        // ประกาศฟังก์ชันสลับหน้าไว้ด้านบนสุดเพื่อให้เรียกใช้ได้ทันที
         function goToCard() {
-            clearTimeout(autoTimer);
             const welcome = document.getElementById('welcome-view');
             const card = document.getElementById('card-view');
             
-            if (welcome) welcome.style.display = 'none';
-            if (card) card.classList.remove('hidden-section');
-
-            // เริ่มดึงข้อมูลจากฐานข้อมูลจริงทันทีที่เปิดการ์ด
-            fetchWarrantyData();
+            if (welcome) {
+                welcome.style.display = 'none';
+            }
+            if (card) {
+                card.classList.remove('hidden-section');
+            }
+            
+            // เริ่มรันระบบเวลาทันทีที่เปิดการ์ด
+            initWarrantyTimer();
         }
 
-        async function fetchWarrantyData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const productCode = urlParams.get('code') || urlParams.get('chip') || "040ADD81B1291";
+        // ตั้งเวลาอัตโนมัติ 5 วินาทีเปลี่ยนหน้าให้ทันที
+        setTimeout(goToCard, 5000);
 
-            try {
-                /* 
-                  เชื่อมต่อดึงข้อมูลจริงจากตาราง warranties ใน Supabase หรือ API ของเพื่อน:
-                  const response = await fetch(`/api/warranties?code=${productCode}`);
-                  const result = await response.json();
-                */
+        function initWarrantyTimer() {
+            // วันเริ่มรับประกัน (ดึงจากฐานข้อมูลหรือ LocalStorage ครั้งแรก)
+            const productCode = "040ADD81B1291";
+            let savedStart = localStorage.getItem(`warranty_start_${productCode}`);
 
-                // จำลองโครงสร้างข้อมูลที่ดึงมาจากตาราง warranties จริง
-                const warrantyRecord = {
-                    model: "Hexag Bovin",
-                    size: "XS",
-                    color: "Camel Suede",
-                    productCode: productCode,
-                    owner: "Minta Pumdokmai",
-                    // ดึงค่าวันเริ่มจากฐานข้อมูล หรือถ้าสแกนครั้งแรกให้บันทึกเวลาปัจจุบันลงตาราง warranties
-                    startDate: localStorage.getItem(`warranty_start_${productCode}`) || new Date().toISOString()
-                };
+            if (!savedStart) {
+                savedStart = "2026-11-07T00:00:00";
+                localStorage.setItem(`warranty_start_${productCode}`, savedStart);
+            }
 
-                if (!localStorage.getItem(`warranty_start_${productCode}`)) {
-                    localStorage.setItem(`warranty_start_${productCode}`, warrantyRecord.startDate);
+            const startDateObj = new Date(savedStart);
+            document.getElementById('data-start-date').innerText = startDateObj.toISOString().split('T')[0];
+
+            // วันหมดอายุ = วันเริ่ม + 365 วันเต็ม
+            const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
+
+            const timer = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = expireTime - now;
+
+                if (distance <= 0) {
+                    clearInterval(timer);
+                    document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
+                    return;
                 }
 
-                // แสงผลลงหน้าการ์ด
-                document.getElementById('data-model').innerText = warrantyRecord.model;
-                document.getElementById('data-size').innerText = warrantyRecord.size;
-                document.getElementById('data-color').innerText = warrantyRecord.color;
-                document.getElementById('data-code').innerText = warrantyRecord.productCode;
-                document.getElementById('data-owner').innerText = warrantyRecord.owner;
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                const startDateObj = new Date(warrantyRecord.startDate);
-                document.getElementById('data-start-date').innerText = startDateObj.toISOString().split('T')[0];
-
-                // เริ่มรันระบบเวลานับถอยหลัง 365 วันแบบเรียลไทม์
-                startLiveCountdown(startDateObj);
-
-            } catch (err) {
-                console.error("Error fetching warranties data:", err);
-                document.getElementById('countdown-text').innerText = "ไม่สามารถโหลดข้อมูลการรับประกันได้";
-            }
+                document.getElementById('countdown-text').innerText = 
+                    `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วินาที`;
+            }, 1000);
         }
-
-        function startLiveCountdown(startDateObj) {
-            // วันหมดอายุ = วันเริ่
+    </script>
+</body>
+</html>
