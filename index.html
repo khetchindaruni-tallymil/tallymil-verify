@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TALLY MiL - Certificate of Authenticity & Warranty</title>
+    <!-- นำเข้าฟอนต์ Young Serif จาก Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -18,7 +19,7 @@
             align-items: center;
             justify-content: center;
         }
-        /* หน้าต้อนรับ */
+        /* หน้าต้อนรับ (จัดวรรคอ่านง่าย + ฟอนต์ Young Serif) */
         #welcome-view {
             position: fixed;
             inset: 0;
@@ -109,7 +110,7 @@
 </head>
 <body>
 
-    <!-- หน้าต้อนรับ -->
+    <!-- ================= 1. หน้าต้อนรับ ================= -->
     <div id="welcome-view" onclick="goToCard()">
         <div class="space-y-4">
             <div>
@@ -126,7 +127,7 @@
         </div>
     </div>
 
-    <!-- หน้าการ์ดรับประกัน -->
+    <!-- ================= 2. หน้าการ์ดรับประกัน ================= -->
     <div id="card-view" class="card-container hidden-section">
         <div class="text-center mb-6">
             <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
@@ -174,8 +175,8 @@
             </div>
         </div>
 
-        <!-- ปุ่ม VIP กดแล้วพุ่งไป LINE Official -->
-        <a href="https://line.me/R/ti/p/@tallymil" target="_blank" class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all">
+        <!-- ปุ่ม VIP อัปเดตลิงก์ LINE Official (@962dvbat) เรียบร้อย -->
+        <a href="https://line.me/R/ti/p/@962dvbat" target="_blank" class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all">
             <span>🎁</span>
             <span>รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</span>
         </a>
@@ -186,38 +187,38 @@
         </div>
     </div>
 
+    <!-- ================= SCRIPT ควบคุมระบบ ================= -->
     <script>
         function goToCard() {
             const welcome = document.getElementById('welcome-view');
             const card = document.getElementById('card-view');
             
-            if (welcome) {
-                welcome.style.display = 'none';
-            }
-            if (card) {
-                card.classList.remove('hidden-section');
-            }
+            if (welcome) welcome.style.display = 'none';
+            if (card) card.classList.remove('hidden-section');
             
             initWarrantyTimer();
         }
 
-        // ตั้งเวลาอัตโนมัติ 5 วินาทีเปลี่ยนหน้า
+        // ตั้งเวลาอัตโนมัติ 5 วินาทีสลับไปหน้าการ์ด
         setTimeout(goToCard, 5000);
 
         function initWarrantyTimer() {
             const productCode = "040ADD81B1291";
             let savedStart = localStorage.getItem(`warranty_start_${productCode}`);
 
+            // บันทึกวันสแกนครั้งแรกสุด (ถ้าย้อนไปครั้งแรกให้ล็อก 365 วันเต็ม)
             if (!savedStart) {
-                // ล็อกวันเริ่มประกัน 2026-11-07 เป๊ะๆ ตามบรีฟ
-                savedStart = "2026-11-07T00:00:00";
+                savedStart = new Date().toISOString();
                 localStorage.setItem(`warranty_start_${productCode}`, savedStart);
             }
 
             const startDateObj = new Date(savedStart);
-            document.getElementById('data-start-date').innerText = "2026-11-07";
+            
+            // แสดงวันที่เริ่มต้นรูปแบบ YYYY-MM-DD
+            const formattedDate = startDateObj.toISOString().split('T')[0];
+            document.getElementById('data-start-date').innerText = formattedDate;
 
-            // วันหมดอายุ = วันเริ่ม + 365 วันเต็ม
+            // วันหมดอายุ = วันเริ่มประกัน + 365 วันเต็ม (24*60*60*1000 ms)
             const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
 
             const timer = setInterval(() => {
@@ -230,6 +231,7 @@
                     return;
                 }
 
+                // คำนวณ วัน, ชม., นาที (เริ่มต้น 59), วินาที (เริ่มต้น 59)
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
