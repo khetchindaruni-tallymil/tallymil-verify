@@ -221,17 +221,17 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     function startCountdown(dateStr) {
-        // แยกปี เดือน วัน ออกจากสตริง YYYY-MM-DD เพื่อสร้างเวลาท้องถิ่นแบบแม่นยำ 100% ป้องกันปัญหา Timezone เพี้ยน
+        // ใช้เวลามาตรฐานสากล (UTC) ในการคำนวณวันหมดอายุ เพื่อให้ทุกเครื่องแสดงผลตรงกันเป๊ะ
         const parts = dateStr.split('-');
         const year = parseInt(parts[0], 10);
         const month = parseInt(parts[1], 10) - 1;
         const day = parseInt(parts[2], 10);
 
-        // กำหนดวันเริ่มต้นและบวกไป 1 ปีเต็มสิ้นสุดที่เวลา 23:59:59 ของวันเดียวกันในปีถัดไป
-        const expireDate = new Date(year + 1, month, day, 23, 59, 59);
+        // กำหนดเวลาหมดอายุสิ้นสุดที่สิ้นวัน (23:59:59 UTC) ของปีถัดไป
+        const expireDate = Date.UTC(year + 1, month, day, 23, 59, 59);
 
         setInterval(() => {
-            const now = new Date();
+            const now = Date.now(); // ใช้เวลาสากลระบบ UTC มิลลิวินาที
             const diffTime = expireDate - now;
 
             if (diffTime > 0) {
