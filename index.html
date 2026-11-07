@@ -15,7 +15,7 @@
             margin: 0;
             padding: 0;
         }
-        /* หน้าต้อนรับ */
+        /* หน้าต้อนรับ (แสดงอัตโนมัติ 8 วินาที) */
         #welcome-view {
             position: fixed;
             inset: 0;
@@ -27,7 +27,7 @@
             padding: 32px;
             text-align: center;
             z-index: 50;
-            transition: opacity 0.6s ease-out;
+            transition: opacity 0.8s ease-out;
         }
         .welcome-title {
             color: #e2c068;
@@ -58,20 +58,10 @@
             font-size: 13px;
             line-height: 1.7;
         }
-        .enter-btn {
-            background: none;
-            border: none;
-            color: #e2c068;
-            font-family: 'Young Serif', serif;
-            font-size: 11px;
+        .loading-text {
+            color: #6b7280;
+            font-size: 10px;
             letter-spacing: 0.15em;
-            cursor: pointer;
-            padding: 12px 24px;
-            border-radius: 9999px;
-            transition: background 0.3s;
-        }
-        .enter-btn:active {
-            background: rgba(226, 192, 104, 0.1);
         }
 
         /* หน้าการ์ดรับประกัน */
@@ -104,7 +94,7 @@
 </head>
 <body class="min-h-screen flex items-center justify-center p-3">
 
-    <!-- ================= 1. หน้าต้อนรับ (WELCOME VIEW) ================= -->
+    <!-- ================= 1. หน้าต้อนรับ (แสดงอัตโนมัติ 8 วินาที) ================= -->
     <div id="welcome-view">
         <div class="space-y-4">
             <div>
@@ -118,14 +108,13 @@
             </div>
 
             <div>
-                <!-- เปลี่ยนเป็นปุ่มคลิกจริงจัง ป้องกันปัญหากดแล้วไม่ไป -->
-                <button id="enter-trigger-btn" class="enter-btn animate-pulse">[ แตะเพื่อดำเนินการต่อ ]</button>
+                <p class="loading-text animate-pulse">[ กำลังโหลดเข้าสู่ใบรับประกัน... ]</p>
             </div>
         </div>
     </div>
 
 
-    <!-- ================= 2. หน้าการ์ดรับประกัน (CERTIFICATE VIEW) ================= -->
+    <!-- ================= 2. หน้าการ์ดรับประกัน ================= -->
     <div id="card-view" class="w-full max-w-sm card-container rounded-2xl p-5 relative hidden opacity-0 transition-opacity duration-700">
         
         <!-- Header Brand -->
@@ -190,23 +179,20 @@
     </div>
 
 
-    <!-- ================= SCRIPT ================= -->
+    <!-- ================= SCRIPT ตั้งเวลา 8 วินาทีอัตโนมัติ ================= -->
     <script>
-        document.getElementById('enter-trigger-btn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            enterCertificate();
+        // ตั้งเวลาให้หน้าต้อนรับแสดง 8 วินาที แล้วสลับไปหน้าการ์ดอัตโนมัติ
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                transitionToCertificate();
+            }, 8000); // 8000 มิลลิวินาที = 8 วินาที
         });
 
-        // เผื่อคนกดโดนพื้นที่ว่างในหน้าต้อนรับด้วย
-        document.getElementById('welcome-view').addEventListener('click', function() {
-            enterCertificate();
-        });
-
-        function enterCertificate() {
+        function transitionToCertificate() {
             const welcomeEl = document.getElementById('welcome-view');
             const cardEl = document.getElementById('card-view');
 
-            if (welcomeEl.style.display === 'none') return; // ป้องกันการเรียกซ้ำ
+            if (!welcomeEl || welcomeEl.style.display === 'none') return;
 
             welcomeEl.style.opacity = '0';
             setTimeout(() => {
@@ -215,7 +201,7 @@
                 setTimeout(() => {
                     cardEl.style.opacity = '1';
                 }, 50);
-            }, 500);
+            }, 800);
 
             loadProductAndWarrantyData();
         }
@@ -245,3 +231,11 @@
                 document.getElementById('data-owner').innerText = productData.owner;
 
                 const startDateObj = new Date(productData.startDate);
+                const thaiMonths = [
+                    "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+                    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+                ];
+                const tDay = startDateObj.getDate();
+                const tMonth = thaiMonths[startDateObj.getMonth()];
+                const tYear = startDateObj.getFullYear() + 543;
+                document.getElementById('data-start-d
