@@ -227,51 +227,59 @@
     const chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
 
     async function loadData() {
-        if (!chipId) {
-            document.getElementById('disp-model').innerText = 'ไม่พบรหัสชิป';
-            document.getElementById('disp-size').innerText = '-';
-            document.getElementById('disp-color').innerText = '-';
-            document.getElementById('disp-chip').innerText = '-';
-            document.getElementById('disp-owner').innerText = 'กรุณาสแกนผ่านชิป NFC หรือเปิดจากลิงก์ที่แอดมินสร้าง';
-            document.getElementById('disp-date').innerText = '-';
-            document.getElementById('disp-remaining').innerText = 'ไม่มีข้อมูล';
-            return;
+        let item = null;
+
+        if (chipId) {
+            const { data } = await supabaseClient
+                .from('warranties')
+                .select('*')
+                .eq('chip_id', chipId)
+                .maybeSingle();
+            item = data;
         }
 
-        const { data, error } = await supabaseClient
-            .from('warranties')
-            .select('*')
-            .eq('chip_id', chipId)
-            .single();
+        // ถ้าไม่พบจาก chip หรือไม่ได้ส่ง chip มา ให้ดึงข้อมูลล่าสุดในระบบมาแสดงทันที
+        if (!item) {
+            const { data: latestData } = await supabaseClient
+                .from('warranties')
+                .select('*')
+                .order('activated_at', { ascending: false })
+                .limit(1);
+            if (latestData && latestData.length > 0) {
+                item = latestData[0];
+            }
+        }
 
-        if (error || !data) {
+        if (!item) {
             document.getElementById('disp-model').innerText = 'ไม่พบข้อมูลในระบบ';
             document.getElementById('disp-size').innerText = '-';
             document.getElementById('disp-color').innerText = '-';
-            document.getElementById('disp-chip').innerText = chipId;
-            document.getElementById('disp-owner').innerText = 'รหัสชิปนี้ยังไม่ได้ลงทะเบียนประกันในระบบ Admin';
+            document.getElementById('disp-chip').innerText = chipId || '-';
+            document.getElementById('disp-owner').innerText = 'กรุณากรอกข้อมูลในหน้า Admin ก่อน';
             document.getElementById('disp-date').innerText = '-';
             document.getElementById('disp-remaining').innerText = 'ไม่มีข้อมูลประกัน';
             return;
         }
 
-        // แสดงข้อมูลที่แอดมินบันทึกไว้ใน Supabase
-        document.getElementById('disp-model').innerText = data.model || '-';
-        document.getElementById('disp-size').innerText = data.size || '-';
-        document.getElementById('disp-color').innerText = data.color || '-';
-        document.getElementById('disp-chip').innerText = data.chip_id || '-';
-        document.getElementById('disp-owner').innerText = data.customer_name || '-';
+        // แสดงข้อมูลลงในการ์ด
+        document.getElementById('disp-model').innerText = item.model || '-';
+        document.getElementById('disp-size').innerText = item.size || '-';
+        document.getElementById('disp-color').innerText = item.color || '-';
+        document.getElementById('disp-chip').innerText = item.chip_id || '-';
+        document.getElementById('disp-owner').innerText = item.customer_name || '-';
 
-        if (data.activated_at) {
+        if (item.activated_at) {
             let startDate;
-            if (!isNaN(data.activated_at) && data.activated_at.toString().length >= 10) {
-                startDate = new Date(parseInt(data.activated_at) * 1000);
+            if (!isNaN(item.activated_at) && item.activated_at.toString().length >= 10) {
+                startDate = new Date(parseInt(item.activated_at) * 1000);
             } else {
-                startDate = new Date(data.activated_at);
+                startDate = new Date(item.activated_at);
             }
 
             if (!isNaN(startDate.getTime())) {
                 const year = startDate.getFullYear();
                 const month = String(startDate.getMonth() + 1).padStart(2, '0');
                 const day = String(startDate.getDate()).padStart(2, '0');
-                docum
+                document.getElementById('disp-date').innerText = `${year}-${month}-${day}`;
+
+                co
