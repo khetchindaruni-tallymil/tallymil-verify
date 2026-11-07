@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TALLY MiL - Admin Data Entry & NFC Link Generator</title>
+    <title>TALLY MiL - Admin Data Entry & NFC Link</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -83,8 +83,8 @@
         }
         .success { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
         .error { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
-        
-        /* กล่องแสดงลิงก์สำหรับ NFC */
+
+        /* กล่องแสดงลิงก์และปุ่มคัดลอก */
         #nfc-box {
             margin-top: 20px;
             background: #0a0a0a;
@@ -100,3 +100,160 @@
             word-break: break-all;
             margin-bottom: 10px;
             background: #1a1a1a;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            user-select: all;
+        }
+        .btn-copy {
+            background: #10b981;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .btn-copy:hover { background: #059669; }
+    </style>
+</head>
+<body>
+
+<div class="admin-card">
+    <h2>TALLY MiL - บันทึกข้อมูล & สร้างลิงก์ NFC</h2>
+    
+    <form id="adminForm">
+        <div class="form-group">
+            <label>รหัสชิป (CHIP ID / UID):</label>
+            <input type="text" id="chip_id" required>
+        </div>
+
+        <div class="form-group">
+            <label>รุ่นสินค้า (MODEL):</label>
+            <input type="text" id="model" required>
+        </div>
+
+        <div class="form-group">
+            <label>ไซส์ (SIZE):</label>
+            <input type="text" id="size" required>
+        </div>
+
+        <div class="form-group">
+            <label>สี (COLOR):</label>
+            <input type="text" id="color" required>
+        </div>
+
+        <div class="form-group">
+            <label>ชื่อผู้ถือครอง (REGISTERED OWNER):</label>
+            <input type="text" id="customer_name" required>
+        </div>
+
+        <div class="form-group">
+            <label>เบอร์โทรศัพท์ (PHONE):</label>
+            <input type="text" id="phone">
+        </div>
+
+        <div class="form-group">
+            <label>LINE ID:</label>
+            <input type="text" id="line_id">
+        </div>
+
+        <div class="form-group">
+            <label>วันเริ่มรับประกัน (START DATE):</label>
+            <input type="date" id="activated_at">
+        </div>
+
+        <button type="submit" class="btn-submit">บันทึกข้อมูลและสร้างลิงก์ NFC</button>
+    </form>
+
+    <div id="alert-msg"></div>
+
+    <!-- กล่องแสดงลิงก์สำหรับคัดลอก -->
+    <div id="nfc-box">
+        <label style="color: #10b981; font-weight: 600; margin-bottom: 8px; display: block;">🔗 ลิงก์สำหรับเขียนใส่ชิป NFC:</label>
+        <div id="nfc-link-text">-</div>
+        <button type="button" class="btn-copy" onclick="copyNfcLink()">📋 คัดลอกลิงก์ (Copy Link)</button>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    document.getElementById('activated_at').value = new Date().toISOString().split('T')[0];
+
+    let generatedLink = "";
+
+    document.getElementById('adminForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const alertMsg = document.getElementById('alert-msg');
+        const nfcBox = document.getElementById('nfc-box');
+        alertMsg.style.display = 'none';
+        nfcBox.style.display = 'none';
+
+        let rawChip = document.getElementById('chip_id').value.trim();
+        const cleanedChip = rawChip.replace(/:/g, '');
+
+        let dateInput = document.getElementById('activated_at').value;
+        if (!dateInput) {
+            dateInput = new Date().toISOString().split('T')[0];
+        }
+
+        const payload = {
+            chip_id: cleanedChip,
+            model: document.getElementById('model').value.trim(),
+            size: document.getElementById('size').value.trim(),
+            color: document.getElementById('color').value.trim(),
+            customer_name: document.getElementById('customer_name').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            line_id: document.getElementById('line_id').value.trim(),
+            activated_at: dateInput
+        };
+
+        try {
+            const { data, error } = await supabaseClient
+                .from('warranties')
+                .upsert([payload], { onConflict: 'chip_id' });
+
+            if (error) throw error;
+
+            alertMsg.className = 'success';
+            alertMsg.innerText = '✓ บันทึกข้อมูลสำเร็จเรียบร้อย!';
+            alertMsg.style.display = 'block';
+
+            // สร้างลิงก์ NFC อัตโนมัติ
+            const domain = window.location.origin;
+            generatedLink = `${domain}/?chip=${cleanedChip}`;
+
+            document.getElementById('nfc-link-text').innerText = generatedLink;
+            nfcBox.style.display = 'block'; // แสดงกล่องและปุ่มคัดลอก
+
+        } catch (err) {
+            alertMsg.className = 'error';
+            alertMsg.innerText = '❌ เกิดข้อผิดพลาด: ' + err.message;
+            alertMsg.style.display = 'block';
+        }
+    });
+
+    function copyNfcLink() {
+        navigator.clipboard.writeText(generatedLink).then(() => {
+            alert('คัดลอกลิงก์สำเร็จ! นำไปวางเขียนใส่ชิป NFC ได้เลยครับ');
+        }).catch(err => {
+            // สำรองกรณีเครื่องบล็อกคลิปบอร์ด
+            const range = document.createRange();
+            range.selectNode(document.getElementById('nfc-link-text'));
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            alert('คัดลอกลิงก์แล้ว!');
+        });
+    }
+</script>
+
+</body>
+</html>
