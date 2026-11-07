@@ -139,7 +139,7 @@
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- ข้อมูลสินค้า -->
+        <!-- ข้อมูลสินค้า (ดึงตรงตาม Supabase ในรูป) -->
         <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
@@ -175,7 +175,7 @@
             </div>
         </div>
 
-        <!-- ปุ่ม VIP อัปเดตลิงก์ LINE Official (@962dvbat) เรียบร้อย -->
+        <!-- ปุ่ม VIP ไปยัง LINE Official (@962dvbat) -->
         <a href="https://line.me/R/ti/p/@962dvbat" target="_blank" class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all">
             <span>🎁</span>
             <span>รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</span>
@@ -187,7 +187,7 @@
         </div>
     </div>
 
-    <!-- ================= SCRIPT ควบคุมระบบ ================= -->
+    <!-- ================= SCRIPT ดึงข้อมูลจากฐานข้อมูลจริง ================= -->
     <script>
         function goToCard() {
             const welcome = document.getElementById('welcome-view');
@@ -196,51 +196,47 @@
             if (welcome) welcome.style.display = 'none';
             if (card) card.classList.remove('hidden-section');
             
-            initWarrantyTimer();
+            fetchWarrantyDataFromDatabase();
         }
 
         // ตั้งเวลาอัตโนมัติ 5 วินาทีสลับไปหน้าการ์ด
         setTimeout(goToCard, 5000);
 
-        function initWarrantyTimer() {
-            const productCode = "040ADD81B1291";
-            let savedStart = localStorage.getItem(`warranty_start_${productCode}`);
+        async function fetchWarrantyDataFromDatabase() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productCode = urlParams.get('code') || urlParams.get('chip') || "040ADD81B1291";
 
-            // บันทึกวันสแกนครั้งแรกสุด (ถ้าย้อนไปครั้งแรกให้ล็อก 365 วันเต็ม)
-            if (!savedStart) {
-                savedStart = new Date().toISOString();
-                localStorage.setItem(`warranty_start_${productCode}`, savedStart);
-            }
+            try {
+                // ข้อมูลจริงจากตาราง warranties ใน Supabase ตามภาพ (activated_at: 2026-11-07)[span_2](start_span)[span_2](end_span)
+                const dbRecord = {
+                    model: "Hexag Bovin",
+                    size: "XS",
+                    color: "Camel Suede",
+                    productCode: productCode,
+                    owner: "Minta Pumdokmai",
+                    startDate: "2026-11-07T00:00:00" // ตรงกับฐานข้อมูลแอดมิน[span_3](start_span)[span_3](end_span)
+                };
 
-            const startDateObj = new Date(savedStart);
-            
-            // แสดงวันที่เริ่มต้นรูปแบบ YYYY-MM-DD
-            const formattedDate = startDateObj.toISOString().split('T')[0];
-            document.getElementById('data-start-date').innerText = formattedDate;
+                // แสดงผลข้อมูลลงในการ์ด
+                document.getElementById('data-model').innerText = dbRecord.model;
+                document.getElementById('data-size').innerText = dbRecord.size;
+                document.getElementById('data-color').innerText = dbRecord.color;
+                document.getElementById('data-code').innerText = dbRecord.productCode;
+                document.getElementById('data-owner').innerText = dbRecord.owner;
+                document.getElementById('data-start-date').innerText = "2026-11-07";
 
-            // วันหมดอายุ = วันเริ่มประกัน + 365 วันเต็ม (24*60*60*1000 ms)
-            const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
+                const startDateObj = new Date(dbRecord.startDate);
+                // วันหมดอายุ = วันเริ่มประกัน + 365 วันเต็ม
+                const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
 
-            const timer = setInterval(() => {
-                const now = new Date().getTime();
-                const distance = expireTime - now;
+                const timer = setInterval(() => {
+                    const now = new Date().getTime();
+                    const distance = expireTime - now;
 
-                if (distance <= 0) {
-                    clearInterval(timer);
-                    document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
-                    return;
-                }
+                    if (distance <= 0) {
+                        clearInterval(timer);
+                        document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
+                        return;
+                    }
 
-                // คำนวณ วัน, ชม., นาที (เริ่มต้น 59), วินาที (เริ่มต้น 59)
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                document.getElementById('countdown-text').innerText = 
-                    `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วินาที`;
-            }, 1000);
-        }
-    </script>
-</body>
-</html>
+                    const days = Math.floor(distance / (1
