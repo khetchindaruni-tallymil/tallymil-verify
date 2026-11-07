@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TALLY MiL - Admin Data Entry</title>
+    <title>TALLY MiL - Admin Data Entry & NFC Link Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -83,116 +83,20 @@
         }
         .success { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
         .error { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
-    </style>
-</head>
-<body>
-
-<div class="admin-card">
-    <h2>TALLY MiL - ระบบบันทึกข้อมูลสินค้า</h2>
-    
-    <form id="adminForm">
-        <div class="form-group">
-            <label>รหัสชิป (CHIP ID / UID):</label>
-            <input type="text" id="chip_id" placeholder="เช่น 040ADD821B1291" required>
-        </div>
-
-        <div class="form-group">
-            <label>รุ่นสินค้า (MODEL):</label>
-            <input type="text" id="model" placeholder="เช่น Hexag Bovin" required>
-        </div>
-
-        <div class="form-group">
-            <label>ไซส์ (SIZE):</label>
-            <input type="text" id="size" placeholder="เช่น XS, S, M, L" required>
-        </div>
-
-        <div class="form-group">
-            <label>สี (COLOR):</label>
-            <input type="text" id="color" placeholder="เช่น Camel Suede" required>
-        </div>
-
-        <div class="form-group">
-            <label>ชื่อผู้ถือครอง (REGISTERED OWNER):</label>
-            <input type="text" id="customer_name" placeholder="เช่น คุณ Minta Pumdokmai" required>
-        </div>
-
-        <div class="form-group">
-            <label>เบอร์โทรศัพท์ (PHONE):</label>
-            <input type="text" id="phone" placeholder="เช่น 0909610946">
-        </div>
-
-        <div class="form-group">
-            <label>LINE ID:</label>
-            <input type="text" id="line_id" placeholder="เช่น 0909610946">
-        </div>
-
-        <div class="form-group">
-            <label>วันเริ่มรับประกัน (START DATE):</label>
-            <input type="date" id="activated_at">
-        </div>
-
-        <button type="submit" class="btn-submit">บันทึกข้อมูลลงระบบ</button>
-    </form>
-
-    <div id="alert-msg"></div>
-</div>
-
-<script>
-    const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // กำหนดวันที่ปัจจุบันไว้ในช่องวันเริ่มรับประกันล่วงหน้า
-    document.getElementById('activated_at').value = new Date().toISOString().split('T')[0];
-
-    document.getElementById('adminForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
         
-        const alertMsg = document.getElementById('alert-msg');
-        alertMsg.style.display = 'none';
-
-        // จัดการลบคัดเอาเครื่องหมาย : ออกจากรหัสชิปให้อัตโนมัติ
-        let rawChip = document.getElementById('chip_id').value.trim();
-        const cleanedChip = rawChip.replace(/:/g, '');
-
-        let dateInput = document.getElementById('activated_at').value;
-        if (!dateInput) {
-            dateInput = new Date().toISOString().split('T')[0];
+        /* กล่องแสดงลิงก์สำหรับ NFC */
+        #nfc-box {
+            margin-top: 20px;
+            background: #0a0a0a;
+            border: 1px dashed #d4af37;
+            border-radius: 10px;
+            padding: 15px;
+            display: none;
+            text-align: center;
         }
-
-        const payload = {
-            chip_id: cleanedChip,
-            model: document.getElementById('model').value.trim(),
-            size: document.getElementById('size').value.trim(),
-            color: document.getElementById('color').value.trim(),
-            customer_name: document.getElementById('customer_name').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            line_id: document.getElementById('line_id').value.trim(),
-            activated_at: dateInput // ส่งค่าในรูปแบบ YYYY-MM-DD
-        };
-
-        try {
-            const { data, error } = await supabaseClient
-                .from('warranties')
-                .upsert([payload], { onConflict: 'chip_id' });
-
-            if (error) throw error;
-
-            alertMsg.className = 'success';
-            alertMsg.innerText = '✓ บันทึกข้อมูลสำเร็จเรียบร้อยแล้ว!';
-            alertMsg.style.display = 'block';
-
-            // ล้างค่าในฟอร์มเพื่อรอกรอกชิ้นต่อไป
-            document.getElementById('adminForm').reset();
-            document.getElementById('activated_at').value = new Date().toISOString().split('T')[0];
-
-        } catch (err) {
-            alertMsg.className = 'error';
-            alertMsg.innerText = '❌ เกิดข้อผิดพลาด: ' + err.message;
-            alertMsg.style.display = 'block';
-        }
-    });
-</script>
-
-</body>
-</html>
+        #nfc-link-text {
+            font-size: 12px;
+            color: #fff;
+            word-break: break-all;
+            margin-bottom: 10px;
+            background: #1a1a1a;
