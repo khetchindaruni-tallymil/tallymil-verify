@@ -185,7 +185,7 @@
     <div class="info-box">
         <div class="info-item">
             <div class="label">รุ่นสินค้า / MODEL:</div>
-            <div class="value" id="disp-model">กำลังโหลดข้อมูลชิป...</div>
+            <div class="value" id="disp-model">กำลังโหลดข้อมูล...</div>
         </div>
         <div class="info-item">
             <div class="label">ไซส์ / SIZE:</div>
@@ -224,7 +224,6 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ดึงรหัสชิปจาก URL เช่น ?chip=040ADD821B1291
     const urlParams = new URLSearchParams(window.location.search);
     let chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
     if (chipId) {
@@ -237,7 +236,6 @@
         if (countdownInterval) clearInterval(countdownInterval);
 
         let startDate;
-        // ตรวจสอบว่าวันที่บันทึกมาเป็นตัวเลข Timestamp หรือไม่
         if (!isNaN(startDateInput) && startDateInput.toString().length >= 10) {
             startDate = new Date(Number(startDateInput) * 1000);
         } else {
@@ -275,9 +273,9 @@
         try {
             let item = null;
 
-            // ถ้ามีรหัสชิપในลิงก์ ให้ค้นหาตามรหัสชิปนั้นๆ ก่อน
+            // 1. ถ้ามีรหัสชิปในลิงก์ ให้ค้นหาตามชิปนั้นก่อน
             if (chipId) {
-                const { data, error } = await supabaseClient
+                const { data } = await supabaseClient
                     .from('warranties')
                     .select('*')
                     .ilike('chip_id', `%${chipId}%`)
@@ -288,7 +286,9 @@
                 }
             }
 
-            // ถ้าไม่มีชิปในลิงก์ หรือค้นหาไม่เจอ ให้ดึงข้อมูลล่าสุดที่เพิ่งบันทึกจากแอดมินมาแสดง
+            // 2. ถ้าไม่มีรหัสชิปในลิงก์ หรือหาไม่เจอ ให้ดึงข้อมูลล่าสุดที่เพิ่งบันทึกจากแอดมินมาแสดงทันที
             if (!item) {
                 const { data: fallbackData } = await supabaseClient
-                    .f
+                    .from('warranties')
+                    .select('*')
+                    .order('activated_at', { ascending: false })
