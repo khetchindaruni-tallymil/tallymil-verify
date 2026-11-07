@@ -185,27 +185,27 @@
     <div class="info-box">
         <div class="info-item">
             <div class="label">รุ่นสินค้า / MODEL:</div>
-            <div class="value" id="disp-model">TALLY MiL Edition</div>
+            <div class="value" id="disp-model">กำลังค้นหาข้อมูลชิป...</div>
         </div>
         <div class="info-item">
             <div class="label">ไซส์ / SIZE:</div>
-            <div class="value" id="disp-size">Standard</div>
+            <div class="value" id="disp-size">-</div>
         </div>
         <div class="info-item">
             <div class="label">สี / COLOR:</div>
-            <div class="value" id="disp-color">Original Gold</div>
+            <div class="value" id="disp-color">-</div>
         </div>
         <div class="info-item">
             <div class="label">รหัสสินค้า / PRODUCT CODE:</div>
-            <div class="value" id="disp-chip">AUTHENTIC-VAL</div>
+            <div class="value" id="disp-chip">-</div>
         </div>
         <div class="info-item">
             <div class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
-            <div class="value" id="disp-owner">VIP Customer</div>
+            <div class="value" id="disp-owner">-</div>
         </div>
         <div class="info-item">
             <div class="label">วันเริ่มรับประกัน / START DATE:</div>
-            <div class="value" id="disp-date">2026-01-01</div>
+            <div class="value" id="disp-date">-</div>
         </div>
     </div>
 
@@ -230,7 +230,11 @@
     function startCountdown(startDateStr) {
         let startDate = new Date(startDateStr);
         if (isNaN(startDate.getTime())) {
-            startDate = new Date();
+            // ถ้าเป็นตัวเลข Timestamp จาก Supabase ให้แปลงตรงนี้
+            startDate = new Date(Number(startDateStr) * 1000);
+            if (isNaN(startDate.getTime())) {
+                startDate = new Date();
+            }
         }
 
         const expireDate = new Date(startDate);
@@ -256,26 +260,27 @@
         setInterval(updateTimer, 1000);
     }
 
-    // เริ่มต้นเดินเวลารอไว้ทันที
-    startCountdown('2026-01-01');
-
     async function loadData() {
         try {
             let query = supabaseClient.from('warranties').select('*');
+
             if (chipId) {
-                query = query.eq('chip_id', chipId);
+                // ค้นหาแบบตรงตัวกับรหัสชิปที่ส่งมาในลิงก์
+                query = query.eq('chip_id', chipId.trim());
             }
-            
-            const { data, error } = await query.order('activated_at', { ascending: false }).limit(1);
 
-            if (!error && data && data.length > 0) {
-                const item = data[0];
-                document.getElementById('disp-model').innerText = item.model || 'TALLY MiL Edition';
-                document.getElementById('disp-size').innerText = item.size || 'Standard';
-                document.getElementById('disp-color').innerText = item.color || 'Original Gold';
-                document.getElementById('disp-chip').innerText = item.chip_id || chipId || 'AUTHENTIC-VAL';
-                document.getElementById('disp-owner').innerText = item.customer_name || 'VIP Customer';
+            const { data, error } = await query.limit(1);
 
-                if (item.activated_at) {
-                    let startDateVal = item.activated_at;
-                    if (!isNaN(startDateVal) && startDateVal.toString().length >= 10) {
+            if (error || !data || data.length === 0) {
+                // ถ้าไม่พบตามชิป ให้ดึงข้อมูลล่าสุดมาแสดงแทนเพื่อไม่ให้จอว่าง
+                const { data: fallbackData } = await supabaseClient
+                    .from('warranties')
+                    .select('*')
+                    .order('activated_at', { ascending: false })
+                    .limit(1);
+
+                if (fallbackData && fallbackData.length > 0) {
+                    renderItem(fallbackData[0]);
+                } else {
+                    document.getElementById('disp-model').innerText = 'ไม่พบข้อมูลชิปนี้ในระบบ';
+                    document.getElementById('disp-owner').innerText = 'กรุณาตรวจสอบการบันทึก
