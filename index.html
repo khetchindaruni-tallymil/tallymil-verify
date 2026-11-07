@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -13,10 +13,12 @@
             background-color: #050505;
             color: #d4af37;
             min-height: 100vh;
+            width: 100vw;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 15px;
+            overflow-x: hidden;
         }
 
         #welcome-screen {
@@ -183,7 +185,7 @@
     <div class="info-box">
         <div class="info-item">
             <div class="label">รุ่นสินค้า / MODEL:</div>
-            <div class="value" id="disp-model">กำลังเชื่อมต่อฐานข้อมูล...</div>
+            <div class="value" id="disp-model">กำลังโหลดข้อมูล...</div>
         </div>
         <div class="info-item">
             <div class="label">ไซส์ / SIZE:</div>
@@ -262,7 +264,6 @@
                 query = query.eq('chip_id', chipId);
             }
             
-            // ดึงข้อมูลแถวแรกสุดที่ตรงกัน หรือแถวพึ่งกรอกล่าสุด
             const { data, error } = await query.order('activated_at', { ascending: false }).limit(1);
 
             if (error) {
@@ -283,4 +284,4 @@
             document.getElementById('disp-chip').innerText = item.chip_id || '-';
             document.getElementById('disp-owner').innerText = item.customer_name || '-';
 
-            if (item.acti
+            if (item.activated_at) {
