@@ -19,7 +19,7 @@
             padding: 15px;
         }
 
-        /* หน้าต้อนรับ: ใช้ CSS Animation บังคับหายไปหลัง 8 วินาทีชัวร์ 100% */
+        /* หน้าต้อนรับ: แสดง 8 วินาที แล้วซ่อนอัตโนมัติ */
         #welcome-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -66,7 +66,7 @@
             max-width: 320px;
         }
 
-        /* หน้าการ์ดข้อมูล: แสดงผลทันทีใต้ฉากหลัง */
+        /* หน้าการ์ดข้อมูล */
         .card {
             width: 100%;
             max-width: 400px;
@@ -228,7 +228,13 @@
 
     async function loadData() {
         if (!chipId) {
-            document.getElementById('disp-owner').innerText = 'ไม่พบรหัสชิป';
+            document.getElementById('disp-model').innerText = 'ไม่พบรหัสชิป';
+            document.getElementById('disp-size').innerText = '-';
+            document.getElementById('disp-color').innerText = '-';
+            document.getElementById('disp-chip').innerText = '-';
+            document.getElementById('disp-owner').innerText = 'กรุณาสแกนผ่านชิป NFC หรือเปิดจากลิงก์ที่แอดมินสร้าง';
+            document.getElementById('disp-date').innerText = '-';
+            document.getElementById('disp-remaining').innerText = 'ไม่มีข้อมูล';
             return;
         }
 
@@ -239,12 +245,17 @@
             .single();
 
         if (error || !data) {
-            document.getElementById('disp-model').innerText = 'ไม่พบข้อมูล';
-            document.getElementById('disp-owner').innerText = 'สินค้านี้ยังไม่ได้ลงทะเบียนประกัน';
+            document.getElementById('disp-model').innerText = 'ไม่พบข้อมูลในระบบ';
+            document.getElementById('disp-size').innerText = '-';
+            document.getElementById('disp-color').innerText = '-';
+            document.getElementById('disp-chip').innerText = chipId;
+            document.getElementById('disp-owner').innerText = 'รหัสชิปนี้ยังไม่ได้ลงทะเบียนประกันในระบบ Admin';
+            document.getElementById('disp-date').innerText = '-';
             document.getElementById('disp-remaining').innerText = 'ไม่มีข้อมูลประกัน';
             return;
         }
 
+        // แสดงข้อมูลที่แอดมินบันทึกไว้ใน Supabase
         document.getElementById('disp-model').innerText = data.model || '-';
         document.getElementById('disp-size').innerText = data.size || '-';
         document.getElementById('disp-color').innerText = data.color || '-';
@@ -253,7 +264,7 @@
 
         if (data.activated_at) {
             let startDate;
-            if (!isNaN(data.activated_at) && data.activated_at.length >= 10) {
+            if (!isNaN(data.activated_at) && data.activated_at.toString().length >= 10) {
                 startDate = new Date(parseInt(data.activated_at) * 1000);
             } else {
                 startDate = new Date(data.activated_at);
@@ -263,17 +274,4 @@
                 const year = startDate.getFullYear();
                 const month = String(startDate.getMonth() + 1).padStart(2, '0');
                 const day = String(startDate.getDate()).padStart(2, '0');
-                document.getElementById('disp-date').innerText = `${year}-${month}-${day}`;
-
-                const expireDate = new Date(startDate);
-                expireDate.setFullYear(expireDate.getFullYear() + 1);
-
-                function updateCountdown() {
-                    const now = new Date();
-                    const diffTime = expireDate - now;
-
-                    if (diffTime > 0) {
-                        const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                        const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
-                        const seconds = Math.floor((diffTime % (1000 * 60)) / 1000);
+                docum
