@@ -1,4 +1,213 @@
-  <div class="warranty-box">
+ <!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TALLY MiL - Digital Authenticity & Warranty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #050505;
+            color: #d4af37;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        /* หน้าต้อนรับ: แสดงผล 8 วินาที แล้วซ่อนอัตโนมัติ */
+        #welcome-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        .welcome-title {
+            font-family: 'Cinzel', serif;
+            font-size: 28px;
+            letter-spacing: 3px;
+            color: #f3e5ab;
+            margin-bottom: 8px;
+            text-shadow: 0 0 15px rgba(212,175,55,0.4);
+        }
+        .welcome-sub {
+            font-size: 11px;
+            color: #c5a059;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+        .welcome-quote-en {
+            font-size: 13px;
+            color: #e5d59c;
+            font-style: italic;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            max-width: 320px;
+        }
+        .welcome-quote-th {
+            font-size: 12px;
+            color: #a88a38;
+            line-height: 1.6;
+            max-width: 320px;
+        }
+
+        /* หน้าการ์ดข้อมูล */
+        .card {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(145deg, #121212 0%, #080808 100%);
+            border: 1px solid #2a2415;
+            border-radius: 20px;
+            padding: 25px 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.9), 0 0 15px rgba(212,175,55,0.1);
+            text-align: center;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        .brand-header {
+            font-family: 'Cinzel', serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #f3e5ab;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+        .brand-sub {
+            font-size: 10px;
+            color: #c5a059;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+        }
+        .auth-badge {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            color: #10b981;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .info-box {
+            background: #0d0d0d;
+            border: 1px solid #221e14;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        .info-item {
+            margin-bottom: 10px;
+        }
+        .info-item:last-child { margin-bottom: 0; }
+        .label {
+            font-size: 10px;
+            color: #8c733e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .value {
+            font-size: 14px;
+            color: #ffffff;
+            font-weight: 500;
+            margin-top: 1px;
+        }
+        .warranty-box {
+            background: linear-gradient(135deg, #1c180e 0%, #0d0b06 100%);
+            border: 1px solid #d4af37;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .w-title {
+            font-size: 10px;
+            color: #d4af37;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+        .w-time {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .btn-vip {
+            background: #10b981;
+            color: #fff;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .footer-note {
+            font-size: 10px;
+            color: #555;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+<!-- หน้าต้อนรับ (แสดง 8 วินาที) -->
+<div id="welcome-screen">
+    <div class="welcome-title">TALLY MiL</div>
+    <div class="welcome-sub">WELCOME TO TALLY MIL</div>
+    <div class="welcome-quote-en">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</div>
+    <div class="welcome-quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
+</div>
+
+<!-- หน้าการ์ดข้อมูลประกัน -->
+<div class="card" id="main-card">
+    <div class="brand-header">TALLY MiL</div>
+    <div class="brand-sub">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
+
+    <div class="auth-badge">✓ AUTHENTIC & GUARANTEED PRODUCT</div>
+
+    <div class="info-box">
+        <div class="info-item">
+            <div class="label">รุ่นสินค้า / MODEL:</div>
+            <div class="value" id="disp-model">กำลังโหลด...</div>
+        </div>
+        <div class="info-item">
+            <div class="label">ไซส์ / SIZE:</div>
+            <div class="value" id="disp-size">กำลังโหลด...</div>
+        </div>
+        <div class="info-item">
+            <div class="label">สี / COLOR:</div>
+            <div class="value" id="disp-color">กำลังโหลด...</div>
+        </div>
+        <div class="info-item">
+            <div class="label">รหัสสินค้า / PRODUCT CODE:</div>
+            <div class="value" id="disp-chip">กำลังโหลด...</div>
+        </div>
+        <div class="info-item">
+            <div class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
+            <div class="value" id="disp-owner">กำลังโหลด...</div>
+        </div>
+        <div class="info-item">
+            <div class="label">วันเริ่มรับประกัน / START DATE:</div>
+            <div class="value" id="disp-date">กำลังโหลด...</div>
+        </div>
+    </div>
+
+    <div class="warranty-box">
         <div class="w-title">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</div>
         <div class="w-time" id="disp-remaining">กำลังคำนวณ...</div>
     </div>
@@ -16,7 +225,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
 
-    // ฟังก์ชันเปลี่ยนหน้าเมื่อครบ 8 วินาที
+    // ควบคุมเวลา 8 วินาทีเป๊ะๆ แล้วตัดไปหน้าการ์ด
     setTimeout(() => {
         const welcome = document.getElementById('welcome-screen');
         const card = document.getElementById('main-card');
@@ -74,32 +283,3 @@
 
                 function updateCountdown() {
                     const now = new Date();
-                    const diffTime = expireDate - now;
-
-                    if (diffTime > 0) {
-                        const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                        const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
-                        const seconds = Math.floor((diffTime % (1000 * 60)) / 1000);
-
-                        document.getElementById('disp-remaining').innerText = `${days} วัน ${hours}ชม. ${minutes}น. ${seconds}วินาที`;
-                    } else {
-                        document.getElementById('disp-remaining').innerText = 'หมดอายุการรับประกัน';
-                        document.getElementById('disp-remaining').style.color = '#ef4444';
-                    }
-                }
-
-                updateCountdown();
-                setInterval(updateCountdown, 1000);
-            } else {
-                document.getElementById('disp-date').innerText = data.activated_at;
-                document.getElementById('disp-remaining').innerText = '1 ปีเต็ม';
-            }
-        }
-    }
-
-    loadData();
-</script>
-
-</body>
-</html>
