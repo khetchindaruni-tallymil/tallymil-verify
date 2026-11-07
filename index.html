@@ -14,6 +14,10 @@
             font-family: 'Young Serif', serif;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         /* หน้าต้อนรับ */
         #welcome-view {
@@ -26,9 +30,8 @@
             justify-content: center;
             padding: 32px;
             text-align: center;
-            z-index: 50;
+            z-index: 999;
             cursor: pointer;
-            transition: opacity 0.6s ease-out;
         }
         .welcome-title {
             color: #e2c068;
@@ -63,10 +66,6 @@
             color: #e2c068;
             font-size: 11px;
             letter-spacing: 0.15em;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-family: 'Young Serif', serif;
         }
 
         /* หน้าการ์ดรับประกัน */
@@ -74,6 +73,11 @@
             background-color: #0f0f0f;
             border: 1px solid rgba(212, 175, 55, 0.2);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
+            width: 100%;
+            max-width: 380px;
+            padding: 20px;
+            border-radius: 1rem;
+            position: relative;
         }
         .inner-box {
             background-color: #141414;
@@ -95,11 +99,14 @@
             box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
             font-family: 'Young Serif', serif;
         }
+        .hidden-section {
+            display: none !important;
+        }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-3">
+<body>
 
-    <!-- ================= 1. หน้าต้อนรับ (กดได้ หรือรอ 7 วิเปลี่ยนเอง) ================= -->
+    <!-- ================= 1. หน้าต้อนรับ ================= -->
     <div id="welcome-view" onclick="enterCertificate()">
         <div class="space-y-4">
             <div>
@@ -113,14 +120,14 @@
             </div>
 
             <div>
-                <button class="action-text animate-pulse">[ แตะเพื่อเข้าสู่ใบรับประกัน ]</button>
+                <p class="action-text animate-pulse">[ แตะเพื่อเข้าสู่ใบรับประกัน ]</p>
             </div>
         </div>
     </div>
 
 
     <!-- ================= 2. หน้าการ์ดรับประกัน ================= -->
-    <div id="card-view" class="w-full max-w-sm card-container rounded-2xl p-5 relative hidden opacity-0 transition-opacity duration-700">
+    <div id="card-view" class="card-container hidden-section">
         
         <!-- Header Brand -->
         <div class="text-center mb-5">
@@ -184,34 +191,31 @@
     </div>
 
 
-    <!-- ================= SCRIPT แก้ไขปัญหาค้าง & ตั้งเวลาอัตโนมัติ ================= -->
+    <!-- ================= SCRIPT ควบคุมการสลับหน้า ================= -->
     <script>
-        let isEntered = false;
+        let hasSwitched = false;
 
-        // ให้สลับหน้าเองอัตโนมัติใน 7 วินาที (เผื่อไม่ได้กด)
-        const autoTimer = setTimeout(() => {
+        // ระบบสำรอง: ถ้าไม่แตะจอ 6 วินาที จะสลับไปหน้าการ์ดให้อัตโนมัติทันที
+        const autoSlideTimer = setTimeout(() => {
             enterCertificate();
-        }, 7000);
+        }, 6000);
 
         function enterCertificate() {
-            if (isEntered) return;
-            isEntered = true;
-            clearTimeout(autoTimer); // ยกเลิกเวลาออโต้ถ้ามีการกดแล้ว
+            if (hasSwitched) return;
+            hasSwitched = true;
+            clearTimeout(autoSlideTimer);
 
             const welcomeEl = document.getElementById('welcome-view');
             const cardEl = document.getElementById('card-view');
 
-            if (!welcomeEl) return;
+            if (welcomeEl) {
+                welcomeEl.style.display = 'none'; // ซ่อนแบบฉับพลัน ป้องกันค้าง
+            }
+            if (cardEl) {
+                cardEl.classList.remove('hidden-section'); // แสดงหน้าการ์ด
+            }
 
-            welcomeEl.style.opacity = '0';
-            setTimeout(() => {
-                welcomeEl.style.display = 'none';
-                cardEl.classList.remove('hidden');
-                setTimeout(() => {
-                    cardEl.style.opacity = '1';
-                }, 50);
-            }, 500);
-
+            // โหลดข้อมูลและเริ่มนับเวลา
             loadProductAndWarrantyData();
         }
 
@@ -244,4 +248,6 @@
                     "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
                     "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
                 ];
-                const tDay = startDateObj.getDate()
+                const tDay = startDateObj.getDate();
+                const tMonth = thaiMonths[startDateObj.getMonth()];
+               
