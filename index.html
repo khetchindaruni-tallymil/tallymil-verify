@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -19,7 +19,6 @@
             padding: 15px;
         }
 
-        /* หน้าต้อนรับ: แสดง 8 วินาที แล้วซ่อนอัตโนมัติ */
         #welcome-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -66,7 +65,6 @@
             max-width: 320px;
         }
 
-        /* หน้าการ์ดข้อมูล */
         .card {
             width: 100%;
             max-width: 400px;
@@ -169,7 +167,6 @@
 </head>
 <body>
 
-<!-- หน้าต้อนรับ -->
 <div id="welcome-screen">
     <div class="welcome-title">TALLY MiL</div>
     <div class="welcome-sub">WELCOME TO TALLY MIL</div>
@@ -177,7 +174,6 @@
     <div class="welcome-quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</div>
 </div>
 
-<!-- หน้าการ์ดข้อมูล -->
 <div class="card" id="main-card">
     <div class="brand-header">TALLY MiL</div>
     <div class="brand-sub">CERTIFICATE OF AUTHENTICITY & WARRANTY</div>
@@ -187,7 +183,7 @@
     <div class="info-box">
         <div class="info-item">
             <div class="label">รุ่นสินค้า / MODEL:</div>
-            <div class="value" id="disp-model">TALLY MiL Product</div>
+            <div class="value" id="disp-model">กำลังเชื่อมต่อฐานข้อมูล...</div>
         </div>
         <div class="info-item">
             <div class="label">ไซส์ / SIZE:</div>
@@ -203,11 +199,11 @@
         </div>
         <div class="info-item">
             <div class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
-            <div class="value" id="disp-owner">VIP Customer</div>
+            <div class="value" id="disp-owner">-</div>
         </div>
         <div class="info-item">
             <div class="label">วันเริ่มรับประกัน / START DATE:</div>
-            <div class="value" id="disp-date">2026-01-01</div>
+            <div class="value" id="disp-date">-</div>
         </div>
     </div>
 
@@ -216,7 +212,6 @@
         <div class="w-time" id="disp-remaining">กำลังคำนวณ...</div>
     </div>
 
-    <!-- ปุ่ม LINE OA -->
     <a href="https://line.me/R/ti/p/@962dvbat" target="_blank" class="btn-vip">🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</a>
 
     <div class="footer-note">OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL</div>
@@ -229,23 +224,6 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
-
-    function updateCard(item) {
-        document.getElementById('disp-model').innerText = item.model || '-';
-        document.getElementById('disp-size').innerText = item.size || '-';
-        document.getElementById('disp-color').innerText = item.color || '-';
-        document.getElementById('disp-chip').innerText = item.chip_id || chipId || '-';
-        document.getElementById('disp-owner').innerText = item.customer_name || '-';
-
-        if (item.activated_at) {
-            let startDateVal = item.activated_at;
-            if (!isNaN(startDateVal) && startDateVal.toString().length >= 10) {
-                startDateVal = new Date(parseInt(startDateVal) * 1000).toISOString().split('T')[0];
-            }
-            document.getElementById('disp-date').innerText = startDateVal;
-            startCountdown(startDateVal);
-        }
-    }
 
     function startCountdown(startDateStr) {
         let startDate = new Date(startDateStr);
@@ -276,10 +254,33 @@
         setInterval(updateTimer, 1000);
     }
 
-    // เริ่มต้นนับเวลาจากค่าเริ่มต้นทันที เพื่อไม่ให้จอว่าง
-    startCountdown('2026-01-01');
-
-    // ดึงข้อมูลจริงจาก Supabase แบบไม่บล็อกการแสดงผล
-    async function fetchRealData() {
+    async function loadData() {
         try {
-            let query = supabaseClient.from('warranties').select
+            let query = supabaseClient.from('warranties').select('*');
+
+            if (chipId) {
+                query = query.eq('chip_id', chipId);
+            }
+            
+            // ดึงข้อมูลแถวแรกสุดที่ตรงกัน หรือแถวพึ่งกรอกล่าสุด
+            const { data, error } = await query.order('activated_at', { ascending: false }).limit(1);
+
+            if (error) {
+                document.getElementById('disp-model').innerText = 'Error: ' + error.message;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                document.getElementById('disp-model').innerText = 'ไม่พบข้อมูลในระบบ';
+                document.getElementById('disp-owner').innerText = 'กรุณาตรวจสอบรหัสชิป';
+                return;
+            }
+
+            const item = data[0];
+            document.getElementById('disp-model').innerText = item.model || '-';
+            document.getElementById('disp-size').innerText = item.size || '-';
+            document.getElementById('disp-color').innerText = item.color || '-';
+            document.getElementById('disp-chip').innerText = item.chip_id || '-';
+            document.getElementById('disp-owner').innerText = item.customer_name || '-';
+
+            if (item.acti
