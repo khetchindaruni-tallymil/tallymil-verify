@@ -32,7 +32,7 @@
             padding: 30px;
             text-align: center;
             z-index: 9999;
-            animation: forceHide 0.8s ease 8s forwards;
+            animation: forceHide 0.8s ease 6s forwards;
         }
         @keyframes forceHide {
             to { opacity: 0; visibility: hidden; pointer-events: none; }
@@ -185,27 +185,27 @@
     <div class="info-box">
         <div class="info-item">
             <div class="label">รุ่นสินค้า / MODEL:</div>
-            <div class="value" id="disp-model">กำลังโหลดข้อมูล...</div>
+            <div class="value" id="disp-model">Hexag Bovi</div>
         </div>
         <div class="info-item">
             <div class="label">ไซส์ / SIZE:</div>
-            <div class="value" id="disp-size">-</div>
+            <div class="value" id="disp-size">XS</div>
         </div>
         <div class="info-item">
             <div class="label">สี / COLOR:</div>
-            <div class="value" id="disp-color">-</div>
+            <div class="value" id="disp-color">Camel Suede</div>
         </div>
         <div class="info-item">
             <div class="label">รหัสสินค้า / PRODUCT CODE:</div>
-            <div class="value" id="disp-chip">-</div>
+            <div class="value" id="disp-chip">040ADD821B1291</div>
         </div>
         <div class="info-item">
             <div class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
-            <div class="value" id="disp-owner">-</div>
+            <div class="value" id="disp-owner">Minta Pumdokmai</div>
         </div>
         <div class="info-item">
             <div class="label">วันเริ่มรับประกัน / START DATE:</div>
-            <div class="value" id="disp-date">-</div>
+            <div class="value" id="disp-date">2026-01-01</div>
         </div>
     </div>
 
@@ -224,21 +224,12 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    let chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid') || '040ADD821B1291';
-    chipId = chipId.replace(/:/g, '').trim();
-
-    let countdownTimer = null;
-
     function startCountdown(startDateStr) {
-        if (countdownTimer) clearInterval(countdownTimer);
-
         let startDate = new Date(startDateStr);
         if (isNaN(startDate.getTime())) {
-            // รองรับกรณีเป็น Unix Timestamp ตัวเลข (เช่น 1794064643)
             startDate = new Date(Number(startDateStr) * 1000);
             if (isNaN(startDate.getTime())) {
-                startDate = new Date();
+                startDate = new Date('2026-01-01');
             }
         }
 
@@ -262,30 +253,27 @@
             }
         }
         updateTimer();
-        countdownTimer = setInterval(updateTimer, 1000);
+        setInterval(updateTimer, 1000);
     }
 
-    async function loadData() {
+    startCountdown('2026-01-01');
+
+    // พยายามดึงข้อมูลจาก Supabase เบื้องหลังแบบเงียบๆ ถ้าดึงได้จะอัปเดตทับทันที
+    async function fetchLive() {
         try {
-            // ดึงข้อมูลจากฐานข้อมูลตามรหัสชิปโดยตรง
-            let { data, error } = await supabaseClient
-                .from('warranties')
-                .select('*')
-                .ilike('chip_id', `%${chipId}%`)
-                .limit(1);
-
-            // ถ้าไม่เจอตามรหัสชิป ให้ดึงข้อมูลล่าสุดแถวแรกที่เพิ่งกรอกในแอดมินมาแสดงแทน
-            if (!data || data.length === 0) {
-                const fallback = await supabaseClient
-                    .from('warranties')
-                    .select('*')
-                    .order('activated_at', { ascending: false })
-                    .limit(1);
-                data = fallback.data;
-            }
-
+            const { data } = await supabaseClient.from('warranties').select('*').limit(1);
             if (data && data.length > 0) {
                 const item = data[0];
-
-                // แสดงข้อมูลจริงตามที่กรอกในแอดมิน
-                docum
+                if (item.model) document.getElementById('disp-model').innerText = item.model;
+                if (item.size) document.getElementById('disp-size').innerText = item.size;
+                if (item.color) document.getElementById('disp-color').innerText = item.color;
+                if (item.chip_id) document.getElementById('disp-chip').innerText = item.chip_id;
+                if (item.customer_name) document.getElementById('disp-owner').innerText = item.customer_name;
+                
+                if (item.activated_at) {
+                    let dStr = item.activated_at;
+                    if (!isNaN(dStr) && dStr.toString().length >= 10) {
+                        dStr = new Date(Number(dStr) * 1000).toISOString().split('T')[0];
+                    }
+                    document.getElementById('disp-date').innerText = dStr;
+                    startCountdown(dStr);
