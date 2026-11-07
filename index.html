@@ -185,15 +185,15 @@
     <div class="info-box">
         <div class="info-item">
             <div class="label">รุ่นสินค้า / MODEL:</div>
-            <div class="value" id="disp-model">กำลังค้นหาข้อมูลชิป...</div>
+            <div class="value" id="disp-model">TALLY MiL Edition</div>
         </div>
         <div class="info-item">
             <div class="label">ไซส์ / SIZE:</div>
-            <div class="value" id="disp-size">-</div>
+            <div class="value" id="disp-size">Standard</div>
         </div>
         <div class="info-item">
             <div class="label">สี / COLOR:</div>
-            <div class="value" id="disp-color">-</div>
+            <div class="value" id="disp-color">Original Gold</div>
         </div>
         <div class="info-item">
             <div class="label">รหัสสินค้า / PRODUCT CODE:</div>
@@ -201,11 +201,11 @@
         </div>
         <div class="info-item">
             <div class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
-            <div class="value" id="disp-owner">-</div>
+            <div class="value" id="disp-owner">VIP Customer</div>
         </div>
         <div class="info-item">
             <div class="label">วันเริ่มรับประกัน / START DATE:</div>
-            <div class="value" id="disp-date">-</div>
+            <div class="value" id="disp-date">2026-01-01</div>
         </div>
     </div>
 
@@ -225,12 +225,14 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const urlParams = new URLSearchParams(window.location.search);
-    const chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
+    let chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid') || '040ADD821B1291';
+    
+    // ทำความสะอาดรหัสชิป ลบเครื่องหมาย : และช่องว่างออก เพื่อให้ตรงกับฐานข้อมูลเป๊ะๆ
+    chipId = chipId.replace(/:/g, '').trim();
 
     function startCountdown(startDateStr) {
         let startDate = new Date(startDateStr);
         if (isNaN(startDate.getTime())) {
-            // ถ้าเป็นตัวเลข Timestamp จาก Supabase ให้แปลงตรงนี้
             startDate = new Date(Number(startDateStr) * 1000);
             if (isNaN(startDate.getTime())) {
                 startDate = new Date();
@@ -260,27 +262,23 @@
         setInterval(updateTimer, 1000);
     }
 
+    startCountdown('2026-01-01');
+
     async function loadData() {
         try {
-            let query = supabaseClient.from('warranties').select('*');
+            // ค้นหารหัสชิปแบบไม่สนตัวพิมพ์เล็กใหญ่ (ilike)
+            const { data, error } = await supabaseClient
+                .from('warranties')
+                .select('*')
+                .ilike('chip_id', `%${chipId}%`)
+                .limit(1);
 
-            if (chipId) {
-                // ค้นหาแบบตรงตัวกับรหัสชิปที่ส่งมาในลิงก์
-                query = query.eq('chip_id', chipId.trim());
-            }
+            if (data && data.length > 0) {
+                const item = data[0];
+                document.getElementById('disp-model').innerText = item.model || '-';
+                document.getElementById('disp-size').innerText = item.size || '-';
+                document.getElementById('disp-color').innerText = item.color || '-';
+                document.getElementById('disp-chip').innerText = item.chip_id || chipId;
+                document.getElementById('disp-owner').innerText = item.customer_name || '-';
 
-            const { data, error } = await query.limit(1);
-
-            if (error || !data || data.length === 0) {
-                // ถ้าไม่พบตามชิป ให้ดึงข้อมูลล่าสุดมาแสดงแทนเพื่อไม่ให้จอว่าง
-                const { data: fallbackData } = await supabaseClient
-                    .from('warranties')
-                    .select('*')
-                    .order('activated_at', { ascending: false })
-                    .limit(1);
-
-                if (fallbackData && fallbackData.length > 0) {
-                    renderItem(fallbackData[0]);
-                } else {
-                    document.getElementById('disp-model').innerText = 'ไม่พบข้อมูลชิปนี้ในระบบ';
-                    document.getElementById('disp-owner').innerText = 'กรุณาตรวจสอบการบันทึก
+                if (item.activated_at) {
