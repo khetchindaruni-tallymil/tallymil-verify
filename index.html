@@ -11,7 +11,7 @@
         body {
             background-color: #050505;
             color: #e5e5e5;
-            font-family: 'Young Serif', serif; /* ใช้ Young Serif ทั้งหน้า */
+            font-family: 'Young Serif', serif;
             margin: 0;
             padding: 0;
         }
@@ -27,7 +27,6 @@
             padding: 32px;
             text-align: center;
             z-index: 50;
-            cursor: pointer;
             transition: opacity 0.6s ease-out;
         }
         .welcome-title {
@@ -59,10 +58,20 @@
             font-size: 13px;
             line-height: 1.7;
         }
-        .tap-instruction {
-            color: #6b7280;
-            font-size: 10px;
+        .enter-btn {
+            background: none;
+            border: none;
+            color: #e2c068;
+            font-family: 'Young Serif', serif;
+            font-size: 11px;
             letter-spacing: 0.15em;
+            cursor: pointer;
+            padding: 12px 24px;
+            border-radius: 9999px;
+            transition: background 0.3s;
+        }
+        .enter-btn:active {
+            background: rgba(226, 192, 104, 0.1);
         }
 
         /* หน้าการ์ดรับประกัน */
@@ -96,7 +105,7 @@
 <body class="min-h-screen flex items-center justify-center p-3">
 
     <!-- ================= 1. หน้าต้อนรับ (WELCOME VIEW) ================= -->
-    <div id="welcome-view" onclick="enterCertificate()">
+    <div id="welcome-view">
         <div class="space-y-4">
             <div>
                 <h1 class="welcome-title">TALLY MIL</h1>
@@ -109,7 +118,8 @@
             </div>
 
             <div>
-                <p class="tap-instruction animate-pulse">[ แตะหน้าจอเพื่อดำเนินการต่อ ]</p>
+                <!-- เปลี่ยนเป็นปุ่มคลิกจริงจัง ป้องกันปัญหากดแล้วไม่ไป -->
+                <button id="enter-trigger-btn" class="enter-btn animate-pulse">[ แตะเพื่อดำเนินการต่อ ]</button>
             </div>
         </div>
     </div>
@@ -130,7 +140,7 @@
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- ข้อมูลสินค้า (ดึงข้อมูลจากระบบแอดมิน) -->
+        <!-- ข้อมูลสินค้า -->
         <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-4">
             <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
                 <span class="text-gray-400 text-[11px]">รุ่นสินค้า / MODEL</span>
@@ -182,9 +192,21 @@
 
     <!-- ================= SCRIPT ================= -->
     <script>
+        document.getElementById('enter-trigger-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            enterCertificate();
+        });
+
+        // เผื่อคนกดโดนพื้นที่ว่างในหน้าต้อนรับด้วย
+        document.getElementById('welcome-view').addEventListener('click', function() {
+            enterCertificate();
+        });
+
         function enterCertificate() {
             const welcomeEl = document.getElementById('welcome-view');
             const cardEl = document.getElementById('card-view');
+
+            if (welcomeEl.style.display === 'none') return; // ป้องกันการเรียกซ้ำ
 
             welcomeEl.style.opacity = '0';
             setTimeout(() => {
@@ -203,7 +225,6 @@
             const chipId = urlParams.get('chip') || "0480F7B2AD1E90";
 
             try {
-                // ข้อมูลจำลองดึงจากฐานข้อมูลแอดมิน
                 const productData = {
                     model: "Hexag Vegan",
                     size: "XS",
@@ -224,17 +245,3 @@
                 document.getElementById('data-owner').innerText = productData.owner;
 
                 const startDateObj = new Date(productData.startDate);
-                const thaiMonths = [
-                    "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-                    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
-                ];
-                const tDay = startDateObj.getDate();
-                const tMonth = thaiMonths[startDateObj.getMonth()];
-                const tYear = startDateObj.getFullYear() + 543;
-                document.getElementById('data-start-date').innerText = `${tDay} ${tMonth} ${tYear}`;
-
-                startExactCountdown(startDateObj);
-
-            } catch (error) {
-                console.error("Error loading data:", error);
-                document.getElementById('
