@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TALLY MiL - Admin Panel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>TALLY MiL - Admin Data Entry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Prompt', sans-serif;
-            background-color: #050505;
+            background-color: #0d0d0d;
             color: #d4af37;
             min-height: 100vh;
             display: flex;
@@ -20,117 +20,121 @@
         }
         .admin-card {
             width: 100%;
-            max-width: 420px;
-            background: #111111;
+            max-width: 480px;
+            background: #141414;
             border: 1px solid #2a2415;
-            border-radius: 20px;
-            padding: 25px 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
-        .brand-title {
-            font-family: 'Cinzel', serif;
-            font-size: 22px;
+        h2 {
             text-align: center;
-            color: #f3e5ab;
-            margin-bottom: 5px;
-        }
-        .sub-title {
-            font-size: 12px;
-            text-align: center;
-            color: #b38b32;
             margin-bottom: 20px;
+            color: #f3e5ab;
+            font-size: 20px;
             letter-spacing: 1px;
         }
-        .form-group { margin-bottom: 14px; text-align: left; }
-        .form-group label { display: block; font-size: 12px; color: #c5a059; margin-bottom: 6px; }
-        .form-control {
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            color: #c5a059;
+            margin-bottom: 6px;
+        }
+        input, select {
             width: 100%;
-            background: #080808;
-            border: 1px solid #44371e;
-            color: #fff;
             padding: 12px;
+            background: #050505;
+            border: 1px solid #332b18;
             border-radius: 8px;
+            color: #ffffff;
             font-size: 14px;
+            font-family: inherit;
             outline: none;
         }
-        .form-control:focus { border-color: #d4af37; }
+        input:focus, select:focus {
+            border-color: #d4af37;
+        }
         .btn-submit {
             width: 100%;
-            background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
+            padding: 14px;
+            background: #d4af37;
             color: #000;
             border: none;
-            padding: 14px;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             margin-top: 10px;
+            transition: all 0.2s;
         }
-        .btn-copy {
-            display: none;
-            width: 100%;
-            background: #10b981;
-            color: #fff;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 8px;
+        .btn-submit:hover {
+            background: #f3e5ab;
         }
-        .status-msg {
+        #alert-msg {
             margin-top: 15px;
-            font-size: 13px;
+            padding: 10px;
+            border-radius: 6px;
             text-align: center;
+            font-size: 13px;
+            display: none;
         }
+        .success { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+        .error { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
     </style>
 </head>
 <body>
 
 <div class="admin-card">
-    <div class="brand-title">TALLY MiL</div>
-    <div class="sub-title">ADMINISTRATOR SYSTEM</div>
-
-    <div class="form-group">
-        <label>รหัสชิป / CHIP ID (ซีเรียลชิป NFC)</label>
-        <input type="text" id="chip_id" class="form-control" placeholder="เช่น BVSS1">
-    </div>
-
-    <div class="form-group">
-        <label>รุ่นสินค้า / MODEL</label>
-        <input type="text" id="model" class="form-control" value="Bovin">
-    </div>
-
-    <div class="form-group">
-        <label>ไซส์ / SIZE</label>
-        <input type="text" id="size" class="form-control" value="XS">
-    </div>
-
-    <div class="form-group">
-        <label>สี / COLOR</label>
-        <input type="text" id="color" class="form-control" value="Camel Suede">
-    </div>
-
-    <div class="form-group">
-        <label>ชื่อ-นามสกุล ลูกค้า / CUSTOMER NAME</label>
-        <input type="text" id="customer_name" class="form-control" placeholder="ชื่อ-นามสกุลลูกค้า">
-    </div>
-
-    <div class="form-group">
-        <label>เบอร์โทรศัพท์ / PHONE</label>
-        <input type="tel" id="phone" class="form-control" placeholder="08X-XXX-XXXX">
-    </div>
-
-    <div class="form-group">
-        <label>LINE ID (ถ้ามี)</label>
-        <input type="text" id="line_id" class="form-control" placeholder="LINE ID ลูกค้า">
-    </div>
-
-    <button class="btn-submit" id="btn-save" onclick="saveWarrantyData()">บันทึกข้อมูลและเปิดประกันทันที</button>
-    <button class="btn-copy" id="btn-copy-link" onclick="copyCustomerLink()">📋 กดคัดลอกลิงก์ส่งให้ลูกค้า</button>
+    <h2>TALLY MiL - ระบบบันทึกข้อมูลสินค้า</h2>
     
-    <div id="status-msg" class="status-msg"></div>
+    <form id="adminForm">
+        <div class="form-group">
+            <label>รหัสชิป (CHIP ID / UID):</label>
+            <input type="text" id="chip_id" placeholder="เช่น 040ADD821B1291" required>
+        </div>
+
+        <div class="form-group">
+            <label>รุ่นสินค้า (MODEL):</label>
+            <input type="text" id="model" placeholder="เช่น Hexag Bovin" required>
+        </div>
+
+        <div class="form-group">
+            <label>ไซส์ (SIZE):</label>
+            <input type="text" id="size" placeholder="เช่น XS, S, M, L" required>
+        </div>
+
+        <div class="form-group">
+            <label>สี (COLOR):</label>
+            <input type="text" id="color" placeholder="เช่น Camel Suede" required>
+        </div>
+
+        <div class="form-group">
+            <label>ชื่อผู้ถือครอง (REGISTERED OWNER):</label>
+            <input type="text" id="customer_name" placeholder="เช่น คุณ Minta Pumdokmai" required>
+        </div>
+
+        <div class="form-group">
+            <label>เบอร์โทรศัพท์ (PHONE):</label>
+            <input type="text" id="phone" placeholder="เช่น 0909610946">
+        </div>
+
+        <div class="form-group">
+            <label>LINE ID:</label>
+            <input type="text" id="line_id" placeholder="เช่น 0909610946">
+        </div>
+
+        <div class="form-group">
+            <label>วันเริ่มรับประกัน (START DATE):</label>
+            <input type="date" id="activated_at">
+        </div>
+
+        <button type="submit" class="btn-submit">บันทึกข้อมูลลงระบบ</button>
+    </form>
+
+    <div id="alert-msg"></div>
 </div>
 
 <script>
@@ -138,75 +142,56 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let savedChipId = "";
+    // กำหนดวันที่ปัจจุบันไว้ในช่องวันเริ่มรับประกันล่วงหน้า
+    document.getElementById('activated_at').value = new Date().toISOString().split('T')[0];
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const chipParam = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
-    if (chipParam) {
-        document.getElementById('chip_id').value = chipParam;
-    }
+    document.getElementById('adminForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const alertMsg = document.getElementById('alert-msg');
+        alertMsg.style.display = 'none';
 
-    async function saveWarrantyData() {
-        const chipId = document.getElementById('chip_id').value.trim();
-        const model = document.getElementById('model').value.trim();
-        const size = document.getElementById('size').value.trim();
-        const color = document.getElementById('color').value.trim();
-        const custName = document.getElementById('customer_name').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const lineId = document.getElementById('line_id').value.trim();
-        const msgEl = document.getElementById('status-msg');
-        const btn = document.getElementById('btn-save');
+        // จัดการลบคัดเอาเครื่องหมาย : ออกจากรหัสชิปให้อัตโนมัติ
+        let rawChip = document.getElementById('chip_id').value.trim();
+        const cleanedChip = rawChip.replace(/:/g, '');
 
-        if (!chipId || !custName) {
-            alert('กรุณากรอกรหัสชิปและชื่อลูกค้าให้เรียบร้อยครับ');
-            return;
+        let dateInput = document.getElementById('activated_at').value;
+        if (!dateInput) {
+            dateInput = new Date().toISOString().split('T')[0];
         }
 
-        btn.innerText = 'กำลังบันทึกข้อมูล...';
-        btn.disabled = true;
+        const payload = {
+            chip_id: cleanedChip,
+            model: document.getElementById('model').value.trim(),
+            size: document.getElementById('size').value.trim(),
+            color: document.getElementById('color').value.trim(),
+            customer_name: document.getElementById('customer_name').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            line_id: document.getElementById('line_id').value.trim(),
+            activated_at: dateInput // ส่งค่าในรูปแบบ YYYY-MM-DD
+        };
 
-        const currentTime = Math.floor(Date.now() / 1000).toString();
+        try {
+            const { data, error } = await supabaseClient
+                .from('warranties')
+                .upsert([payload], { onConflict: 'chip_id' });
 
-        const { error } = await supabaseClient
-            .from('warranties')
-            .upsert({
-                chip_id: chipId,
-                model: model,
-                size: size,
-                color: color,
-                customer_name: custName,
-                phone: phone,
-                line_id: lineId,
-                activated_at: currentTime
-            }, { onConflict: 'chip_id' });
+            if (error) throw error;
 
-        if (error) {
-            msgEl.style.color = '#ef4444';
-            msgEl.innerText = 'เกิดข้อผิดพลาด: ' + error.message;
-            btn.innerText = 'บันทึกข้อมูลและเปิดประกันทันที';
-            btn.disabled = false;
-        } else {
-            savedChipId = chipId;
-            msgEl.style.color = '#10b981';
-            msgEl.innerText = '✓ บันทึกสำเร็จ! พร้อมส่งลิงก์ให้ลูกค้าแล้ว';
-            btn.innerText = 'บันทึกเรียบร้อย';
-            btn.disabled = false;
-            
-            document.getElementById('btn-copy-link').style.display = 'block';
+            alertMsg.className = 'success';
+            alertMsg.innerText = '✓ บันทึกข้อมูลสำเร็จเรียบร้อยแล้ว!';
+            alertMsg.style.display = 'block';
+
+            // ล้างค่าในฟอร์มเพื่อรอกรอกชิ้นต่อไป
+            document.getElementById('adminForm').reset();
+            document.getElementById('activated_at').value = new Date().toISOString().split('T')[0];
+
+        } catch (err) {
+            alertMsg.className = 'error';
+            alertMsg.innerText = '❌ เกิดข้อผิดพลาด: ' + err.message;
+            alertMsg.style.display = 'block';
         }
-    }
-
-    function copyCustomerLink() {
-        if (!savedChipId) return;
-        const domain = window.location.origin;
-        const customerUrl = `${domain}/?chip=${savedChipId}`;
-
-        navigator.clipboard.writeText(customerUrl).then(() => {
-            alert('คัดลอกลิงก์สำเร็จ! สามารถนำไปวางส่งให้ลูกค้าทาง LINE ได้เลยครับ 📋✨');
-        }).catch(err => {
-            prompt("คัดลอกลิงก์นี้ด้วยตนเอง:", customerUrl);
-        });
-    }
+    });
 </script>
 
 </body>
