@@ -1,11 +1,11 @@
-
-                    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TALLY MiL - Digital Authenticity & Warranty</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -187,27 +187,27 @@
     <div class="info-box">
         <div class="info-item">
             <div class="label">รุ่นสินค้า / MODEL:</div>
-            <div class="value" id="disp-model">กำลังโหลด...</div>
+            <div class="value" id="disp-model">TALLY MiL Product</div>
         </div>
         <div class="info-item">
             <div class="label">ไซส์ / SIZE:</div>
-            <div class="value" id="disp-size">กำลังโหลด...</div>
+            <div class="value" id="disp-size">-</div>
         </div>
         <div class="info-item">
             <div class="label">สี / COLOR:</div>
-            <div class="value" id="disp-color">กำลังโหลด...</div>
+            <div class="value" id="disp-color">-</div>
         </div>
         <div class="info-item">
             <div class="label">รหัสสินค้า / PRODUCT CODE:</div>
-            <div class="value" id="disp-chip">กำลังโหลด...</div>
+            <div class="value" id="disp-chip">-</div>
         </div>
         <div class="info-item">
             <div class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
-            <div class="value" id="disp-owner">กำลังโหลด...</div>
+            <div class="value" id="disp-owner">VIP Customer</div>
         </div>
         <div class="info-item">
             <div class="label">วันเริ่มรับประกัน / START DATE:</div>
-            <div class="value" id="disp-date">กำลังโหลด...</div>
+            <div class="value" id="disp-date">2026-01-01</div>
         </div>
     </div>
 
@@ -216,7 +216,7 @@
         <div class="w-time" id="disp-remaining">กำลังคำนวณ...</div>
     </div>
 
-    <!-- ปุ่มเปิดเข้า LINE OA ของคุณ -->
+    <!-- ปุ่ม LINE OA -->
     <a href="https://line.me/R/ti/p/@962dvbat" target="_blank" class="btn-vip">🎁 รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</a>
 
     <div class="footer-note">OFFICIAL DIGITAL CERTIFICATE - TALLY MiL<br>ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MiL</div>
@@ -225,9 +225,27 @@
 <script>
     const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const urlParams = new URLSearchParams(window.location.search);
     const chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid');
+
+    function updateCard(item) {
+        document.getElementById('disp-model').innerText = item.model || '-';
+        document.getElementById('disp-size').innerText = item.size || '-';
+        document.getElementById('disp-color').innerText = item.color || '-';
+        document.getElementById('disp-chip').innerText = item.chip_id || chipId || '-';
+        document.getElementById('disp-owner').innerText = item.customer_name || '-';
+
+        if (item.activated_at) {
+            let startDateVal = item.activated_at;
+            if (!isNaN(startDateVal) && startDateVal.toString().length >= 10) {
+                startDateVal = new Date(parseInt(startDateVal) * 1000).toISOString().split('T')[0];
+            }
+            document.getElementById('disp-date').innerText = startDateVal;
+            startCountdown(startDateVal);
+        }
+    }
 
     function startCountdown(startDateStr) {
         let startDate = new Date(startDateStr);
@@ -238,7 +256,7 @@
         const expireDate = new Date(startDate);
         expireDate.setFullYear(expireDate.getFullYear() + 1);
 
-        function updateCountdown() {
+        function updateTimer() {
             const now = new Date();
             const diffTime = expireDate - now;
 
@@ -254,34 +272,14 @@
                 document.getElementById('disp-remaining').style.color = '#ef4444';
             }
         }
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
+        updateTimer();
+        setInterval(updateTimer, 1000);
     }
 
-    async function loadData() {
+    // เริ่มต้นนับเวลาจากค่าเริ่มต้นทันที เพื่อไม่ให้จอว่าง
+    startCountdown('2026-01-01');
+
+    // ดึงข้อมูลจริงจาก Supabase แบบไม่บล็อกการแสดงผล
+    async function fetchRealData() {
         try {
-            let endpoint = `${SUPABASE_URL}/rest/v1/warranties?select=*`;
-            if (chipId) {
-                endpoint += `&chip_id=eq.${encodeURIComponent(chipId)}&limit=1`;
-            } else {
-                endpoint += `&order=activated_at.desc&limit=1`;
-            }
-
-            const response = await fetch(endpoint, {
-                headers: {
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': Bearer ${SUPABASE_ANON_KEY}
-                }
-            });
-
-            const rows = await response.json();
-            if (rows && rows.length > 0) {
-                const item = rows[0];
-                document.getElementById('disp-model').innerText = item.model || '-';
-                document.getElementById('disp-size').innerText = item.size || '-';
-                document.getElementById('disp-color').innerText = item.color || '-';
-                document.getElementById('disp-chip').innerText = item.chip_id || '-';
-                document.getElementById('disp-owner').innerText = item.customer_name || '-';
-
-                if (item.activated_at) {
-                    let startDateVal = item.activated_at
+            let query = supabaseClient.from('warranties').select
