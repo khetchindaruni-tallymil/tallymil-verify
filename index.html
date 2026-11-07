@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TALLY MiL - Digital Authenticity & Warranty</title>
+    <title>TALLY MiL - Certificate of Authenticity & Warranty</title>
     <link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -18,6 +18,7 @@
             align-items: center;
             justify-content: center;
         }
+        /* หน้าต้อนรับ */
         #welcome-view {
             position: fixed;
             inset: 0;
@@ -65,34 +66,36 @@
             font-size: 11px;
             letter-spacing: 0.15em;
         }
+
+        /* หน้าการ์ดรับประกัน (ดีไซน์ฟอร์แมตดั้งเดิมตามรูปแรกๆ) */
         .card-container {
-            background-color: #0f0f0f;
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            background-color: #141414;
+            border: 1px solid rgba(212, 175, 55, 0.3);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
             width: 100%;
             max-width: 380px;
-            padding: 20px;
+            padding: 24px;
             border-radius: 1rem;
             position: relative;
         }
         .inner-box {
-            background-color: #141414;
+            background-color: #1c1c1c;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .gold-border-box {
             border: 1px solid rgba(212, 175, 55, 0.35);
         }
         .auth-badge {
-            background-color: #0a1c10;
-            border: 1px solid rgba(34, 197, 94, 0.25);
+            background-color: #1a2e1d;
+            border: 1px solid rgba(34, 197, 94, 0.3);
             color: #4ade80;
         }
         .gold-text {
-            color: #e2c068;
+            color: #d4af37;
         }
         .vip-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
             font-family: 'Young Serif', serif;
         }
         .hidden-section {
@@ -119,74 +122,125 @@
         </div>
     </div>
 
-    <!-- หน้าการ์ดรับประกัน -->
+    <!-- หน้าการ์ดรับประกัน (ดีไซน์ดั้งเดิม) -->
     <div id="card-view" class="card-container hidden-section">
-        <div class="text-center mb-5">
-            <h1 class="text-base tracking-[0.25em] text-white">TALLY MIL</h1>
-            <p class="text-[9px] tracking-[0.15em] text-gray-400 mt-1">CERTIFICATE OF AUTHENTICITY & WARRANTY</p>
+        <div class="text-center mb-6">
+            <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
+            <p class="text-[10px] tracking-widest text-gray-400 mt-1">CERTIFICATE OF AUTHENTICITY & WARRANTY</p>
         </div>
 
-        <div class="flex items-center justify-center gap-2 auth-badge py-2 px-4 rounded-full text-[11px] font-medium mb-5">
+        <div class="flex items-center justify-center gap-2 auth-badge py-2 px-4 rounded-full text-xs font-medium mb-6">
             <span>✓</span>
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-4">
-            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
-                <span class="text-gray-400 text-[11px]">รุ่นสินค้า / MODEL</span>
-                <span id="data-model" class="font-semibold text-white tracking-wide">Hexag Vegan</span>
+        <!-- ข้อมูลสินค้า (ดึงจากตาราง warranties) -->
+        <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-6">
+            <div class="flex justify-between border-b border-gray-800 pb-2">
+                <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
+                <span id="data-model" class="font-semibold text-white">กำลังโหลด...</span>
             </div>
-            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
-                <span class="text-gray-400 text-[11px]">ไซส์ / SIZE</span>
-                <span id="data-size" class="font-semibold text-white tracking-wide">XS</span>
+            <div class="flex justify-between border-b border-gray-800 pb-2">
+                <span class="text-gray-400">ไซส์ / SIZE:</span>
+                <span id="data-size" class="font-semibold text-white">--</span>
             </div>
-            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
-                <span class="text-gray-400 text-[11px]">สี / COLOR</span>
-                <span id="data-color" class="font-semibold text-white tracking-wide">Navy Obsidian</span>
+            <div class="flex justify-between border-b border-gray-800 pb-2">
+                <span class="text-gray-400">สี / COLOR:</span>
+                <span id="data-color" class="font-semibold text-white">--</span>
             </div>
-            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
-                <span class="text-gray-400 text-[11px]">รหัสชิป / CHIP ID</span>
-                <span id="data-chip" class="font-mono text-gray-300 text-[11px]">0480F7B2AD1E90</span>
+            <div class="flex justify-between border-b border-gray-800 pb-2">
+                <span class="text-gray-400">รหัสสินค้า / PRODUCT CODE:</span>
+                <span id="data-code" class="font-mono text-gray-300">--</span>
             </div>
-            <div class="flex justify-between items-center pb-2.5 border-b border-gray-800/60">
-                <span class="text-gray-400 text-[11px]">ชื่อผู้ถือครอง / REGISTERED OWNER</span>
-                <span id="data-owner" class="font-semibold text-white tracking-wide">Minta Pumdokmai</span>
+            <div class="flex justify-between border-b border-gray-800 pb-2">
+                <span class="text-gray-400">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
+                <span id="data-owner" class="font-semibold text-white">--</span>
             </div>
-            <div class="flex justify-between items-center">
-                <span class="text-gray-400 text-[11px]">วันเริ่มรับประกัน / START DATE</span>
-                <span id="data-start-date" class="font-mono text-white text-[11px]">8 พฤศจิกายน 2569</span>
-            </div>
-        </div>
-
-        <div class="inner-box gold-border-box rounded-xl p-3.5 text-center mb-4">
-            <p class="text-[9px] text-gray-400 tracking-wider mb-1">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</p>
-            <div id="countdown-text" class="text-xs sm:text-sm font-bold gold-text font-mono">
-                364 วัน 23 ชม. 59 นาที 50 วินาที
+            <div class="flex justify-between">
+                <span class="text-gray-400">วันเริ่มรับประกัน / START DATE:</span>
+                <span id="data-start-date" class="font-mono text-white">--</span>
             </div>
         </div>
 
-        <button class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+        <!-- กล่องนับถอยหลังประกันคงเหลือ -->
+        <div class="inner-box gold-border-box rounded-xl p-4 text-center mb-6">
+            <p class="text-[10px] text-gray-400 tracking-wider mb-1">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</p>
+            <div id="countdown-text" class="text-sm font-bold gold-text font-mono">
+                กำลังคำนวณเวลา...
+            </div>
+        </div>
+
+        <button class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all">
             <span>🎁</span>
             <span>รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</span>
         </button>
 
-        <div class="text-center mt-4 space-y-0.5">
-            <p class="text-[8px] text-gray-500 tracking-widest">OFFICIAL DIGITAL CERTIFICATE - TALLY MIL</p>
-            <p class="text-[8px] text-gray-600">ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MIL</p>
+        <div class="text-center mt-6 space-y-1">
+            <p class="text-[9px] text-gray-500 tracking-widest">OFFICIAL DIGITAL CERTIFICATE - TALLY MIL</p>
+            <p class="text-[9px] text-gray-600">ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MIL</p>
         </div>
     </div>
 
     <script>
-        // ตั้งเวลาอัตโนมัติ 5 วินาทีเปลี่ยนหน้าให้ทันที และเผื่อปุ่มกด
-        setTimeout(goToCard, 5000);
+        // ตั้งเวลา 5 วินาที หรือกดหน้าจอเพื่อเข้าสู่หน้าการ์ด
+        const autoTimer = setTimeout(goToCard, 5000);
 
         function goToCard() {
+            clearTimeout(autoTimer);
             const welcome = document.getElementById('welcome-view');
             const card = document.getElementById('card-view');
             
             if (welcome) welcome.style.display = 'none';
             if (card) card.classList.remove('hidden-section');
+
+            // เริ่มดึงข้อมูลจากฐานข้อมูลจริงทันทีที่เปิดการ์ด
+            fetchWarrantyData();
         }
-    </script>
-</body>
-</html>
+
+        async function fetchWarrantyData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productCode = urlParams.get('code') || urlParams.get('chip') || "040ADD81B1291";
+
+            try {
+                /* 
+                  เชื่อมต่อดึงข้อมูลจริงจากตาราง warranties ใน Supabase หรือ API ของเพื่อน:
+                  const response = await fetch(`/api/warranties?code=${productCode}`);
+                  const result = await response.json();
+                */
+
+                // จำลองโครงสร้างข้อมูลที่ดึงมาจากตาราง warranties จริง
+                const warrantyRecord = {
+                    model: "Hexag Bovin",
+                    size: "XS",
+                    color: "Camel Suede",
+                    productCode: productCode,
+                    owner: "Minta Pumdokmai",
+                    // ดึงค่าวันเริ่มจากฐานข้อมูล หรือถ้าสแกนครั้งแรกให้บันทึกเวลาปัจจุบันลงตาราง warranties
+                    startDate: localStorage.getItem(`warranty_start_${productCode}`) || new Date().toISOString()
+                };
+
+                if (!localStorage.getItem(`warranty_start_${productCode}`)) {
+                    localStorage.setItem(`warranty_start_${productCode}`, warrantyRecord.startDate);
+                }
+
+                // แสงผลลงหน้าการ์ด
+                document.getElementById('data-model').innerText = warrantyRecord.model;
+                document.getElementById('data-size').innerText = warrantyRecord.size;
+                document.getElementById('data-color').innerText = warrantyRecord.color;
+                document.getElementById('data-code').innerText = warrantyRecord.productCode;
+                document.getElementById('data-owner').innerText = warrantyRecord.owner;
+
+                const startDateObj = new Date(warrantyRecord.startDate);
+                document.getElementById('data-start-date').innerText = startDateObj.toISOString().split('T')[0];
+
+                // เริ่มรันระบบเวลานับถอยหลัง 365 วันแบบเรียลไทม์
+                startLiveCountdown(startDateObj);
+
+            } catch (err) {
+                console.error("Error fetching warranties data:", err);
+                document.getElementById('countdown-text').innerText = "ไม่สามารถโหลดข้อมูลการรับประกันได้";
+            }
+        }
+
+        function startLiveCountdown(startDateObj) {
+            // วันหมดอายุ = วันเริ่
