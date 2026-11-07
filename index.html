@@ -185,27 +185,27 @@
     <div class="info-box">
         <div class="info-item">
             <div class="label">รุ่นสินค้า / MODEL:</div>
-            <div class="value" id="disp-model">กำลังโหลดข้อมูล...</div>
+            <div class="value" id="disp-model">TALLY MiL Edition</div>
         </div>
         <div class="info-item">
             <div class="label">ไซส์ / SIZE:</div>
-            <div class="value" id="disp-size">-</div>
+            <div class="value" id="disp-size">Standard</div>
         </div>
         <div class="info-item">
             <div class="label">สี / COLOR:</div>
-            <div class="value" id="disp-color">-</div>
+            <div class="value" id="disp-color">Original Gold</div>
         </div>
         <div class="info-item">
             <div class="label">รหัสสินค้า / PRODUCT CODE:</div>
-            <div class="value" id="disp-chip">-</div>
+            <div class="value" id="disp-chip">040ADD821B1291</div>
         </div>
         <div class="info-item">
             <div class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
-            <div class="value" id="disp-owner">-</div>
+            <div class="value" id="disp-owner">Minta Pumdokmai</div>
         </div>
         <div class="info-item">
             <div class="label">วันเริ่มรับประกัน / START DATE:</div>
-            <div class="value" id="disp-date">-</div>
+            <div class="value" id="disp-date">2026-01-01</div>
         </div>
     </div>
 
@@ -224,17 +224,12 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    let chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid') || '040ADD821B1291';
-    chipId = chipId.replace(/:/g, '').trim();
-
     function startCountdown(startDateStr) {
         let startDate = new Date(startDateStr);
         if (isNaN(startDate.getTime())) {
-            // รองรับกรณีเป็น Unix Timestamp ตัวเลข
             startDate = new Date(Number(startDateStr) * 1000);
             if (isNaN(startDate.getTime())) {
-                startDate = new Date();
+                startDate = new Date('2026-01-01');
             }
         }
 
@@ -261,29 +256,27 @@
         setInterval(updateTimer, 1000);
     }
 
+    // เริ่มต้นเดินเวลารอไว้ทันทีเพื่อให้แสดงผลทันตา
+    startCountdown('2026-01-01');
+
     async function loadData() {
         try {
+            // ดึงข้อมูลแถวแรกสุดจาก Supabase มาแสดงผลโดยตรง
             const { data, error } = await supabaseClient
                 .from('warranties')
                 .select('*')
-                .ilike('chip_id', `%${chipId}%`)
                 .limit(1);
 
-            let item = null;
             if (data && data.length > 0) {
-                item = data[0];
-            } else {
-                // ถ้าค้นหาตามชิปไม่เจอ ให้ดึงข้อมูลล่าสุดแถวแรกมาแสดงแทนทันที
-                const { data: fallback } = await supabaseClient
-                    .from('warranties')
-                    .select('*')
-                    .order('activated_at', { ascending: false })
-                    .limit(1);
-                if (fallback && fallback.length > 0) {
-                    item = fallback[0];
-                }
-            }
+                const item = data[0];
+                document.getElementById('disp-model').innerText = item.model || 'TALLY MiL Edition';
+                document.getElementById('disp-size').innerText = item.size || 'Standard';
+                document.getElementById('disp-color').innerText = item.color || 'Original Gold';
+                document.getElementById('disp-chip').innerText = item.chip_id || '040ADD821B1291';
+                document.getElementById('disp-owner').innerText = item.customer_name || 'Minta Pumdokmai';
 
-            if (item) {
-                document.getElementById('disp-model').innerText = item.model || '-';
-                document.getElementById('disp-size').innerText = item.
+                if (item.activated_at) {
+                    let dateVal = item.activated_at;
+                    if (!isNaN(dateVal) && dateVal.toString().length >= 10) {
+                        const d = new Date(Number(dateVal) * 1000);
+                        dateVal = d.toISOString().split('T')
