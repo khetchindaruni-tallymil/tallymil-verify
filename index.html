@@ -185,15 +185,15 @@
     <div class="info-box">
         <div class="info-item">
             <div class="label">รุ่นสินค้า / MODEL:</div>
-            <div class="value" id="disp-model">TALLY MiL Edition</div>
+            <div class="value" id="disp-model">กำลังโหลดข้อมูล...</div>
         </div>
         <div class="info-item">
             <div class="label">ไซส์ / SIZE:</div>
-            <div class="value" id="disp-size">Standard</div>
+            <div class="value" id="disp-size">-</div>
         </div>
         <div class="info-item">
             <div class="label">สี / COLOR:</div>
-            <div class="value" id="disp-color">Original Gold</div>
+            <div class="value" id="disp-color">-</div>
         </div>
         <div class="info-item">
             <div class="label">รหัสสินค้า / PRODUCT CODE:</div>
@@ -201,11 +201,11 @@
         </div>
         <div class="info-item">
             <div class="label">ชื่อผู้ถือครอง / REGISTERED OWNER:</div>
-            <div class="value" id="disp-owner">VIP Customer</div>
+            <div class="value" id="disp-owner">-</div>
         </div>
         <div class="info-item">
             <div class="label">วันเริ่มรับประกัน / START DATE:</div>
-            <div class="value" id="disp-date">2026-01-01</div>
+            <div class="value" id="disp-date">-</div>
         </div>
     </div>
 
@@ -226,17 +226,12 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     let chipId = urlParams.get('chip') || urlParams.get('id') || urlParams.get('code') || urlParams.get('uid') || '040ADD821B1291';
-    
-    // ทำความสะอาดรหัสชิป ลบเครื่องหมาย : และช่องว่างออก เพื่อให้ตรงกับฐานข้อมูลเป๊ะๆ
     chipId = chipId.replace(/:/g, '').trim();
 
     function startCountdown(startDateStr) {
         let startDate = new Date(startDateStr);
         if (isNaN(startDate.getTime())) {
-            startDate = new Date(Number(startDateStr) * 1000);
-            if (isNaN(startDate.getTime())) {
-                startDate = new Date();
-            }
+            startDate = new Date();
         }
 
         const expireDate = new Date(startDate);
@@ -262,23 +257,30 @@
         setInterval(updateTimer, 1000);
     }
 
-    startCountdown('2026-01-01');
-
     async function loadData() {
         try {
-            // ค้นหารหัสชิปแบบไม่สนตัวพิมพ์เล็กใหญ่ (ilike)
+            // ดึงข้อมูลโดยใช้ชื่อคอลัมน์จริงจากตาราง warranties
             const { data, error } = await supabaseClient
                 .from('warranties')
-                .select('*')
+                .select('chip_id, model, size, color, customer_name, activated_at')
                 .ilike('chip_id', `%${chipId}%`)
                 .limit(1);
 
+            let item = null;
             if (data && data.length > 0) {
-                const item = data[0];
+                item = data[0];
+            } else {
+                // ถ้าไม่เจอตามชิด ให้ดึงข้อมูลล่าสุดแถวแรกมาแสดงแทน
+                const { data: fallback } = await supabaseClient
+                    .from('warranties')
+                    .select('chip_id, model, size, color, customer_name, activated_at')
+                    .limit(1);
+                if (fallback && fallback.length > 0) {
+                    item = fallback[0];
+                }
+            }
+
+            if (item) {
                 document.getElementById('disp-model').innerText = item.model || '-';
                 document.getElementById('disp-size').innerText = item.size || '-';
-                document.getElementById('disp-color').innerText = item.color || '-';
-                document.getElementById('disp-chip').innerText = item.chip_id || chipId;
-                document.getElementById('disp-owner').innerText = item.customer_name || '-';
-
-                if (item.activated_at) {
+                document.getElementById('disp-color').innerText =
