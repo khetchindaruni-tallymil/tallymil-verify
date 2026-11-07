@@ -67,7 +67,7 @@
             letter-spacing: 0.15em;
         }
 
-        /* หน้าการ์ดรับประกัน (ดีไซน์ดั้งเดิมตามรูปแรกๆ) */
+        /* หน้าการ์ดรับประกัน (ดีไซน์ดั้งเดิมเป๊ะ) */
         .card-container {
             background-color: #141414;
             border: 1px solid rgba(212, 175, 55, 0.3);
@@ -97,6 +97,10 @@
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
             box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
             font-family: 'Young Serif', serif;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .hidden-section {
             display: none !important;
@@ -122,7 +126,7 @@
         </div>
     </div>
 
-    <!-- หน้าการ์ดรับประกัน (ดีไซน์ดั้งเดิม) -->
+    <!-- หน้าการ์ดรับประกัน -->
     <div id="card-view" class="card-container hidden-section">
         <div class="text-center mb-6">
             <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
@@ -170,10 +174,11 @@
             </div>
         </div>
 
-        <button class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all">
+        <!-- ปุ่ม VIP กดแล้วพุ่งไป LINE Official -->
+        <a href="https://line.me/R/ti/p/@tallymil" target="_blank" class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all">
             <span>🎁</span>
             <span>รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</span>
-        </button>
+        </a>
 
         <div class="text-center mt-6 space-y-1">
             <p class="text-[9px] text-gray-500 tracking-widest">OFFICIAL DIGITAL CERTIFICATE - TALLY MIL</p>
@@ -182,7 +187,6 @@
     </div>
 
     <script>
-        // ประกาศฟังก์ชันสลับหน้าไว้ด้านบนสุดเพื่อให้เรียกใช้ได้ทันที
         function goToCard() {
             const welcome = document.getElementById('welcome-view');
             const card = document.getElementById('card-view');
@@ -194,25 +198,24 @@
                 card.classList.remove('hidden-section');
             }
             
-            // เริ่มรันระบบเวลาทันทีที่เปิดการ์ด
             initWarrantyTimer();
         }
 
-        // ตั้งเวลาอัตโนมัติ 5 วินาทีเปลี่ยนหน้าให้ทันที
+        // ตั้งเวลาอัตโนมัติ 5 วินาทีเปลี่ยนหน้า
         setTimeout(goToCard, 5000);
 
         function initWarrantyTimer() {
-            // วันเริ่มรับประกัน (ดึงจากฐานข้อมูลหรือ LocalStorage ครั้งแรก)
             const productCode = "040ADD81B1291";
             let savedStart = localStorage.getItem(`warranty_start_${productCode}`);
 
             if (!savedStart) {
+                // ล็อกวันเริ่มประกัน 2026-11-07 เป๊ะๆ ตามบรีฟ
                 savedStart = "2026-11-07T00:00:00";
                 localStorage.setItem(`warranty_start_${productCode}`, savedStart);
             }
 
             const startDateObj = new Date(savedStart);
-            document.getElementById('data-start-date').innerText = startDateObj.toISOString().split('T')[0];
+            document.getElementById('data-start-date').innerText = "2026-11-07";
 
             // วันหมดอายุ = วันเริ่ม + 365 วันเต็ม
             const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
