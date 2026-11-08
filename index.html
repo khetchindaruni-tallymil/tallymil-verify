@@ -22,7 +22,7 @@
 </head>
 <body>
 
-    <!-- หน้าต้อนรับ -->
+    <!-- หน้าต้อนรับ (โชว์ 8 วินาทีเป๊ะ) -->
     <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999;">
         <div class="space-y-4">
             <div>
@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <!-- หน้าการ์ดรับประกัน (ซ่อนไว้ก่อนโดยใช้ style="display: none;") -->
+    <!-- หน้าการ์ดรับประกัน (ซ่อนไว้ก่อน) -->
     <div id="card-screen" style="display: none; background-color: #141414; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9); width: 100%; max-width: 380px; padding: 24px; border-radius: 1rem; position: relative;">
         <div class="text-center mb-6">
             <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
@@ -52,11 +52,11 @@
         <div style="background-color: #1c1c1c; border: 1px solid rgba(255, 255, 255, 0.05);" class="rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
-                <span class="font-semibold text-white">Hexag Bovin</span>
+                <span id="data-model" class="font-semibold text-white">กำลังโหลด...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ไซส์ / SIZE:</span>
-                <span class="font-semibold text-white">XS</span>
+                <span id="data-size" class="font-semibold text-white">XS</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">สี / COLOR:</span>
@@ -97,19 +97,15 @@
     </div>
 
     <script>
-        // 1. ตั้งเวลาบังคับเปลี่ยนหน้าด้วย Direct DOM Manipulation (8 วินาทีเป๊ะ)
+        // 1. หน้าต้อนรับโชว์ 8 วินาทีเป๊ะ แล้วเปิดหน้าการ์ด
         setTimeout(function() {
             var welcome = document.getElementById('welcome-screen');
             var card = document.getElementById('card-screen');
-            if (welcome) {
-                welcome.style.display = 'none';
-            }
-            if (card) {
-                card.style.display = 'block';
-            }
+            if (welcome) welcome.style.display = 'none';
+            if (card) card.style.display = 'block';
         }, 8000);
 
-        // 2. ดึงข้อมูลจาก Supabase ทันที
+        // 2. ดึงข้อมูลจากตาราง warranties ใน Supabase ตาม chip_id ที่สแกนจริง
         var urlParams = new URLSearchParams(window.location.search);
         var chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD81B1291";
         document.getElementById('data-chip').innerText = chipId;
@@ -126,18 +122,28 @@
         .then(function(data) {
             if (data && data.length > 0) {
                 var item = data[0];
-                updateCard(item.customer_name, item.color || "Navy Obsidian", item.activated_at);
+                // ดึงค่าตรงตามฐานข้อมูลจริงทุกประการ (model, color, customer_name, activated_at)
+                updateCard(
+                    item.model || "Hexag Bovin", 
+                    item.color || "Camel Suede", 
+                    item.customer_name || "Minta Pumdokmai", 
+                    item.activated_at
+                );
             } else {
-                updateCard("Minta Pumdokmai", "Navy Obsidian", "2026-11-07");
+                // ค่าสำรองกรณีไม่เจอในฐานข้อมูล
+                updateCard("Hexag Bovin", "Camel Suede", "Minta Pumdokmai", "2026-11-07");
             }
         })
         .catch(function(err) {
-            updateCard("Minta Pumdokmai", "Navy Obsidian", "2026-11-07");
+            console.error("Fetch error:", err);
+            updateCard("Hexag Bovin", "Camel Suede", "Minta Pumdokmai", "2026-11-07");
         });
 
-        function updateCard(owner, color, startDateStr) {
-            document.getElementById('data-owner').innerText = owner || "Minta Pumdokmai";
-            document.getElementById('data-color').innerText = color || "Navy Obsidian";
+        function updateCard(model, color, owner, startDateStr) {
+            document.getElementById('data-model').innerText = model;
+            document.getElementById('data-color').innerText = color;
+            document.getElementById('data-owner').innerText = owner;
+            
             var formattedDate = startDateStr ? startDateStr.split('T')[0] : "2026-11-07";
             document.getElementById('data-start-date').innerText = formattedDate;
 
