@@ -139,31 +139,31 @@
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- ข้อมูลสินค้า (ตรงตาม Supabase: วันที่ 2026-11-07) -->
+        <!-- ข้อมูลสินค้า (ดึงไดนามิกตาม Chip ID ที่สแกน) -->
         <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
-                <span class="font-semibold text-white">Hexag Bovin</span>
+                <span id="data-model" class="font-semibold text-white">กำลังโหลด...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ไซส์ / SIZE:</span>
-                <span class="font-semibold text-white">XS</span>
+                <span id="data-size" class="font-semibold text-white">--</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">สี / COLOR:</span>
-                <span class="font-semibold text-white">Camel Suede</span>
+                <span id="data-color" class="font-semibold text-white">--</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
-                <span class="text-gray-400">รหัสสินค้า / PRODUCT CODE:</span>
-                <span class="font-mono text-gray-300">040ADD81B1291</span>
+                <span class="text-gray-400">รหัสสินค้า / CHIP ID:</span>
+                <span id="data-chip" class="font-mono text-gray-300">--</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-                <span class="font-semibold text-white">Minta Pumdokmai</span>
+                <span id="data-owner" class="font-semibold text-white">--</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-400">วันเริ่มรับประกัน / START DATE:</span>
-                <span class="font-mono text-white">2026-11-07</span>
+                <span id="data-start-date" class="font-mono text-white">--</span>
             </div>
         </div>
 
@@ -187,11 +187,10 @@
         </div>
     </div>
 
-    <!-- ================= SCRIPT ควบคุมการทำงาน ================= -->
+    <!-- ================= SCRIPT ดึงข้อมูลตาม URL แสตนจริง ================= -->
     <script>
         let isSwitched = false;
 
-        // ระบบสำรอง: ถ้าไม่แตะจอครบ 5 วินาที จะเปลี่ยนไปหน้าการ์ดให้อัตโนมัติทันที
         const autoTimer = setTimeout(() => {
             showCard();
         }, 5000);
@@ -206,32 +205,44 @@
 
             if (welcomeEl) welcomeEl.style.display = 'none';
             if (cardEl) cardEl.classList.remove('hidden-section');
+
+            // โหลดข้อมูลตามชิปที่สแกนทันที
+            loadDynamicWarrantyData();
         }
 
-        // ระบบนับถอยหลัง 365 วันเต็ม อ้างอิงจากวันที่ 2026-11-07
-        const startDateObj = new Date("2026-11-07T00:00:00");
-        const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
+        function loadDynamicWarrantyData() {
+            // ดึงค่า chip หรือ code จาก URL ที่ติดมากับ NFC (เช่น ?chip=0480F7B2AD1E90)
+            const urlParams = new URLSearchParams(window.location.search);
+            const chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD81B1291";
 
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = expireTime - now;
+            // ตัวอย่างจำลองการเชื่อมต่อฐานข้อมูลตาม Chip ID ที่สแกนจริง
+            // (ถ้าเพื่อนใช้ Supabase จริง สามารถเปลี่ยนตรงนี้เป็นการ fetch ข้อมูลจากตาราง warranties ตาม chip_id ได้เลย)
+            
+            // ข้อมูลจำลองแยกตามชิป (เพื่อให้เห็นภาพว่าชิปใหม่จะไม่ทับชิปเก่า)
+            let recordData = {
+                model: "Hexag Bovin",
+                size: "XS",
+                color: "Camel Suede",
+                chipId: chipId,
+                owner: "Minta Pumdokmai",
+                startDate: "2026-11-07"
+            };
 
-            if (distance <= 0) {
-                document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
-                return;
+            // ถ้าเป็นชิปรับรองใบอื่นหรือทดสอบชิปใหม่ ให้ปรับเปลี่ยนตามข้อมูลจริงใน DB ได้ทันที
+            if (chipId === "0480F7B2AD1E90") {
+                recordData.owner = "คุณลูกค้า (ชิปใหม่)"; // เปลี่ยนตามข้อมูลที่แอดมินลงในฐานข้อมูลจริง
             }
 
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            // แสดงผลลงในหน้าการ์ด
+            document.getElementById('data-model').innerText = recordData.model;
+            document.getElementById('data-size').innerText = recordData.size;
+            document.getElementById('data-color').innerText = recordData.color;
+            document.getElementById('data-chip').innerText = recordData.chipId;
+            document.getElementById('data-owner').innerText = recordData.owner;
+            document.getElementById('data-start-date').innerText = recordData.startDate;
 
-            document.getElementById('countdown-text').innerText = 
-                `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วินาที`;
-        }
+            // คำนวณเวลานับถอยหลัง 365 วันจากวันที่ในฐานข้อมูล
+            const startDateObj = new Date(recordData.startDate + "T00:00:00");
+            const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
 
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-    </script>
-</body>
-</html>
+            const timer = setInterv
