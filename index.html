@@ -22,7 +22,7 @@
 </head>
 <body>
 
-    <!-- หน้าต้อนรับ (โชว์ 8 วินาทีเป๊ะ แล้วซ่อนอัตโนมัติ) -->
+    <!-- หน้าต้อนรับ -->
     <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999;">
         <div class="space-y-4">
             <div>
@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <!-- หน้าการ์ดรับประกัน (เริ่มต้นซ่อนไว้) -->
+    <!-- หน้าการ์ดรับประกัน -->
     <div id="card-screen" style="display: none; background-color: #141414; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9); width: 100%; max-width: 380px; padding: 24px; border-radius: 1rem; position: relative;">
         <div class="text-center mb-6">
             <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
@@ -97,7 +97,9 @@
     </div>
 
     <script>
-        // 1. ควบคุมเวลาหน้าต้อนรับ 8 วินาทีเป๊ะ แล้วสลับโชว์หน้าการ์ด
+        var timerInterval = null;
+
+        // 1. สลับหน้าต้อนรับไปยังหน้าการ์ด (ซ่อนต้อนรับใน 6 วินาทีเพื่อความกระชับ)
         setTimeout(function() {
             var welcome = document.getElementById('welcome-screen');
             var card = document.getElementById('card-screen');
@@ -109,9 +111,9 @@
                     if (card) card.style.display = 'block';
                 }, 500);
             }
-        }, 8000);
+        }, 6000);
 
-        // 2. ดึงข้อมูลจาก Supabase แบบไดนามิกตาม Chip ID ที่สแกน
+        // 2. ดึง Param จาก URL
         var urlParams = new URLSearchParams(window.location.search);
         var chipId = urlParams.get('chip') || urlParams.get('code') || "";
         
@@ -126,20 +128,22 @@
                 headers: {
                     "apikey": supabaseAnonKey,
                     "Authorization": "Bearer " + supabaseAnonKey,
-                    "Content-Type": "application/json",
-                    "Prefer": "return=representation"
+                    "Content-Type": "application/json"
                 }
             })
-            .then(function(res) { return res.json(); })
+            .then(function(res) { 
+                if (!res.ok) throw new Error("Network error");
+                return res.json(); 
+            })
             .then(function(data) {
                 if (data && data.length > 0) {
                     var item = data[0];
                     renderCardData(
-                        item.model || "-",
+                        item.model || item.product_name || "-",
                         item.size || "-",
                         item.color || "-",
-                        item.customer_name || item.owner || "-",
-                        item.activated_at || item.start_date || null
+                        item.customer_name || item.owner || item.name || "-",
+                        item.activated || item.activated_at || item.start_date || item.created_at || null
                     );
                 } else {
                     document.getElementById('data-model').innerText = "ไม่พบข้อมูลสินค้านี้ในระบบ";
@@ -151,7 +155,11 @@
             })
             .catch(function(err) {
                 console.error("Fetch error:", err);
-                document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อ";
+                document.getElementById('data-model').innerText = "ไม่พบข้อมูล / สแกนชิปใหม่อีกครั้ง";
+                document.getElementById('data-size').innerText = "-";
+                document.getElementById('data-color').innerText = "-";
+                document.getElementById('data-owner').innerText = "-";
+                document.getElementById('countdown-text').innerText = "ระบบขัดข้องชั่วคราว";
             });
         } else {
             document.getElementById('data-chip').innerText = "ไม่พบรหัสชิป";
@@ -162,6 +170,7 @@
             document.getElementById('countdown-text').innerText = "กรุณาสแกนผ่านชิปสินค้า";
         }
 
+        // 3. ฟังก์ชั่นแสดงข้อมูลการ์ดและคำนวณเวลานับถอยหลัง Real-time
         function renderCardData(model, size, color, owner, activatedAt) {
             document.getElementById('data-model').innerText = model;
             document.getElementById('data-size').innerText = size;
@@ -174,16 +183,6 @@
                 return;
             }
 
-            var startDateStr = activatedAt.split('T')[0];
-            document.getElementById('data-start-date').innerText = startDateStr;
-
-            var startTime = new Date(startDateStr + "T00:00:00").getTime();
-            var expireTime = startTime + (365 * 24 * 60 * 60 * 1000);
-
-            function updateCountdown() {
-                var now = new Date().getTime();
-                var distance = expireTime - now;
-
-                if (distance <= 0) {
-                    document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
-                    return;
+            var startDate = new Date(activatedAt);
+            if (isNaN(startDate.getTime())) {
+                document.getElementById('data-start
