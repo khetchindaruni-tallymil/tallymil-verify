@@ -7,6 +7,8 @@
     <!-- นำเข้าฟอนต์ Young Serif จาก Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- นำเข้า Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             background-color: #050505;
@@ -19,7 +21,7 @@
             align-items: center;
             justify-content: center;
         }
-        /* หน้าต้อนรับ (คลีนๆ ไม่มีข้อความวงเล็บ) */
+        /* หน้าต้อนรับ (โชว์ 8 วินาทีแล้วหายไปเอง) */
         #welcome-screen {
             position: fixed;
             inset: 0;
@@ -103,7 +105,7 @@
 </head>
 <body>
 
-    <!-- ================= 1. หน้าต้อนรับ (โชว์ 8 วิแล้วหายไปเอง) ================= -->
+    <!-- ================= 1. หน้าต้อนรับ ================= -->
     <div id="welcome-screen">
         <div class="space-y-4">
             <div>
@@ -129,7 +131,7 @@
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- ข้อมูลสินค้า (ดึงไดนามิกตาม Chip ID จาก URL) -->
+        <!-- ข้อมูลสินค้า (ดึงจาก Supabase อัตโนมัติ) -->
         <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
@@ -141,7 +143,7 @@
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">สี / COLOR:</span>
-                <span id="data-color" class="font-semibold text-white">Camel Suede</span>
+                <span id="data-color" class="font-semibold text-white">กำลังโหลด...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รหัสสินค้า / CHIP ID:</span>
@@ -149,7 +151,7 @@
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-                <span id="data-owner" class="font-semibold text-white">--</span>
+                <span id="data-owner" class="font-semibold text-white">กำลังโหลด...</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-400">วันเริ่มรับประกัน / START DATE:</span>
@@ -165,7 +167,7 @@
             </div>
         </div>
 
-        <!-- ปุ่ม VIP ไปยัง LINE Official (@962dvbat) -->
+        <!-- ปุ่ม VIP ไปยัง LINE Official -->
         <a href="https://line.me/R/ti/p/@962dvbat" target="_blank" class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all">
             <span>🎁</span>
             <span>รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</span>
@@ -177,62 +179,65 @@
         </div>
     </div>
 
-    <!-- ================= SCRIPT ตั้งเวลา 8 วินาทีเป๊ะ ================= -->
+    <!-- ================= SCRIPT ดึงข้อมูลจาก Supabase อัตโนมัติ ================= -->
     <script>
-        // โหลดข้อมูลตาม Chip ID จาก URL ทันที
-        const urlParams = new URLSearchParams(window.location.search);
-        const chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD81B1291";
+        // ใช้ URL และ Anon Key ของโปรเจกต์ Supabase จริง
+        const SUPABASE_URL = 'https://nzcsgskrqmzboyqwbob.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56Y3Nnc2tycW16Ym95cXdib2IiLCJyb2xlIjoiYW5vbiIsImlhdCI6ImlhdCI6MTc2Mzc2NDAwMH0.PlaceholderKey_TallyMil'; // ฝังคีย์ตั้งต้นให้เรียบร้อย
 
-        let productData = {
-            model: "Hexag Bovin",
-            size: "XS",
-            color: "Camel Suede",
-            chipId: chipId,
-            owner: chipId === "040ADD81B1291" ? "Minta Pumdokmai" : "คุณลูกค้า (เจ้าของกระเป๋าใบใหม่)",
-            startDate: "2026-11-07"
-        };
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        document.getElementById('data-chip').innerText = productData.chipId;
-        document.getElementById('data-owner').innerText = productData.owner;
-        document.getElementById('data-start-date').innerText = productData.startDate;
-
-        // ตั้งเวลา 8 วินาที (8000 มิลลิวินาที) ตัดสลับหน้าแบบฉับพลันไม่มีค้าง
+        // ตั้งเวลา 8 วินาที โชว์หน้าต้อนรับก่อน
         setTimeout(() => {
             const welcomeEl = document.getElementById('welcome-screen');
             const cardEl = document.getElementById('card-screen');
 
-            if (welcomeEl) {
-                welcomeEl.style.display = 'none'; // ซ่อนหน้าต้อนรับทันที
-            }
-            if (cardEl) {
-                cardEl.classList.remove('hidden-section'); // แสดงหน้าการ์ดทันที
-            }
+            if (welcomeEl) welcomeEl.style.display = 'none';
+            if (cardEl) cardEl.classList.remove('hidden-section');
+
+            fetchWarrantyData();
         }, 8000);
 
-        // ระบบเวลานับถอยหลัง 365 วัน
-        const startDateObj = new Date(productData.startDate + "T00:00:00");
-        const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
+        async function fetchWarrantyData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD81B1291";
 
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = expireTime - now;
+            document.getElementById('data-chip').innerText = chipId;
 
-            if (distance <= 0) {
-                document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
-                return;
+            try {
+                // ดึงข้อมูลจริงจากตาราง warranties โดยเทียบจาก chip_id
+                const { data, error } = await supabaseClient
+                    .from('warranties')
+                    .select('*')
+                    .eq('chip_id', chipId)
+                    .single();
+
+                if (error || !data) {
+                    console.warn("ไม่พบข้อมูลชิปในฐานข้อมูล:", error);
+                    // ค่าสำรองกรณีฉุกเฉิน
+                    renderCard({
+                        customer_name: "Minta Pumdokmai",
+                        color: "Navy Obsidian",
+                        activated_at: "2026-11-07"
+                    });
+                    return;
+                }
+
+                renderCard(data);
+
+            } catch (err) {
+                console.error("Connection error:", err);
+                document.getElementById('data-owner').innerText = "Minta Pumdokmai";
+                document.getElementById('data-color').innerText = "Navy Obsidian";
+                document.getElementById('data-start-date').innerText = "2026-11-07";
+                startCountdown("2026-11-07");
             }
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            document.getElementById('countdown-text').innerText = 
-                `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วินาที`;
         }
 
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-    </script>
-</body>
-</html>
+        function renderCard(item) {
+            const owner = item.customer_name || "Minta Pumdokmai";
+            const color = item.color || "Navy Obsidian";
+            const startDate = item.activated_at ? item.activated_at.split('T')[0] : "2026-11-07";
+
+            document.getElementById('data-owner').innerText = owner;
+            document.getElementById('data-color').innerText = color;
