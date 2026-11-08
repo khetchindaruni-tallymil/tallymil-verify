@@ -22,7 +22,7 @@
 </head>
 <body>
 
-    <!-- หน้าต้อนรับ (โชว์ 8 วินาทีเป๊ะ) -->
+    <!-- หน้าต้อนรับ (โชว์ 8 วินาทีเป๊ะ แล้วซ่อนอัตโนมัติ) -->
     <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999;">
         <div class="space-y-4">
             <div>
@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <!-- หน้าการ์ดรับประกัน -->
+    <!-- หน้าการ์ดรับประกัน (เริ่มต้นซ่อนไว้) -->
     <div id="card-screen" style="display: none; background-color: #141414; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9); width: 100%; max-width: 380px; padding: 24px; border-radius: 1rem; position: relative;">
         <div class="text-center mb-6">
             <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
@@ -97,28 +97,30 @@
     </div>
 
     <script>
-        // 1. หน้าต้อนรับโชว์ 8 วินาทีเป๊ะ แล้วเปิดหน้าการ์ด
+        // 1. ควบคุมเวลาหน้าต้อนรับ 8 วินาทีเป๊ะ แล้วสลับโชว์หน้าการ์ด
         setTimeout(function() {
             var welcome = document.getElementById('welcome-screen');
             var card = document.getElementById('card-screen');
-            if (welcome) welcome.style.display = 'none';
-            if (card) card.style.display = 'block';
+            if (welcome) {
+                welcome.style.opacity = '0';
+                welcome.style.transition = 'opacity 0.5s ease';
+                setTimeout(function() {
+                    welcome.style.display = 'none';
+                    if (card) card.style.display = 'block';
+                }, 500);
+            }
         }, 8000);
 
-        // 2. ดึง Chip ID จาก URL แบบไดนามิก (รองรับทุกชิ้น ไม่ฟิกซ์ค่า)
+        // 2. ดึงข้อมูลจาก Supabase แบบไดนามิกตาม Chip ID ที่สแกน
         var urlParams = new URLSearchParams(window.location.search);
         var chipId = urlParams.get('chip') || urlParams.get('code') || "";
         
-        if (!chipId) {
-            document.getElementById('data-model').innerText = "ไม่พบรหัสชิปในลิงก์";
-            document.getElementById('countdown-text').innerText = "กรุณาสแกนผ่านชิปสินค้า";
-        } else {
+        if (chipId) {
             document.getElementById('data-chip').innerText = chipId;
 
             var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
-            var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";[span_3](start_span)[span_3](end_span)
+            var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";[span_0](start_span)[span_0](end_span)
 
-            // ยิง API ดึงข้อมูลสดๆ จากฐานข้อมูลหลังบ้านตามชิปที่สแกนจริงเท่านั้น
             fetch(supabaseUrl, {
                 method: "GET",
                 headers: {
@@ -132,14 +134,13 @@
             .then(function(data) {
                 if (data && data.length > 0) {
                     var item = data[0];
-                    // ดึงค่าตามฟิลด์จริงใน DB แบบ 100% ไม่อิงค่าหลอกใดๆ ทั้งสิ้น
-                    renderCard({
-                        model: item.model || "-",
-                        size: item.size || "-",
-                        color: item.color || "-",
-                        customer_name: item.customer_name || item.owner || "-",
-                        activated_at: item.activated_at || item.start_date || null
-                    });
+                    renderCardData(
+                        item.model || "-",
+                        item.size || "-",
+                        item.color || "-",
+                        item.customer_name || item.owner || "-",
+                        item.activated_at || item.start_date || null
+                    );
                 } else {
                     document.getElementById('data-model').innerText = "ไม่พบข้อมูลสินค้านี้ในระบบ";
                     document.getElementById('data-size').innerText = "-";
@@ -149,27 +150,33 @@
                 }
             })
             .catch(function(err) {
-                console.error("Database fetch error:", err);
-                document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล";
+                console.error("Fetch error:", err);
+                document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อ";
             });
+        } else {
+            document.getElementById('data-chip').innerText = "ไม่พบรหัสชิป";
+            document.getElementById('data-model').innerText = "-";
+            document.getElementById('data-size').innerText = "-";
+            document.getElementById('data-color').innerText = "-";
+            document.getElementById('data-owner').innerText = "-";
+            document.getElementById('countdown-text').innerText = "กรุณาสแกนผ่านชิปสินค้า";
         }
 
-        function renderCard(info) {
-            document.getElementById('data-model').innerText = info.model;
-            document.getElementById('data-size').innerText = info.size;
-            document.getElementById('data-color').innerText = info.color;
-            document.getElementById('data-owner').innerText = info.customer_name;
-            
-            if (!info.activated_at) {
+        function renderCardData(model, size, color, owner, activatedAt) {
+            document.getElementById('data-model').innerText = model;
+            document.getElementById('data-size').innerText = size;
+            document.getElementById('data-color').innerText = color;
+            document.getElementById('data-owner').innerText = owner;
+
+            if (!activatedAt) {
                 document.getElementById('data-start-date').innerText = "-";
                 document.getElementById('countdown-text').innerText = "ไม่มีข้อมูลวันที่เริ่มรับประกัน";
                 return;
             }
 
-            var startDateStr = info.activated_at.split('T')[0];
+            var startDateStr = activatedAt.split('T')[0];
             document.getElementById('data-start-date').innerText = startDateStr;
 
-            // ระบบคำนวณเวลานับถอยหลัง 365 วันจากวันที่เริ่มรับประกันจริงใน DB
             var startTime = new Date(startDateStr + "T00:00:00").getTime();
             var expireTime = startTime + (365 * 24 * 60 * 60 * 1000);
 
@@ -180,7 +187,3 @@
                 if (distance <= 0) {
                     document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
                     return;
-                }
-
-                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
