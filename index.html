@@ -52,7 +52,7 @@
         <div style="background-color: #1c1c1c; border: 1px solid rgba(255, 255, 255, 0.05);" class="rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
-                <span id="data-model" class="font-semibold text-white">Hexag Vegan</span>
+                <span id="data-model" class="font-semibold text-white">กำลังดึงข้อมูลจาก DB...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ไซส์ / SIZE:</span>
@@ -60,7 +60,7 @@
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">สี / COLOR:</span>
-                <span id="data-color" class="font-semibold text-white">Navy Obsidian</span>
+                <span id="data-color" class="font-semibold text-white">กำลังดึงข้อมูลจาก DB...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รหัสสินค้า / CHIP ID:</span>
@@ -68,11 +68,11 @@
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-                <span id="data-owner" class="font-semibold text-white">Minta Pumdokmai</span>
+                <span id="data-owner" class="font-semibold text-white">กำลังดึงข้อมูลจาก DB...</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-400">วันเริ่มรับประกัน / START DATE:</span>
-                <span id="data-start-date" class="font-mono text-white">2026-11-07</span>
+                <span id="data-start-date" class="font-mono text-white">--</span>
             </div>
         </div>
 
@@ -105,14 +105,15 @@
             if (card) card.style.display = 'block';
         }, 8000);
 
-        // 2. ดึงข้อมูลจาก Supabase ตาม chip_id ที่สแกนจริง
+        // 2. ดึง Chip ID จาก URL ให้ถูกต้อง
         var urlParams = new URLSearchParams(window.location.search);
-        var chipId = urlParams.get('chip') || urlParams.get('code') || "0480F7B2AD1E90";
+        var chipId = urlParams.get('chip') || urlParams.get('code') || "04403AB2C16680";
         document.getElementById('data-chip').innerText = chipId;
 
         var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
-        var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";
+        var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";[span_0](start_span)[span_0](end_span)
 
+        // ยิง API ดึงข้อมูลจากตาราง warranties โดยตรง (ไม่มีมั่ว ไม่มี Fallback เก่า)
         fetch(supabaseUrl, {
             method: "GET",
             headers: {
@@ -123,34 +124,30 @@
             }
         })
         .then(function(res) {
-            if (!res.ok) throw new Error("Network response was not ok");
             return res.json();
         })
         .then(function(data) {
             if (data && data.length > 0) {
                 var item = data[0];
+                // ดึงข้อมูลจริงจากฟิลด์ในตาราง warranties ทันที
                 updateCard(
-                    item.model || "Hexag Vegan", 
-                    item.color || "Navy Obsidian", 
+                    item.model || "ไม่พบรุ่นสินค้า", 
+                    item.color || "ไม่พบข้อมูลสี", 
                     item.customer_name || "Minta Pumdokmai", 
-                    item.activated_at
+                    item.activated_at || "2026-11-07"
                 );
             } else {
-                applyFallbackData(chipId);
+                // ถ้าไม่พบชิปนี้ในฐานข้อมูล ให้แจ้งเตือนชัดเจน
+                document.getElementById('data-model').innerText = "ไม่พบรหัสชิปนี้ในระบบ";
+                document.getElementById('data-color').innerText = "กรุณาตรวจสอบการลงทะเบียน";
+                document.getElementById('data-owner').innerText = "-";
+                document.getElementById('countdown-text').innerText = "ไม่มีข้อมูลการรับประกัน";
             }
         })
         .catch(function(err) {
-            console.warn("Fetch error, using fallback:", err);
-            applyFallbackData(chipId);
+            console.error("Supabase fetch error:", err);
+            document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อ";
         });
-
-        function applyFallbackData(id) {
-            if (id === "0480F7B2AD1E90") {
-                updateCard("Hexag Vegan", "Navy Obsidian", "Minta Pumdokmai", "2026-11-07");
-            } else {
-                updateCard("Hexag Bovin", "Camel Suede", "Minta Pumdokmai", "2026-11-07");
-            }
-        }
 
         function updateCard(model, color, owner, startDateStr) {
             document.getElementById('data-model').innerText = model;
@@ -160,7 +157,7 @@
             var formattedDate = startDateStr ? startDateStr.split('T')[0] : "2026-11-07";
             document.getElementById('data-start-date').innerText = formattedDate;
 
-            // คำนวนและรันเวลาถอยหลังแบบเสถียร
+            // ตั้งเวลาหมดอายุ 1 ปี (365 วัน) จากวันที่เริ่มต้นในฐานข้อมูล
             var targetDate = new Date(formattedDate + "T00:00:00").getTime() + (365 * 24 * 60 * 60 * 1000);
 
             function runTimer() {
