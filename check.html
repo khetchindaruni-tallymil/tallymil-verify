@@ -22,8 +22,8 @@
 </head>
 <body>
 
-    <!-- หน้าต้อนรับ (บังคับตัดจบใน 5 วินาที ไม่ว่าอะไรจะเกิดขึ้น) -->
-    <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999; transition: opacity 0.5s ease;">
+    <!-- 1. หน้าต้อนรับ (WELCOME SCREEN) -->
+    <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999; transition: opacity 0.8s ease;">
         <div class="space-y-4">
             <div>
                 <h1 style="color: #e2c068; letter-spacing: 0.25em; font-size: 1.5rem;">TALLY MIL</h1>
@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <!-- หน้าการ์ดรับประกัน -->
+    <!-- 2. หน้าการ์ดรับประกัน (CARD SCREEN) -->
     <div id="card-screen" style="display: none; background-color: #141414; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9); width: 100%; max-width: 380px; padding: 24px; border-radius: 1rem; position: relative;">
         <div class="text-center mb-6">
             <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
@@ -48,7 +48,7 @@
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- ข้อมูลสินค้า -->
+        <!-- รายละเอียดสินค้า -->
         <div style="background-color: #1c1c1c; border: 1px solid rgba(255, 255, 255, 0.05);" class="rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
@@ -97,20 +97,22 @@
     </div>
 
     <script>
-        // --- 1. ระบบบังคับเปิดหน้าการ์ด (ทำงานอิสระ ป้องกันหน้าค้าง 100%) ---
-        setTimeout(function() {
-            var welcome = document.getElementById('welcome-screen');
-            var card = document.getElementById('card-screen');
-            if (welcome) {
-                welcome.style.opacity = '0';
-                setTimeout(function() {
-                    welcome.style.display = 'none';
-                    if (card) card.style.display = 'block';
-                }, 500);
-            }
-        }, 5000); // 5 วินาทีเป๊ะ ตัดเข้าหน้าการ์ดทันที
+        // --- ส่วนที่ 1: สลับหน้าต้อนรับไปหน้าการ์ดอัตโนมัติ (ทำงานแยกเด็ดขาด กันหน้าค้าง 100%) ---
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var welcome = document.getElementById('welcome-screen');
+                var card = document.getElementById('card-screen');
+                if (welcome && card) {
+                    welcome.style.opacity = '0';
+                    setTimeout(function() {
+                        welcome.style.display = 'none';
+                        card.style.display = 'block';
+                    }, 800); // 0.8 วินาทีหลังจากเริ่มจาง
+                }
+            }, 5000); // โชว์หน้าต้อนรับ 5 วินาทีเป๊ะ
+        });
 
-        // --- 2. ระบบดึงข้อมูลจาก Supabase ---
+        // --- ส่วนที่ 2: ดึงข้อมูล Supabase และคำนวณเวลา ---
         var urlParams = new URLSearchParams(window.location.search);
         var chipId = urlParams.get('chip') || urlParams.get('code') || "";
         
@@ -118,7 +120,7 @@
             document.getElementById('data-chip').innerText = chipId;
 
             var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
-            var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";[span_0](start_span)[span_0](end_span)
+            var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";
 
             fetch(supabaseUrl, {
                 method: "GET",
@@ -129,7 +131,7 @@
                 }
             })
             .then(function(res) { 
-                if (!res.ok) throw new Error("Network error");
+                if (!res.ok) throw new Error("Network response was not ok");
                 return res.json(); 
             })
             .then(function(data) {
@@ -143,19 +145,19 @@
                         item.activated || item.activated_at || item.start_date || item.created_at || null
                     );
                 } else {
-                    setErrorMessage("ไม่พบข้อมูลสินค้านี้ในระบบ", "ยังไม่ได้ลงทะเบียนรับประกัน");
+                    setFallbackState("ไม่พบข้อมูลสินค้านี้ในระบบ", "ยังไม่ได้ลงทะเบียนรับประกัน");
                 }
             })
             .catch(function(err) {
                 console.error("Fetch error:", err);
-                setErrorMessage("ไม่พบข้อมูล / สแกนชิปใหม่อีกครั้ง", "ระบบขัดข้องชั่วคราว");
+                setFallbackState("ไม่พบข้อมูล / สแกนชิปใหม่อีกครั้ง", "ระบบขัดข้องชั่วคราว");
             });
         } else {
             document.getElementById('data-chip').innerText = "ไม่พบรหัสชิป";
-            setErrorMessage("-", "กรุณาสแกนผ่านชิปสินค้า");
+            setFallbackState("-", "กรุณาสแกนผ่านชิปสินค้า");
         }
 
-        function setErrorMessage(modelText, countdownText) {
+        function setFallbackState(modelText, countdownText) {
             document.getElementById('data-model').innerText = modelText;
             document.getElementById('data-size').innerText = "-";
             document.getElementById('data-color').innerText = "-";
@@ -164,7 +166,7 @@
             document.getElementById('countdown-text').innerText = countdownText;
         }
 
-        // --- 3. ระบบคำนวณเวลานับถอยหลัง Real-time ---
+        // --- ส่วนที่ 3: ระบบนับถอยหลัง Real-time ---
         var timerInterval = null;
 
         function renderCardData(model, size, color, owner, activatedAt) {
@@ -186,7 +188,5 @@
                 return;
             }
 
-            var day = ("0" + startDate.getDate()).slice(-2);
-            var month = ("0" + (startDate.getMonth() + 1)).slice(-2);
-            var year = startDate.getFullYear();
-            document.getElementById('data-start-date
+            // แสดงวันที่ DD/MM/YYYY
+            var day = ("0" + startDate.getD
