@@ -105,38 +105,37 @@
             if (card) card.style.display = 'block';
         }, 8000);
 
-        // 2. ดึงข้อมูลจากตาราง warranties ใน Supabase ตาม chip_id ที่สแกนจริง
+        // 2. ดึงข้อมูลจาก Supabase ตาม chip_id ที่สแกนจริง
         var urlParams = new URLSearchParams(window.location.search);
-        var chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD81B1291";
+        var chipId = urlParams.get('chip') || urlParams.get('code') || "0480F7B2AD1E90";
         document.getElementById('data-chip').innerText = chipId;
 
         var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
-        
+        var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";[span_1](start_span)[span_1](end_span)
+
         fetch(supabaseUrl, {
             headers: {
-                "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56Y3Nnc2tycW16Ym95cXdib2IiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc2Mzc2NDAwMH0.PlaceholderKey_TallyMil",
-                "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56Y3Nnc2tycW16Ym95cXdib2IiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc2Mzc2NDAwMH0.PlaceholderKey_TallyMil"
+                "apikey": supabaseAnonKey,
+                "Authorization": "Bearer " + supabaseAnonKey
             }
         })
         .then(function(res) { return res.json(); })
         .then(function(data) {
             if (data && data.length > 0) {
                 var item = data[0];
-                // ดึงค่าตรงตามฐานข้อมูลจริงทุกประการ (model, color, customer_name, activated_at)
                 updateCard(
-                    item.model || "Hexag Bovin", 
-                    item.color || "Camel Suede", 
+                    item.model || "Hexag Vegan", 
+                    item.color || "Navy Obsidian", 
                     item.customer_name || "Minta Pumdokmai", 
                     item.activated_at
                 );
             } else {
-                // ค่าสำรองกรณีไม่เจอในฐานข้อมูล
-                updateCard("Hexag Bovin", "Camel Suede", "Minta Pumdokmai", "2026-11-07");
+                updateCard("Hexag Vegan", "Navy Obsidian", "Minta Pumdokmai", "2026-11-07");
             }
         })
         .catch(function(err) {
             console.error("Fetch error:", err);
-            updateCard("Hexag Bovin", "Camel Suede", "Minta Pumdokmai", "2026-11-07");
+            updateCard("Hexag Vegan", "Navy Obsidian", "Minta Pumdokmai", "2026-11-07");
         });
 
         function updateCard(model, color, owner, startDateStr) {
