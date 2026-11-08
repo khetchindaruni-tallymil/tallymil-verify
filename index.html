@@ -19,7 +19,7 @@
             align-items: center;
             justify-content: center;
         }
-        /* หน้าต้อนรับ */
+        /* หน้าต้อนรับ (แสดงอัตโนมัติ 8 วินาที) */
         #welcome-screen {
             position: fixed;
             inset: 0;
@@ -31,7 +31,7 @@
             padding: 32px;
             text-align: center;
             z-index: 99999;
-            cursor: pointer;
+            transition: opacity 0.8s ease-in-out;
         }
         .welcome-title {
             color: #e2c068;
@@ -62,7 +62,7 @@
             font-size: 13px;
             line-height: 1.7;
         }
-        .action-text {
+        .loading-text {
             color: #e2c068;
             font-size: 11px;
             letter-spacing: 0.15em;
@@ -78,6 +78,8 @@
             padding: 24px;
             border-radius: 1rem;
             position: relative;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
         }
         .inner-box {
             background-color: #1c1c1c;
@@ -110,8 +112,8 @@
 </head>
 <body>
 
-    <!-- ================= 1. หน้าต้อนรับ ================= -->
-    <div id="welcome-screen" onclick="showCard()">
+    <!-- ================= 1. หน้าต้อนรับ (แสดงออโต้ 8 วินาที) ================= -->
+    <div id="welcome-screen">
         <div class="space-y-4">
             <div>
                 <h1 class="welcome-title">TALLY MIL</h1>
@@ -122,7 +124,7 @@
                 <p class="quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษ ที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</p>
             </div>
             <div>
-                <p class="action-text animate-pulse">[ แตะเพื่อเข้าสู่ใบรับประกัน ]</p>
+                <p class="loading-text animate-pulse">[ กำลังเตรียมความพิเศษสำหรับคุณ... ]</p>
             </div>
         </div>
     </div>
@@ -143,15 +145,15 @@
         <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
-                <span id="data-model" class="font-semibold text-white">กำลังโหลด...</span>
+                <span id="data-model" class="font-semibold text-white">Hexag Bovin</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ไซส์ / SIZE:</span>
-                <span id="data-size" class="font-semibold text-white">--</span>
+                <span id="data-size" class="font-semibold text-white">XS</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">สี / COLOR:</span>
-                <span id="data-color" class="font-semibold text-white">--</span>
+                <span id="data-color" class="font-semibold text-white">Camel Suede</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รหัสสินค้า / CHIP ID:</span>
@@ -187,62 +189,60 @@
         </div>
     </div>
 
-    <!-- ================= SCRIPT ดึงข้อมูลตาม URL แสตนจริง ================= -->
+    <!-- ================= SCRIPT ตั้งเวลา 8 วินาทีอัตโนมัติ ================= -->
     <script>
-        let isSwitched = false;
+        // โหลดข้อมูลชิปล่วงหน้าตั้งแต่เปิดหน้าเว็บ
+        const urlParams = new URLSearchParams(window.location.search);
+        const chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD81B1291";
 
-        const autoTimer = setTimeout(() => {
-            showCard();
-        }, 5000);
+        let productData = {
+            model: "Hexag Bovin",
+            size: "XS",
+            color: "Camel Suede",
+            chipId: chipId,
+            owner: chipId === "040ADD81B1291" ? "Minta Pumdokmai" : "คุณลูกค้า (เจ้าของกระเป๋าใบใหม่)",
+            startDate: "2026-11-07"
+        };
 
-        function showCard() {
-            if (isSwitched) return;
-            isSwitched = true;
-            clearTimeout(autoTimer);
+        // เซ็ตข้อมูลลงการ์ดรอไว้เลย
+        document.getElementById('data-chip').innerText = productData.chipId;
+        document.getElementById('data-owner').innerText = productData.owner;
+        document.getElementById('data-start-date').innerText = productData.startDate;
 
+        // ตั้งเวลาเป๊ะๆ 8 วินาที (8000 มิลลิวินาที) เปลี่ยนหน้าอัตโนมัติ
+        setTimeout(() => {
             const welcomeEl = document.getElementById('welcome-screen');
             const cardEl = document.getElementById('card-screen');
 
-            if (welcomeEl) welcomeEl.style.display = 'none';
-            if (cardEl) cardEl.classList.remove('hidden-section');
+            if (welcomeEl) {
+                welcomeEl.style.opacity = '0';
+                setTimeout(() => {
+                    welcomeEl.style.display = 'none';
+                    cardEl.classList.remove('hidden-section');
+                    setTimeout(() => {
+                        cardEl.style.opacity = '1';
+                    }, 50);
+                }, 800); // รอจังหวะเฟดเอ้าต์ 0.8 วิ
+            }
+        }, 8000);
 
-            // โหลดข้อมูลตามชิปที่สแกนทันที
-            loadDynamicWarrantyData();
-        }
+        // ระบบเวลานับถอยหลัง 365 วัน
+        const startDateObj = new Date(productData.startDate + "T00:00:00");
+        const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
 
-        function loadDynamicWarrantyData() {
-            // ดึงค่า chip หรือ code จาก URL ที่ติดมากับ NFC (เช่น ?chip=0480F7B2AD1E90)
-            const urlParams = new URLSearchParams(window.location.search);
-            const chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD81B1291";
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = expireTime - now;
 
-            // ตัวอย่างจำลองการเชื่อมต่อฐานข้อมูลตาม Chip ID ที่สแกนจริง
-            // (ถ้าเพื่อนใช้ Supabase จริง สามารถเปลี่ยนตรงนี้เป็นการ fetch ข้อมูลจากตาราง warranties ตาม chip_id ได้เลย)
-            
-            // ข้อมูลจำลองแยกตามชิป (เพื่อให้เห็นภาพว่าชิปใหม่จะไม่ทับชิปเก่า)
-            let recordData = {
-                model: "Hexag Bovin",
-                size: "XS",
-                color: "Camel Suede",
-                chipId: chipId,
-                owner: "Minta Pumdokmai",
-                startDate: "2026-11-07"
-            };
-
-            // ถ้าเป็นชิปรับรองใบอื่นหรือทดสอบชิปใหม่ ให้ปรับเปลี่ยนตามข้อมูลจริงใน DB ได้ทันที
-            if (chipId === "0480F7B2AD1E90") {
-                recordData.owner = "คุณลูกค้า (ชิปใหม่)"; // เปลี่ยนตามข้อมูลที่แอดมินลงในฐานข้อมูลจริง
+            if (distance <= 0) {
+                document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
+                return;
             }
 
-            // แสดงผลลงในหน้าการ์ด
-            document.getElementById('data-model').innerText = recordData.model;
-            document.getElementById('data-size').innerText = recordData.size;
-            document.getElementById('data-color').innerText = recordData.color;
-            document.getElementById('data-chip').innerText = recordData.chipId;
-            document.getElementById('data-owner').innerText = recordData.owner;
-            document.getElementById('data-start-date').innerText = recordData.startDate;
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            // คำนวณเวลานับถอยหลัง 365 วันจากวันที่ในฐานข้อมูล
-            const startDateObj = new Date(recordData.startDate + "T00:00:00");
-            const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
-
-            const timer = setInterv
+            document.getElementById('countdown-text').innerText = 
+                `${days} วัน ${hours}
