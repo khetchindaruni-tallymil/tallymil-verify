@@ -111,7 +111,7 @@
         document.getElementById('data-chip').innerText = chipId;
 
         var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
-        var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";[span_0](start_span)[span_0](end_span)
+        var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";
 
         fetch(supabaseUrl, {
             method: "GET",
@@ -136,7 +136,6 @@
                     item.activated_at
                 );
             } else {
-                // ถ้าไม่เจอใน DB ให้แสดงข้อมูลตามชิปที่สแกนทันที
                 applyFallbackData(chipId);
             }
         })
@@ -161,22 +160,29 @@
             var formattedDate = startDateStr ? startDateStr.split('T')[0] : "2026-11-07";
             document.getElementById('data-start-date').innerText = formattedDate;
 
-            var startDateObj = new Date(formattedDate + "T00:00:00");
-            var expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
+            // คำนวนและรันเวลาถอยหลังแบบเสถียร
+            var targetDate = new Date(formattedDate + "T00:00:00").getTime() + (365 * 24 * 60 * 60 * 1000);
 
-            setInterval(function() {
+            function runTimer() {
                 var now = new Date().getTime();
-                var distance = expireTime - now;
+                var distance = targetDate - now;
+
                 if (distance <= 0) {
                     document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
                     return;
                 }
+
                 var days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                document.getElementById('countdown-text').innerText = days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที";
-            }, 1000);
+
+                document.getElementById('countdown-text').innerText = 
+                    days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที";
+            }
+
+            runTimer();
+            setInterval(runTimer, 1000);
         }
     </script>
 </body>
