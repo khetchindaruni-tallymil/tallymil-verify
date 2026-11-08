@@ -21,7 +21,7 @@
             align-items: center;
             justify-content: center;
         }
-        /* หน้าต้อนรับ (โชว์ 8 วินาทีแล้วหายไปเอง) */
+        /* หน้าต้อนรับ (โชว์ 8 วินาทีเป๊ะแบบอิสระ ไม่รอข้อมูล) */
         #welcome-screen {
             position: fixed;
             inset: 0;
@@ -105,7 +105,7 @@
 </head>
 <body>
 
-    <!-- ================= 1. หน้าต้อนรับ ================= -->
+    <!-- ================= 1. หน้าต้อนรับ (โชว์ 8 วิอิสระ) ================= -->
     <div id="welcome-screen">
         <div class="space-y-4">
             <div>
@@ -131,7 +131,7 @@
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- ข้อมูลสินค้า (ดึงจาก Supabase อัตโนมัติ) -->
+        <!-- ข้อมูลสินค้า (ดึงจาก Supabase) -->
         <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
@@ -167,7 +167,7 @@
             </div>
         </div>
 
-        <!-- ปุ่ม VIP ไปยัง LINE Official -->
+        <!-- ปุ่ม VIP ไปยัง LINE Official (@962dvbat) -->
         <a href="https://line.me/R/ti/p/@962dvbat" target="_blank" class="w-full vip-btn text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all">
             <span>🎁</span>
             <span>รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</span>
@@ -179,33 +179,22 @@
         </div>
     </div>
 
-    <!-- ================= SCRIPT ดึงข้อมูลจาก Supabase อัตโนมัติ ================= -->
+    <!-- ================= SCRIPT แยกอิสระ 100% ไม่ค้าง ================= -->
     <script>
-        // ใช้ URL และ Anon Key ของโปรเจกต์ Supabase จริง
+        // 1. สั่งดึงข้อมูลจาก Supabase ทันทีที่เปิดหน้าเว็บเบื้องหลัง (ไม่ต้องรอหน้าต้อนรับ)
         const SUPABASE_URL = 'https://nzcsgskrqmzboyqwbob.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56Y3Nnc2tycW16Ym95cXdib2IiLCJyb2xlIjoiYW5vbiIsImlhdCI6ImlhdCI6MTc2Mzc2NDAwMH0.PlaceholderKey_TallyMil'; // ฝังคีย์ตั้งต้นให้เรียบร้อย
-
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56Y3Nnc2tycW16Ym95cXdib2IiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc2Mzc2NDAwMH0.PlaceholderKey_TallyMil';
+        
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ตั้งเวลา 8 วินาที โชว์หน้าต้อนรับก่อน
-        setTimeout(() => {
-            const welcomeEl = document.getElementById('welcome-screen');
-            const cardEl = document.getElementById('card-screen');
+        // ดึง Chip ID จาก URL ทันที
+        const urlParams = new URLSearchParams(window.location.search);
+        const chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD81B1291";
+        document.getElementById('data-chip').innerText = chipId;
 
-            if (welcomeEl) welcomeEl.style.display = 'none';
-            if (cardEl) cardEl.classList.remove('hidden-section');
-
-            fetchWarrantyData();
-        }, 8000);
-
-        async function fetchWarrantyData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD81B1291";
-
-            document.getElementById('data-chip').innerText = chipId;
-
+        // ฟังก์ชันดึงข้อมูลจาก Supabase
+        async function fetchSupabaseData() {
             try {
-                // ดึงข้อมูลจริงจากตาราง warranties โดยเทียบจาก chip_id
                 const { data, error } = await supabaseClient
                     .from('warranties')
                     .select('*')
@@ -213,31 +202,43 @@
                     .single();
 
                 if (error || !data) {
-                    console.warn("ไม่พบข้อมูลชิปในฐานข้อมูล:", error);
-                    // ค่าสำรองกรณีฉุกเฉิน
-                    renderCard({
+                    console.warn("ไม่พบข้อมูลชิป ใช้ค่าสำรอง");
+                    renderCardData({
                         customer_name: "Minta Pumdokmai",
                         color: "Navy Obsidian",
                         activated_at: "2026-11-07"
                     });
                     return;
                 }
-
-                renderCard(data);
-
+                renderCardData(data);
             } catch (err) {
-                console.error("Connection error:", err);
-                document.getElementById('data-owner').innerText = "Minta Pumdokmai";
-                document.getElementById('data-color').innerText = "Navy Obsidian";
-                document.getElementById('data-start-date').innerText = "2026-11-07";
-                startCountdown("2026-11-07");
+                console.error("Fetch error:", err);
+                renderCardData({
+                    customer_name: "Minta Pumdokmai",
+                    color: "Navy Obsidian",
+                    activated_at: "2026-11-07"
+                });
             }
         }
 
-        function renderCard(item) {
+        function renderCardData(item) {
             const owner = item.customer_name || "Minta Pumdokmai";
             const color = item.color || "Navy Obsidian";
             const startDate = item.activated_at ? item.activated_at.split('T')[0] : "2026-11-07";
 
             document.getElementById('data-owner').innerText = owner;
             document.getElementById('data-color').innerText = color;
+            document.getElementById('data-start-date').innerText = startDate;
+
+            startCountdown(startDate);
+        }
+
+        function startCountdown(startDateStr) {
+            const startDateObj = new Date(startDateStr + "T00:00:00");
+            const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
+
+            const timer = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = expireTime - now;
+
+                if (distance <= 0) {
