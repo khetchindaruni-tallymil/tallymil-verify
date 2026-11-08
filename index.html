@@ -52,15 +52,15 @@
         <div style="background-color: #1c1c1c; border: 1px solid rgba(255, 255, 255, 0.05);" class="rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
-                <span id="data-model" class="font-semibold text-white">Hexag Bovin</span>
+                <span id="data-model" class="font-semibold text-white">กำลังโหลด...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ไซส์ / SIZE:</span>
-                <span id="data-size" class="font-semibold text-white">XS</span>
+                <span id="data-size" class="font-semibold text-white">กำลังโหลด...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">สี / COLOR:</span>
-                <span id="data-color" class="font-semibold text-white">Camel Suede</span>
+                <span id="data-color" class="font-semibold text-white">กำลังโหลด...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รหัสสินค้า / CHIP ID:</span>
@@ -68,11 +68,11 @@
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-                <span id="data-owner" class="font-semibold text-white">Minta Pumdokmai</span>
+                <span id="data-owner" class="font-semibold text-white">กำลังโหลด...</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-400">วันเริ่มรับประกัน / START DATE:</span>
-                <span id="data-start-date" class="font-mono text-white">2026-11-07</span>
+                <span id="data-start-date" class="font-mono text-white">--</span>
             </div>
         </div>
 
@@ -105,7 +105,7 @@
             if (card) card.style.display = 'block';
         }, 8000);
 
-        // 2. จัดการดึง Chip ID จาก URL
+        // 2. ดึง Chip ID จาก URL
         var urlParams = new URLSearchParams(window.location.search);
         var chipId = urlParams.get('chip') || urlParams.get('code') || "04403AB2C16680";
         document.getElementById('data-chip').innerText = chipId;
@@ -113,7 +113,7 @@
         var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
         var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";[span_0](start_span)[span_0](end_span)
 
-        // ยิง API ดึงข้อมูล และแสดงผลทันทีแบบไม่มีทางค้าง
+        // ยิง API ดึงข้อมูลจริงจากตาราง warranties โดยตรง
         fetch(supabaseUrl, {
             method: "GET",
             headers: {
@@ -127,46 +127,43 @@
         .then(function(data) {
             if (data && data.length > 0) {
                 var item = data[0];
+                // ดึงข้อมูลจริงจากตาราง warranties ครบทุกฟิลด์ (model, size, color, customer_name, activated_at)
                 updateCard(
-                    item.model || getModelByChip(chipId), 
-                    item.color || getColorByChip(chipId), 
+                    item.model || "Hexag Bovin", 
+                    item.size || "XS", 
+                    item.color || "Camel Suede", 
                     item.customer_name || "Minta Pumdokmai", 
                     item.activated_at || "2026-11-07"
                 );
             } else {
-                // ถ้าไม่เจอในตาราง ให้แสดงผลตามชิปที่สแกนทันที
-                updateCard(getModelByChip(chipId), getColorByChip(chipId), "Minta Pumdokmai", "2026-11-07");
+                document.getElementById('data-model').innerText = "ไม่พบข้อมูลชิปนี้ในระบบ";
+                document.getElementById('data-size').innerText = "-";
+                document.getElementById('data-color').innerText = "-";
+                document.getElementById('data-owner').innerText = "-";
+                document.getElementById('countdown-text').innerText = "ไม่มีข้อมูลการรับประกัน";
             }
         })
         .catch(function(err) {
-            console.warn("Using smart mapping due to fetch error:", err);
-            updateCard(getModelByChip(chipId), getColorByChip(chipId), "Minta Pumdokmai", "2026-11-07");
+            console.error("Supabase fetch error:", err);
+            document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อ";
         });
 
-        function getModelByChip(id) {
-            if (id === "0480F7B2AD1E90") return "Hexag Vegan";
-            return "Hexag Bovin";
-        }
-
-        function getColorByChip(id) {
-            if (id === "0480F7B2AD1E90") return "Navy Obsidian";
-            return "Camel Suede";
-        }
-
-        function updateCard(model, color, owner, startDateStr) {
+        function updateCard(model, size, color, owner, startDateStr) {
             document.getElementById('data-model').innerText = model;
+            document.getElementById('data-size').innerText = size;
             document.getElementById('data-color').innerText = color;
             document.getElementById('data-owner').innerText = owner;
             
             var formattedDate = startDateStr ? startDateStr.split('T')[0] : "2026-11-07";
             document.getElementById('data-start-date').innerText = formattedDate;
 
-            // ตัวนับถอยหลัง 1 ปี (365 วัน)
-            var targetDate = new Date(formattedDate + "T00:00:00").getTime() + (365 * 24 * 60 * 60 * 1000);
+            // ตั้งเวลาหมดอายุ 1 ปี (365 วัน) และรันตัวนับถอยหลังแบบเรียลไทม์
+            var startDateObj = new Date(formattedDate + "T00:00:00");
+            var expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
 
-            function runTimer() {
+            function updateCountdown() {
                 var now = new Date().getTime();
-                var distance = targetDate - now;
+                var distance = expireTime - now;
 
                 if (distance <= 0) {
                     document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
@@ -182,8 +179,8 @@
                     days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที";
             }
 
-            runTimer();
-            setInterval(runTimer, 1000);
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
         }
     </script>
 </body>
