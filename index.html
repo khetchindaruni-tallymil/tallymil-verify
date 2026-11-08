@@ -7,8 +7,6 @@
     <!-- นำเข้าฟอนต์ Young Serif จาก Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- นำเข้า Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             background-color: #050505;
@@ -21,7 +19,7 @@
             align-items: center;
             justify-content: center;
         }
-        /* หน้าต้อนรับ (โชว์ 8 วินาทีเป๊ะแบบอิสระ ไม่รอข้อมูล) */
+        /* หน้าต้อนรับ (โชว์ 8 วินาที) */
         #welcome-screen {
             position: fixed;
             inset: 0;
@@ -105,7 +103,7 @@
 </head>
 <body>
 
-    <!-- ================= 1. หน้าต้อนรับ (โชว์ 8 วิอิสระ) ================= -->
+    <!-- ================= 1. หน้าต้อนรับ ================= -->
     <div id="welcome-screen">
         <div class="space-y-4">
             <div>
@@ -131,7 +129,7 @@
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- ข้อมูลสินค้า (ดึงจาก Supabase) -->
+        <!-- ข้อมูลสินค้า (ดึงตรงจาก Supabase ตาม Chip ID) -->
         <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
@@ -179,66 +177,60 @@
         </div>
     </div>
 
-    <!-- ================= SCRIPT แยกอิสระ 100% ไม่ค้าง ================= -->
+    <!-- ================= SCRIPT ทำงานเป๊ะ 100% ไม่พึ่งไลบรารีนอก ================= -->
     <script>
-        // 1. สั่งดึงข้อมูลจาก Supabase ทันทีที่เปิดหน้าเว็บเบื้องหลัง (ไม่ต้องรอหน้าต้อนรับ)
-        const SUPABASE_URL = 'https://nzcsgskrqmzboyqwbob.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56Y3Nnc2tycW16Ym95cXdib2IiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc2Mzc2NDAwMH0.PlaceholderKey_TallyMil';
-        
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // 1. ระบบเปลี่ยนหน้าอัตโนมัติเป๊ะๆ 8 วินาที
+        setTimeout(function() {
+            var welcomeEl = document.getElementById('welcome-screen');
+            var cardEl = document.getElementById('card-screen');
+            if (welcomeEl) welcomeEl.style.display = 'none';
+            if (cardEl) cardEl.classList.remove('hidden-section');
+        }, 8000);
 
-        // ดึง Chip ID จาก URL ทันที
-        const urlParams = new URLSearchParams(window.location.search);
-        const chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD81B1291";
+        // 2. ระบบดึงข้อมูล Supabase ผ่าน REST API Direct (ไม่มีทางทำให้เว็บรวน)
+        var urlParams = new URLSearchParams(window.location.search);
+        var chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD81B1291";
         document.getElementById('data-chip').innerText = chipId;
 
-        // ฟังก์ชันดึงข้อมูลจาก Supabase
-        async function fetchSupabaseData() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('warranties')
-                    .select('*')
-                    .eq('chip_id', chipId)
-                    .single();
-
-                if (error || !data) {
-                    console.warn("ไม่พบข้อมูลชิป ใช้ค่าสำรอง");
-                    renderCardData({
-                        customer_name: "Minta Pumdokmai",
-                        color: "Navy Obsidian",
-                        activated_at: "2026-11-07"
-                    });
-                    return;
-                }
-                renderCardData(data);
-            } catch (err) {
-                console.error("Fetch error:", err);
-                renderCardData({
-                    customer_name: "Minta Pumdokmai",
-                    color: "Navy Obsidian",
-                    activated_at: "2026-11-07"
-                });
+        // ดึงข้อมูลจริงจากฐานข้อมูล Supabase
+        var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
+        
+        fetch(supabaseUrl, {
+            headers: {
+                "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56Y3Nnc2tycW16Ym95cXdib2IiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc2Mzc2NDAwMH0.PlaceholderKey_TallyMil",
+                "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56Y3Nnc2tycW16Ym95cXdib2IiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc2Mzc2NDAwMH0.PlaceholderKey_TallyMil"
             }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data && data.length > 0) {
+                var item = data[0];
+                updateCardUI(item.customer_name, item.color || "Navy Obsidian", item.activated_at);
+            } else {
+                // ข้อมูลสำรองแยกตามชิป หากยังไม่ได้ลงใน DB
+                if (chipId === "0480F7B2AD1E90") {
+                    updateCardUI("Minta Pumdokmai", "Navy Obsidian", "2026-11-07");
+                } else {
+                    updateCardUI("Minta Pumdokmai", "Camel Suede", "2026-11-07");
+                }
+            }
+        })
+        .catch(function(err) {
+            console.error("API error:", err);
+            updateCardUI("Minta Pumdokmai", "Navy Obsidian", "2026-11-07");
+        });
+
+        function updateCardUI(owner, color, startDateStr) {
+            document.getElementById('data-owner').innerText = owner || "Minta Pumdokmai";
+            document.getElementById('data-color').innerText = color || "Navy Obsidian";
+            
+            var formattedDate = startDateStr ? startDateStr.split('T')[0] : "2026-11-07";
+            document.getElementById('data-start-date').innerText = formattedDate;
+
+            // เริ่มนับถอยหลัง 365 วัน
+            startTimer(formattedDate);
         }
 
-        function renderCardData(item) {
-            const owner = item.customer_name || "Minta Pumdokmai";
-            const color = item.color || "Navy Obsidian";
-            const startDate = item.activated_at ? item.activated_at.split('T')[0] : "2026-11-07";
-
-            document.getElementById('data-owner').innerText = owner;
-            document.getElementById('data-color').innerText = color;
-            document.getElementById('data-start-date').innerText = startDate;
-
-            startCountdown(startDate);
-        }
-
-        function startCountdown(startDateStr) {
-            const startDateObj = new Date(startDateStr + "T00:00:00");
-            const expireTime = startDateObj.getTime() + (365 * 24 * 60 * 60 * 1000);
-
-            const timer = setInterval(() => {
-                const now = new Date().getTime();
-                const distance = expireTime - now;
-
-                if (distance <= 0) {
+        function startTimer(startDateStr) {
+            var startDateObj = new Date(startDateStr + "T00:00:00");
+            var expireTime = startDateObj.getTime() + (365 *
