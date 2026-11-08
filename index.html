@@ -52,15 +52,15 @@
         <div style="background-color: #1c1c1c; border: 1px solid rgba(255, 255, 255, 0.05);" class="rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
-                <span id="data-model" class="font-semibold text-white">Hexag Bovin</span>
+                <span id="data-model" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ไซส์ / SIZE:</span>
-                <span id="data-size" class="font-semibold text-white">XS</span>
+                <span id="data-size" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">สี / COLOR:</span>
-                <span id="data-color" class="font-semibold text-white">Camel Suede</span>
+                <span id="data-color" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รหัสสินค้า / CHIP ID:</span>
@@ -68,11 +68,11 @@
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-                <span id="data-owner" class="font-semibold text-white">Minta Pumdokmai</span>
+                <span id="data-owner" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-400">วันเริ่มรับประกัน / START DATE:</span>
-                <span id="data-start-date" class="font-mono text-white">2026-11-07</span>
+                <span id="data-start-date" class="font-mono text-white">--</span>
             </div>
         </div>
 
@@ -105,69 +105,77 @@
             if (card) card.style.display = 'block';
         }, 8000);
 
-        // 2. ดึง Chip ID จาก URL
+        // 2. ดึง Chip ID จาก URL แบบไดนามิก (รองรับทุกชิ้น ไม่ฟิกซ์ค่า)
         var urlParams = new URLSearchParams(window.location.search);
-        var chipId = urlParams.get('chip') || urlParams.get('code') || "04403AB2C16680";
-        document.getElementById('data-chip').innerText = chipId;
+        var chipId = urlParams.get('chip') || urlParams.get('code') || "";
+        
+        if (!chipId) {
+            document.getElementById('data-model').innerText = "ไม่พบรหัสชิปในลิงก์";
+            document.getElementById('countdown-text').innerText = "กรุณาสแกนผ่านชิปสินค้า";
+        } else {
+            document.getElementById('data-chip').innerText = chipId;
 
-        var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
-        var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";[span_0](start_span)[span_0](end_span)
+            var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
+            var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";[span_3](start_span)[span_3](end_span)
 
-        // ยิง API ดึงข้อมูล พร้อมระบบจับคู่ข้อมูลอัตโนมัติหากชื่อคอลัมน์ไม่ตรง
-        fetch(supabaseUrl, {
-            method: "GET",
-            headers: {
-                "apikey": supabaseAnonKey,
-                "Authorization": "Bearer " + supabaseAnonKey,
-                "Content-Type": "application/json",
-                "Prefer": "return=representation"
-            }
-        })
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-            if (data && data.length > 0) {
-                var item = data[0];
-                updateCard(
-                    item.model || item.product_model || getModelByChip(chipId), 
-                    item.size || "XS", 
-                    item.color || item.product_color || getColorByChip(chipId), 
-                    item.customer_name || item.owner || item.name || "Minta Pumdokmai", 
-                    item.activated_at || item.start_date || "2026-11-07"
-                );
-            } else {
-                updateCard(getModelByChip(chipId), "XS", getColorByChip(chipId), "Minta Pumdokmai", "2026-11-07");
-            }
-        })
-        .catch(function(err) {
-            console.warn("Using smart fallback:", err);
-            updateCard(getModelByChip(chipId), "XS", getColorByChip(chipId), "Minta Pumdokmai", "2026-11-07");
-        });
-
-        function getModelByChip(id) {
-            if (id === "0480F7B2AD1E90") return "Hexag Vegan";
-            return "Hexag Bovin";
+            // ยิง API ดึงข้อมูลสดๆ จากฐานข้อมูลหลังบ้านตามชิปที่สแกนจริงเท่านั้น
+            fetch(supabaseUrl, {
+                method: "GET",
+                headers: {
+                    "apikey": supabaseAnonKey,
+                    "Authorization": "Bearer " + supabaseAnonKey,
+                    "Content-Type": "application/json",
+                    "Prefer": "return=representation"
+                }
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data && data.length > 0) {
+                    var item = data[0];
+                    // ดึงค่าตามฟิลด์จริงใน DB แบบ 100% ไม่อิงค่าหลอกใดๆ ทั้งสิ้น
+                    renderCard({
+                        model: item.model || "-",
+                        size: item.size || "-",
+                        color: item.color || "-",
+                        customer_name: item.customer_name || item.owner || "-",
+                        activated_at: item.activated_at || item.start_date || null
+                    });
+                } else {
+                    document.getElementById('data-model').innerText = "ไม่พบข้อมูลสินค้านี้ในระบบ";
+                    document.getElementById('data-size').innerText = "-";
+                    document.getElementById('data-color').innerText = "-";
+                    document.getElementById('data-owner').innerText = "-";
+                    document.getElementById('countdown-text').innerText = "ยังไม่ได้ลงทะเบียนรับประกัน";
+                }
+            })
+            .catch(function(err) {
+                console.error("Database fetch error:", err);
+                document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล";
+            });
         }
 
-        function getColorByChip(id) {
-            if (id === "0480F7B2AD1E90") return "Navy Obsidian";
-            return "Camel Suede";
-        }
-
-        function updateCard(model, size, color, owner, startDateStr) {
-            document.getElementById('data-model').innerText = model;
-            document.getElementById('data-size').innerText = size;
-            document.getElementById('data-color').innerText = color;
-            document.getElementById('data-owner').innerText = owner;
+        function renderCard(info) {
+            document.getElementById('data-model').innerText = info.model;
+            document.getElementById('data-size').innerText = info.size;
+            document.getElementById('data-color').innerText = info.color;
+            document.getElementById('data-owner').innerText = info.customer_name;
             
-            var formattedDate = startDateStr ? startDateStr.split('T')[0] : "2026-11-07";
-            document.getElementById('data-start-date').innerText = formattedDate;
+            if (!info.activated_at) {
+                document.getElementById('data-start-date').innerText = "-";
+                document.getElementById('countdown-text').innerText = "ไม่มีข้อมูลวันที่เริ่มรับประกัน";
+                return;
+            }
 
-            // ตัวนับถอยหลัง 1 ปี (365 วัน)
-            var targetDate = new Date(formattedDate + "T00:00:00").getTime() + (365 * 24 * 60 * 60 * 1000);
+            var startDateStr = info.activated_at.split('T')[0];
+            document.getElementById('data-start-date').innerText = startDateStr;
 
-            function runTimer() {
+            // ระบบคำนวณเวลานับถอยหลัง 365 วันจากวันที่เริ่มรับประกันจริงใน DB
+            var startTime = new Date(startDateStr + "T00:00:00").getTime();
+            var expireTime = startTime + (365 * 24 * 60 * 60 * 1000);
+
+            function updateCountdown() {
                 var now = new Date().getTime();
-                var distance = targetDate - now;
+                var distance = expireTime - now;
 
                 if (distance <= 0) {
                     document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
@@ -176,16 +184,3 @@
 
                 var days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                document.getElementById('countdown-text').innerText = 
-                    days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที";
-            }
-
-            runTimer();
-            setInterval(runTimer, 1000);
-        }
-    </script>
-</body>
-</html>
