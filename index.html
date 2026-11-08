@@ -19,7 +19,7 @@
             align-items: center;
             justify-content: center;
         }
-        /* หน้าต้อนรับ (แสดงอัตโนมัติ 8 วินาที) */
+        /* หน้าต้อนรับ (คลีนๆ ไม่มีข้อความวงเล็บ) */
         #welcome-screen {
             position: fixed;
             inset: 0;
@@ -31,7 +31,6 @@
             padding: 32px;
             text-align: center;
             z-index: 99999;
-            transition: opacity 0.8s ease-in-out;
         }
         .welcome-title {
             color: #e2c068;
@@ -47,7 +46,6 @@
         }
         .quote-container {
             margin-top: 28px;
-            margin-bottom: 36px;
             max-width: 320px;
         }
         .quote-en {
@@ -62,11 +60,6 @@
             font-size: 13px;
             line-height: 1.7;
         }
-        .loading-text {
-            color: #e2c068;
-            font-size: 11px;
-            letter-spacing: 0.15em;
-        }
 
         /* หน้าการ์ดรับประกัน */
         .card-container {
@@ -78,8 +71,6 @@
             padding: 24px;
             border-radius: 1rem;
             position: relative;
-            opacity: 0;
-            transition: opacity 0.8s ease-in-out;
         }
         .inner-box {
             background-color: #1c1c1c;
@@ -112,7 +103,7 @@
 </head>
 <body>
 
-    <!-- ================= 1. หน้าต้อนรับ (แสดงออโต้ 8 วินาที) ================= -->
+    <!-- ================= 1. หน้าต้อนรับ (โชว์ 8 วิแล้วหายไปเอง) ================= -->
     <div id="welcome-screen">
         <div class="space-y-4">
             <div>
@@ -122,9 +113,6 @@
             <div class="quote-container">
                 <p class="quote-en">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</p>
                 <p class="quote-th">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษ ที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</p>
-            </div>
-            <div>
-                <p class="loading-text animate-pulse">[ กำลังเตรียมความพิเศษสำหรับคุณ... ]</p>
             </div>
         </div>
     </div>
@@ -141,7 +129,7 @@
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- ข้อมูลสินค้า (ดึงไดนามิกตาม Chip ID ที่สแกน) -->
+        <!-- ข้อมูลสินค้า (ดึงไดนามิกตาม Chip ID จาก URL) -->
         <div class="inner-box rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
@@ -189,9 +177,9 @@
         </div>
     </div>
 
-    <!-- ================= SCRIPT ตั้งเวลา 8 วินาทีอัตโนมัติ ================= -->
+    <!-- ================= SCRIPT ตั้งเวลา 8 วินาทีเป๊ะ ================= -->
     <script>
-        // โหลดข้อมูลชิปล่วงหน้าตั้งแต่เปิดหน้าเว็บ
+        // โหลดข้อมูลตาม Chip ID จาก URL ทันที
         const urlParams = new URLSearchParams(window.location.search);
         const chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD81B1291";
 
@@ -204,25 +192,20 @@
             startDate: "2026-11-07"
         };
 
-        // เซ็ตข้อมูลลงการ์ดรอไว้เลย
         document.getElementById('data-chip').innerText = productData.chipId;
         document.getElementById('data-owner').innerText = productData.owner;
         document.getElementById('data-start-date').innerText = productData.startDate;
 
-        // ตั้งเวลาเป๊ะๆ 8 วินาที (8000 มิลลิวินาที) เปลี่ยนหน้าอัตโนมัติ
+        // ตั้งเวลา 8 วินาที (8000 มิลลิวินาที) ตัดสลับหน้าแบบฉับพลันไม่มีค้าง
         setTimeout(() => {
             const welcomeEl = document.getElementById('welcome-screen');
             const cardEl = document.getElementById('card-screen');
 
             if (welcomeEl) {
-                welcomeEl.style.opacity = '0';
-                setTimeout(() => {
-                    welcomeEl.style.display = 'none';
-                    cardEl.classList.remove('hidden-section');
-                    setTimeout(() => {
-                        cardEl.style.opacity = '1';
-                    }, 50);
-                }, 800); // รอจังหวะเฟดเอ้าต์ 0.8 วิ
+                welcomeEl.style.display = 'none'; // ซ่อนหน้าต้อนรับทันที
+            }
+            if (cardEl) {
+                cardEl.classList.remove('hidden-section'); // แสดงหน้าการ์ดทันที
             }
         }, 8000);
 
@@ -245,4 +228,11 @@
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
             document.getElementById('countdown-text').innerText = 
-                `${days} วัน ${hours}
+                `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วินาที`;
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
