@@ -6,6 +6,8 @@
     <title>TALLY MiL - Certificate of Authenticity & Warranty</title>
     <link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- โหลด Supabase SDK ตัวทางการ ป้องกันปัญหาบล็อกการเชื่อมต่อ -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             background-color: #050505;
@@ -93,7 +95,7 @@
     </div>
 
     <script>
-        // 1. หน้าต้อนรับ 7 วินาที แล้วเปิดหน้าการ์ดแบบอิสระ ไม่ค้างแน่นอน
+        // 1. หน้าต้อนรับ 7 วินาที แล้วเปิดหน้าการ์ดอิสระ 100% ไม่ค้างแน่นอน
         setTimeout(function() {
             var welcome = document.getElementById('welcome-screen');
             var card = document.getElementById('card-screen');
@@ -101,48 +103,52 @@
             if (card) card.style.display = 'block';
         }, 7000);
 
-        // 2. ดึง Chip ID จาก URL (ถ้าไม่ได้ใส่มา ให้ดึงแถวแรก 040ADD821B1291 มาเทส)
+        // 2. ดึง Chip ID จาก URL (ถ้าไม่มี ให้ดึงตัวแรกมาแสดงผลเทส)
         var urlParams = new URLSearchParams(window.location.search);
         var chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD821B1291";
         
         document.getElementById('data-chip').innerText = chipId;
 
-        var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
-        var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";
+        // 3. เชื่อมต่อ Supabase ผ่าน SDK ทางการ
+        const SUPABASE_URL = 'https://nzcsgskrqmzboyqwbob.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';[span_0](start_span)[span_0](end_span)
+        
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // 3. ยิงดึงข้อมูลจาก Supabase ตรงเป๊ะตามคอลัมน์ในตาราง
-        fetch(supabaseUrl, {
-            method: "GET",
-            headers: {
-                "apikey": supabaseAnonKey,
-                "Authorization": "Bearer " + supabaseAnonKey,
-                "Content-Type": "application/json",
-                "Prefer": "return=representation"
+        async function fetchWarrantyData() {
+            try {
+                let { data, error } = await supabaseClient
+                    .from('warranties')
+                    .select('*')
+                    .eq('chip_id', chipId);
+
+                if (error) {
+                    throw error;
+                }
+
+                if (data && data.length > 0) {
+                    var item = data[0];
+                    renderWarrantyCard({
+                        model: item.model || "-",
+                        size: item.size || "-",
+                        color: item.color || "-",
+                        customer_name: item.customer_name || "-",
+                        activated_at: item.activated_at || null
+                    });
+                } else {
+                    document.getElementById('data-model').innerText = "ไม่พบข้อมูลสินค้านี้ในระบบ";
+                    document.getElementById('data-size').innerText = "-";
+                    document.getElementById('data-color').innerText = "-";
+                    document.getElementById('data-owner').innerText = "-";
+                    document.getElementById('countdown-text').innerText = "ยังไม่ได้ลงทะเบียนรับประกัน";
+                }
+            } catch (err) {
+                console.error("Supabase SDK Error:", err);
+                document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล";
             }
-        })
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-            if (data && data.length > 0) {
-                var item = data[0];
-                renderWarrantyCard({
-                    model: item.model || "-",
-                    size: item.size || "-",
-                    color: item.color || "-",
-                    customer_name: item.customer_name || "-",
-                    activated_at: item.activated_at || null
-                });
-            } else {
-                document.getElementById('data-model').innerText = "ไม่พบข้อมูลสินค้านี้ในระบบ";
-                document.getElementById('data-size').innerText = "-";
-                document.getElementById('data-color').innerText = "-";
-                document.getElementById('data-owner').innerText = "-";
-                document.getElementById('countdown-text').innerText = "ยังไม่ได้ลงทะเบียนรับประกัน";
-            }
-        })
-        .catch(function(err) {
-            console.error("Database fetch error:", err);
-            document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล";
-        });
+        }
+
+        fetchWarrantyData();
 
         function renderWarrantyCard(info) {
             document.getElementById('data-model').innerText = info.model;
@@ -184,5 +190,4 @@
             setInterval(updateCountdown, 1000);
         }
     </script>
-</body>
-</html>
+</b
