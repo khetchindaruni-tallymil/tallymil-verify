@@ -57,15 +57,15 @@
         <div style="background-color: #1c1c1c; border: 1px solid rgba(255, 255, 255, 0.05);" class="rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
-                <span id="data-model" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
+                <span id="data-model" class="font-semibold text-white">กำลังดึงข้อมูลจากระบบ...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ไซส์ / SIZE:</span>
-                <span id="data-size" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
+                <span id="data-size" class="font-semibold text-white">--</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">สี / COLOR:</span>
-                <span id="data-color" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
+                <span id="data-color" class="font-semibold text-white">--</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รหัสสินค้า / CHIP ID:</span>
@@ -73,7 +73,7 @@
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-                <span id="data-owner" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
+                <span id="data-owner" class="font-semibold text-white">--</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-400">วันเริ่มรับประกัน / START DATE:</span>
@@ -85,7 +85,7 @@
         <div style="background-color: #1c1c1c; border: 1px solid rgba(212, 175, 55, 0.35);" class="rounded-xl p-4 text-center mb-6">
             <p class="text-[10px] text-gray-400 tracking-wider mb-1">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</p>
             <div id="countdown-text" style="color: #d4af37;" class="text-sm font-bold font-mono">
-                กำลังคำนวณเวลา...
+                รอข้อมูลจากฐานข้อมูล...
             </div>
         </div>
 
@@ -102,48 +102,13 @@
     </div>
 
     <script>
-        // 1. ดึงรหัสชิปจาก URL
+        // 1. ดึงรหัสชิปจริงจาก URL ที่แนบมากับการสแกน NFC
         var urlParams = new URLSearchParams(window.location.search);
         var chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD821B1291";
         
         document.getElementById('data-chip').innerText = chipId;
 
-        // 2. ฟังก์ชันแสดงผลข้อมูลลงหน้าเว็บ
-        function displayWarranty(item) {
-            document.getElementById('data-model').innerText = item.model || "Hexag Bovin";
-            document.getElementById('data-size').innerText = item.size || "XS";
-            document.getElementById('data-color').innerText = item.color || "Camel Suede";
-            document.getElementById('data-owner').innerText = item.customer_name || "Minta Pumdokmai";
-
-            var startDateStr = (item.activated_at ? item.activated_at.split('T')[0] : "2026-11-08");
-            document.getElementById('data-start-date').innerText = startDateStr;
-
-            var startTime = new Date(startDateStr + "T00:00:00").getTime();
-            var expireTime = startTime + (365 * 24 * 60 * 60 * 1000);
-
-            function updateCountdown() {
-                var now = new Date().getTime();
-                var distance = expireTime - now;
-
-                if (distance <= 0) {
-                    document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
-                    return;
-                }
-
-                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                document.getElementById('countdown-text').innerText = 
-                    days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที";
-            }
-
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
-        }
-
-        // 3. ดึงข้อมูลจาก Supabase REST API พร้อมระบบสำรองข้อมูล (Fallback) ป้องกันข้อมูลไม่ขึ้น
+        // 2. ดึงข้อมูลจากตาราง warranties ใน Supabase ตาม chip_id แบบตรงตัวเป๊ะๆ
         var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
         var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";
 
@@ -156,34 +121,61 @@
                 "Prefer": "return=representation"
             }
         })
-        .then(function(res) {
-            if (!res.ok) throw new Error("Network response was not ok");
-            return res.json();
-        })
+        .then(function(res) { return res.json(); })
         .then(function(data) {
             if (data && data.length > 0) {
-                displayWarranty(data[0]);
+                var item = data[0];
+                
+                // ดึงข้อมูลตามจริงจากแถวของชิปนั้นๆ ในฐานข้อมูล
+                document.getElementById('data-model').innerText = item.model || "-";
+                document.getElementById('data-size').innerText = item.size || "-";
+                document.getElementById('data-color').innerText = item.color || "-";
+                document.getElementById('data-owner').innerText = item.customer_name || "-";
+
+                if (item.activated_at) {
+                    var startDateStr = item.activated_at.split('T')[0];
+                    document.getElementById('data-start-date').innerText = startDateStr;
+
+                    // คำนวณเวลานับถอยหลัง 1 ปี (365 วัน) จากวันที่ activated_at จริงของชิปนั้น
+                    var startTime = new Date(startDateStr + "T00:00:00").getTime();
+                    var expireTime = startTime + (365 * 24 * 60 * 60 * 1000);
+
+                    function updateCountdown() {
+                        var now = new Date().getTime();
+                        var distance = expireTime - now;
+
+                        if (distance <= 0) {
+                            document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
+                            return;
+                        }
+
+                        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                        document.getElementById('countdown-text').innerText = 
+                            days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที";
+                    }
+
+                    updateCountdown();
+                    setInterval(updateCountdown, 1000);
+                } else {
+                    document.getElementById('data-start-date').innerText = "-";
+                    document.getElementById('countdown-text').innerText = "ไม่มีข้อมูลวันที่เริ่มรับประกัน";
+                }
             } else {
-                // ถ้าไม่เจอในฐานข้อมูล ให้แสดงข้อมูลตัวอย่างจากชิปนี้ทันที
-                displayWarranty({
-                    model: "Hexag Bovin",
-                    size: "XS",
-                    color: "Camel Suede",
-                    customer_name: "Minta Pumdokmai",
-                    activated_at: "2026-11-08"
-                });
+                // ถ้าไม่มีรหัสชิปนี้ในตาราง warranties ให้แจ้งเตือนชัดเจน
+                document.getElementById('data-model').innerText = "ไม่พบข้อมูลรหัสชิปนี้ในระบบ";
+                document.getElementById('data-size').innerText = "-";
+                document.getElementById('data-color').innerText = "-";
+                document.getElementById('data-owner').innerText = "-";
+                document.getElementById('countdown-text').innerText = "ยังไม่ได้ลงทะเบียนรับประกัน";
             }
         })
         .catch(function(err) {
-            console.error("Fetch Error, using fallback data:", err);
-            // กรณีเกิดข้อผิดพลาดในการเชื่อมต่อ แสดงข้อมูลสำรองทันทีเพื่อให้หน้าเว็บสมบูรณ์ 100%
-            displayWarranty({
-                model: "Hexag Bovin",
-                size: "XS",
-                color: "Camel Suede",
-                customer_name: "Minta Pumdokmai",
-                activated_at: "2026-11-08"
-            });
+            console.error("Fetch Error:", err);
+            document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล";
         });
     </script>
 </body>
