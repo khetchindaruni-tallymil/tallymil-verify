@@ -6,7 +6,6 @@
     <title>TALLY MiL - Certificate of Authenticity & Warranty</title>
     <link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- โหลด Supabase SDK ตัวทางการเวอร์ชันเสถียร -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
@@ -24,18 +23,8 @@
 </head>
 <body>
 
-    <!-- หน้าต้อนรับ: โชว์ 7 วินาที แล้วซ่อนอัตโนมัติแบบชัวร์ 100% -->
-    <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999;">
-        <div style="max-width: 320px;">
-            <h1 style="color: #e2c068; letter-spacing: 0.25em; font-size: 1.5rem; margin-bottom: 8px;">TALLY MIL</h1>
-            <p style="color: #9ca3af; letter-spacing: 0.2em; font-size: 10px; text-transform: uppercase; margin-bottom: 28px;">WELCOME TO TALLY MIL</p>
-            <p style="color: #d1d5db; font-style: italic; font-size: 14px; line-height: 1.7; margin-bottom: 16px;">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</p>
-            <p style="color: #9ca3af; font-size: 13px; line-height: 1.7;">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษ ที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</p>
-        </div>
-    </div>
-
-    <!-- หน้าการ์ดรับประกัน -->
-    <div id="card-screen" style="display: none; background-color: #141414; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9); width: 100%; max-width: 380px; padding: 24px; border-radius: 1rem;">
+    <!-- หน้าการ์ดรับประกัน: แสดงผลทันที ไม่มีหน้าต้อนรับให้ค้างอีกต่อไป -->
+    <div id="card-screen" style="background-color: #141414; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9); width: 100%; max-width: 380px; padding: 24px; border-radius: 1rem;">
         <div class="text-center mb-6">
             <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
             <p class="text-[10px] tracking-widest text-gray-400 mt-1">CERTIFICATE OF AUTHENTICITY & WARRANTY</p>
@@ -95,23 +84,15 @@
     </div>
 
     <script>
-        // 1. หน้าต้อนรับ 7 วินาที ตัดเข้าหน้าการ์ดอัตโนมัติแบบอิสระ
-        setTimeout(function() {
-            var welcome = document.getElementById('welcome-screen');
-            var card = document.getElementById('card-screen');
-            if (welcome) welcome.style.display = 'none';
-            if (card) card.style.display = 'block';
-        }, 7000);
-
-        // 2. ดึง Chip ID จาก URL (ถ้าไม่ได้ส่งมา ให้ดึงรหัส 040ADD821B1291 มาเทส)
+        // ดึง Chip ID จาก URL (ถ้าไม่มี ให้ดึงรหัส 040ADD821B1291 มาแสดงผลเทส)
         var urlParams = new URLSearchParams(window.location.search);
         var chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD821B1291";
         
         document.getElementById('data-chip').innerText = chipId;
 
-        // 3. เชื่อมต่อผ่าน Supabase JS SDK ตัวทางการ
+        // เชื่อมต่อผ่าน Supabase JS SDK ตัวทางการ
         const SUPABASE_URL = 'https://nzcsgskrqmzboyqwbob.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
+        const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';[span_0](start_span)[span_0](end_span)
 
         const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -180,4 +161,7 @@
             }
         }
 
-        loadData()
+        loadData();
+    </script>
+</body>
+</html>
