@@ -22,7 +22,7 @@
 </head>
 <body>
 
-    <!-- หน้าต้อนรับ (โชว์ 7 วินาที แล้วซ่อนอัตโนมัติ) -->
+    <!-- หน้าต้อนรับ: ทำงานอิสระ 7 วินาทีแล้วหายไปแน่นอน -->
     <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999;">
         <div style="max-width: 320px;">
             <h1 style="color: #e2c068; letter-spacing: 0.25em; font-size: 1.5rem; margin-bottom: 8px;">TALLY MIL</h1>
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <!-- หน้าการ์ดรับประกัน (เริ่มต้นซ่อนไว้) -->
+    <!-- หน้าการ์ดรับประกัน -->
     <div id="card-screen" style="display: none; background-color: #141414; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9); width: 100%; max-width: 380px; padding: 24px; border-radius: 1rem;">
         <div class="text-center mb-6">
             <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
@@ -44,7 +44,7 @@
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- ข้อมูลสินค้าดึงจาก DB ตามจริง -->
+        <!-- ข้อมูลสินค้า -->
         <div style="background-color: #1c1c1c; border: 1px solid rgba(255, 255, 255, 0.05);" class="rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
@@ -72,7 +72,7 @@
             </div>
         </div>
 
-        <!-- กล่องนับถอยหลังเรียลไทม์ -->
+        <!-- กล่องนับถอยหลัง -->
         <div style="background-color: #1c1c1c; border: 1px solid rgba(212, 175, 55, 0.35);" class="rounded-xl p-4 text-center mb-6">
             <p class="text-[10px] text-gray-400 tracking-wider mb-1">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</p>
             <div id="countdown-text" style="color: #d4af37;" class="text-sm font-bold font-mono">
@@ -93,7 +93,7 @@
     </div>
 
     <script>
-        // 1. ควบคุมหน้าต้อนรับ 7 วินาที แล้วตัดเข้าหน้าการ์ดอัตโนมัติแบบชัวร์ 100%
+        // 1. แยกการทำงานหน้าต้อนรับให้จบในตัว 7 วินาที ตัดเข้าหน้าการ์ดชัวร์ 100% ไม่รอ API
         setTimeout(function() {
             var welcome = document.getElementById('welcome-screen');
             var card = document.getElementById('card-screen');
@@ -101,7 +101,7 @@
             if (card) card.style.display = 'block';
         }, 7000);
 
-        // 2. ดึงข้อมูลจาก Supabase ตาม Chip ID ที่สแกนแบบเรียลไทม์
+        // 2. ดึงข้อมูลจาก Supabase แบบไดนามิกตาม Chip ID
         var urlParams = new URLSearchParams(window.location.search);
         var chipId = urlParams.get('chip') || urlParams.get('code') || "";
 
@@ -181,4 +181,5 @@
 
                 var days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var minutes = Math.floor((distance % (1000 * 60 * 60))
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds
