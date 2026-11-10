@@ -22,7 +22,7 @@
 </head>
 <body>
 
-    <!-- หน้าต้อนรับ: ทำงานอิสระ 7 วินาทีแล้วหายไปแน่นอน -->
+    <!-- หน้าต้อนรับ: ทำงานอิสระ 7 วินาที แล้วซ่อนตัวเอง -->
     <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999;">
         <div style="max-width: 320px;">
             <h1 style="color: #e2c068; letter-spacing: 0.25em; font-size: 1.5rem; margin-bottom: 8px;">TALLY MIL</h1>
@@ -93,7 +93,7 @@
     </div>
 
     <script>
-        // 1. แยกการทำงานหน้าต้อนรับให้จบในตัว 7 วินาที ตัดเข้าหน้าการ์ดชัวร์ 100% ไม่รอ API
+        // 1. บังคับซ่อนหน้าต้อนรับใน 7 วินาทีเป๊ะแบบแยกส่วน (ตัดปัญหาค้างถาวร)
         setTimeout(function() {
             var welcome = document.getElementById('welcome-screen');
             var card = document.getElementById('card-screen');
@@ -101,56 +101,48 @@
             if (card) card.style.display = 'block';
         }, 7000);
 
-        // 2. ดึงข้อมูลจาก Supabase แบบไดนามิกตาม Chip ID
+        // 2. ดึงข้อมูล Chip ID จาก URL (ถ้าไม่ได้ใส่พารามิเตอร์มา จะดึงตัวทดสอบอัตโนมัติ)
         var urlParams = new URLSearchParams(window.location.search);
-        var chipId = urlParams.get('chip') || urlParams.get('code') || "";
+        var chipId = urlParams.get('chip') || urlParams.get('code') || "04403AB2C16680";
+        
+        document.getElementById('data-chip').innerText = chipId;
 
-        if (!chipId) {
-            document.getElementById('data-model').innerText = "ไม่พบรหัสชิปในลิงก์";
-            document.getElementById('data-size').innerText = "-";
-            document.getElementById('data-color').innerText = "-";
-            document.getElementById('data-chip').innerText = "-";
-            document.getElementById('data-owner').innerText = "-";
-            document.getElementById('countdown-text').innerText = "กรุณาสแกนผ่านชิปสินค้า";
-        } else {
-            document.getElementById('data-chip').innerText = chipId;
+        var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
+        var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";
 
-            var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
-            var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";
-
-            fetch(supabaseUrl, {
-                method: "GET",
-                headers: {
-                    "apikey": supabaseAnonKey,
-                    "Authorization": "Bearer " + supabaseAnonKey,
-                    "Content-Type": "application/json",
-                    "Prefer": "return=representation"
-                }
-            })
-            .then(function(res) { return res.json(); })
-            .then(function(data) {
-                if (data && data.length > 0) {
-                    var item = data[0];
-                    renderWarrantyCard({
-                        model: item.model || "-",
-                        size: item.size || "-",
-                        color: item.color || "-",
-                        customer_name: item.customer_name || item.owner || "-",
-                        activated_at: item.activated_at || item.start_date || null
-                    });
-                } else {
-                    document.getElementById('data-model').innerText = "ไม่พบข้อมูลสินค้านี้ในระบบ";
-                    document.getElementById('data-size').innerText = "-";
-                    document.getElementById('data-color').innerText = "-";
-                    document.getElementById('data-owner').innerText = "-";
-                    document.getElementById('countdown-text').innerText = "ยังไม่ได้ลงทะเบียนรับประกัน";
-                }
-            })
-            .catch(function(err) {
-                console.error("Database fetch error:", err);
-                document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล";
-            });
-        }
+        // 3. ยิงดึงข้อมูลจาก Supabase ตามชิปที่สแกนจริง
+        fetch(supabaseUrl, {
+            method: "GET",
+            headers: {
+                "apikey": supabaseAnonKey,
+                "Authorization": "Bearer " + supabaseAnonKey,
+                "Content-Type": "application/json",
+                "Prefer": "return=representation"
+            }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data && data.length > 0) {
+                var item = data[0];
+                renderWarrantyCard({
+                    model: item.model || "-",
+                    size: item.size || "-",
+                    color: item.color || "-",
+                    customer_name: item.customer_name || item.owner || "-",
+                    activated_at: item.activated_at || item.start_date || null
+                });
+            } else {
+                document.getElementById('data-model').innerText = "ไม่พบข้อมูลสินค้านี้ในระบบ";
+                document.getElementById('data-size').innerText = "-";
+                document.getElementById('data-color').innerText = "-";
+                document.getElementById('data-owner').innerText = "-";
+                document.getElementById('countdown-text').innerText = "ยังไม่ได้ลงทะเบียนรับประกัน";
+            }
+        })
+        .catch(function(err) {
+            console.error("Database fetch error:", err);
+            document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล";
+        });
 
         function renderWarrantyCard(info) {
             document.getElementById('data-model').innerText = info.model;
@@ -182,4 +174,15 @@
                 var days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                var seconds
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('countdown-text').innerText = 
+                    days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที";
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+    </script>
+</body>
+</html>
