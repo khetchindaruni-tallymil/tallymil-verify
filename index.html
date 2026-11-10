@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>TALLY MiL - Certificate of Authenticity & Warranty</title>
     <link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,11 +19,20 @@
             align-items: center;
             justify-content: center;
         }
+        /* แอนิมเอชันซ่อนหน้าต้อนรับแบบอัตโนมัติหลัง 7 วินาที */
+        @keyframes hideWelcome {
+            0% { opacity: 1; visibility: visible; }
+            90% { opacity: 1; visibility: visible; }
+            100% { opacity: 0; visibility: hidden; display: none; }
+        }
+        #welcome-screen {
+            animation: hideWelcome 0.5s ease 7s forwards;
+        }
     </style>
 </head>
 <body>
 
-    <!-- หน้าต้อนรับ: ทำงาน 7 วินาที แล้วซ่อนอัตโนมัติแบบชัวร์ 100% -->
+    <!-- หน้าต้อนรับ: โชว์ 7 วินาทีแล้วหายไปเองด้วย CSS Animation 100% ไม่ติดขัด -->
     <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999;">
         <div style="max-width: 320px;">
             <h1 style="color: #e2c068; letter-spacing: 0.25em; font-size: 1.5rem; margin-bottom: 8px;">TALLY MIL</h1>
@@ -33,7 +43,7 @@
     </div>
 
     <!-- หน้าการ์ดรับประกัน -->
-    <div id="card-screen" style="display: none; background-color: #141414; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9); width: 100%; max-width: 380px; padding: 24px; border-radius: 1rem;">
+    <div id="card-screen" style="background-color: #141414; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9); width: 100%; max-width: 380px; padding: 24px; border-radius: 1rem;">
         <div class="text-center mb-6">
             <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
             <p class="text-[10px] tracking-widest text-gray-400 mt-1">CERTIFICATE OF AUTHENTICITY & WARRANTY</p>
@@ -93,21 +103,13 @@
     </div>
 
     <script>
-        // 1. ควบคุมหน้าต้อนรับ 7 วินาที แล้วเปิดหน้าการ์ด (ทำงานอิสระ 100%)
-        setTimeout(function() {
-            var welcome = document.getElementById('welcome-screen');
-            var card = document.getElementById('card-screen');
-            if (welcome) welcome.style.display = 'none';
-            if (card) card.style.display = 'block';
-        }, 7000);
-
-        // 2. ดึงรหัสชิปจาก URL (ถ้าไม่มี ใช้รหัสเทสตัวแรกในตาราง)
+        // ดึงรหัสชิปจาก URL ทันที
         var urlParams = new URLSearchParams(window.location.search);
         var chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD821B1291";
         
         document.getElementById('data-chip').innerText = chipId;
 
-        // 3. ใช้ REST API ตรงผ่าน Supabase Endpoint พร้อมระบุหัวตารางและคีย์ที่ถูกต้อง
+        // ดึงข้อมูลจาก Supabase ผ่าน REST API
         var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
         var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";
 
@@ -120,17 +122,10 @@
                 "Prefer": "return=representation"
             }
         })
-        .then(function(res) {
-            if (!res.ok) {
-                throw new Error("HTTP status " + res.status);
-            }
-            return res.json();
-        })
+        .then(function(res) { return res.json(); })
         .then(function(data) {
             if (data && data.length > 0) {
                 var item = data[0];
-                
-                // แสดงข้อมูลลงหน้าเว็บตามคอลัมน์จริงในตารางเป๊ะๆ
                 document.getElementById('data-model').innerText = item.model || "-";
                 document.getElementById('data-size').innerText = item.size || "-";
                 document.getElementById('data-color').innerText = item.color || "-";
@@ -167,7 +162,6 @@
                     document.getElementById('data-start-date').innerText = "-";
                     document.getElementById('countdown-text').innerText = "ไม่มีข้อมูลวันที่เริ่มรับประกัน";
                 }
-
             } else {
                 document.getElementById('data-model').innerText = "ไม่พบรหัสชิปนี้ในระบบ";
                 document.getElementById('data-size').innerText = "-";
@@ -178,7 +172,8 @@
         })
         .catch(function(err) {
             console.error("Fetch Error:", err);
-            document.getElementById('data-model').innerText = "เชื่อมต่อฐานข้อมูลไม่สำเร็จ";
-            document.getElementById('data-size').innerText = "-";
-            document.getElementById('data-color').innerText = "-";
-            document.getElementById('data-owner').innerText = "-";
+            document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อ";
+        });
+    </script>
+</body>
+</html>
