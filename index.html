@@ -116,7 +116,7 @@
             document.getElementById('data-chip').innerText = chipId;
 
             var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
-            var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";[span_0](start_span)[span_0](end_span)
+            var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";
 
             fetch(supabaseUrl, {
                 method: "GET",
@@ -167,7 +167,6 @@
             var startDateStr = info.activated_at.split('T')[0];
             document.getElementById('data-start-date').innerText = startDateStr;
 
-            // คำนวณเวลานับถอยหลัง 1 ปี (365 วัน) จากการสแกนครั้งแรกใน DB เสมอ
             var startTime = new Date(startDateStr + "T00:00:00").getTime();
             var expireTime = startTime + (365 * 24 * 60 * 60 * 1000);
 
@@ -181,4 +180,5 @@
                 }
 
                 var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                var hours = Math.floor((distance
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60))
