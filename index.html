@@ -22,7 +22,7 @@
 </head>
 <body>
 
-    <!-- หน้าต้อนรับ: ทำงานอิสระ 7 วินาที แล้วซ่อนตัวเอง -->
+    <!-- หน้าต้อนรับ: โชว์ 7 วินาที แล้วซ่อนอัตโนมัติ -->
     <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999;">
         <div style="max-width: 320px;">
             <h1 style="color: #e2c068; letter-spacing: 0.25em; font-size: 1.5rem; margin-bottom: 8px;">TALLY MIL</h1>
@@ -93,7 +93,7 @@
     </div>
 
     <script>
-        // 1. บังคับซ่อนหน้าต้อนรับใน 7 วินาทีเป๊ะแบบแยกส่วน (ตัดปัญหาค้างถาวร)
+        // 1. หน้าต้อนรับ 7 วินาที แล้วเปิดหน้าการ์ดแบบอิสระ ไม่ค้างแน่นอน
         setTimeout(function() {
             var welcome = document.getElementById('welcome-screen');
             var card = document.getElementById('card-screen');
@@ -101,16 +101,16 @@
             if (card) card.style.display = 'block';
         }, 7000);
 
-        // 2. ดึงข้อมูล Chip ID จาก URL (ถ้าไม่ได้ใส่พารามิเตอร์มา จะดึงตัวทดสอบอัตโนมัติ)
+        // 2. ดึง Chip ID จาก URL (ถ้าไม่ได้ใส่มา ให้ดึงแถวแรก 040ADD821B1291 มาเทส)
         var urlParams = new URLSearchParams(window.location.search);
-        var chipId = urlParams.get('chip') || urlParams.get('code') || "04403AB2C16680";
+        var chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD821B1291";
         
         document.getElementById('data-chip').innerText = chipId;
 
         var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
         var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";
 
-        // 3. ยิงดึงข้อมูลจาก Supabase ตามชิปที่สแกนจริง
+        // 3. ยิงดึงข้อมูลจาก Supabase ตรงเป๊ะตามคอลัมน์ในตาราง
         fetch(supabaseUrl, {
             method: "GET",
             headers: {
@@ -128,8 +128,8 @@
                     model: item.model || "-",
                     size: item.size || "-",
                     color: item.color || "-",
-                    customer_name: item.customer_name || item.owner || "-",
-                    activated_at: item.activated_at || item.start_date || null
+                    customer_name: item.customer_name || "-",
+                    activated_at: item.activated_at || null
                 });
             } else {
                 document.getElementById('data-model').innerText = "ไม่พบข้อมูลสินค้านี้ในระบบ";
