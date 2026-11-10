@@ -22,8 +22,8 @@
 </head>
 <body>
 
-    <!-- 1. หน้าต้อนรับ (WELCOME SCREEN) -->
-    <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999; transition: opacity 0.8s ease;">
+    <!-- หน้าต้อนรับ (รูปแบบตามภาพที่ 1 โชว์ 8 วินาทีเป๊ะ) -->
+    <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999;">
         <div class="space-y-4">
             <div>
                 <h1 style="color: #e2c068; letter-spacing: 0.25em; font-size: 1.5rem;">TALLY MIL</h1>
@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <!-- 2. หน้าการ์ดรับประกัน (CARD SCREEN) -->
+    <!-- หน้าการ์ดรับประกัน (รูปแบบตามภาพที่ 2 แต่ดึงข้อมูลจริงจาก DB) -->
     <div id="card-screen" style="display: none; background-color: #141414; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9); width: 100%; max-width: 380px; padding: 24px; border-radius: 1rem; position: relative;">
         <div class="text-center mb-6">
             <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
@@ -48,19 +48,19 @@
             <span>AUTHENTIC & GUARANTEED PRODUCT</span>
         </div>
 
-        <!-- รายละเอียดสินค้า -->
+        <!-- ข้อมูลสินค้าดึงจากฐานข้อมูลจริงตามชิปที่สแกน -->
         <div style="background-color: #1c1c1c; border: 1px solid rgba(255, 255, 255, 0.05);" class="rounded-xl p-4 space-y-3 text-xs mb-6">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
-                <span id="data-model" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
+                <span id="data-model" class="font-semibold text-white">กำลังโหลด...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ไซส์ / SIZE:</span>
-                <span id="data-size" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
+                <span id="data-size" class="font-semibold text-white">กำลังโหลด...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">สี / COLOR:</span>
-                <span id="data-color" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
+                <span id="data-color" class="font-semibold text-white">กำลังโหลด...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รหัสสินค้า / CHIP ID:</span>
@@ -68,7 +68,7 @@
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-                <span id="data-owner" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
+                <span id="data-owner" class="font-semibold text-white">กำลังโหลด...</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-400">วันเริ่มรับประกัน / START DATE:</span>
@@ -76,7 +76,7 @@
             </div>
         </div>
 
-        <!-- กล่องนับถอยหลัง -->
+        <!-- กล่องนับถอยหลังเรียลไทม์ 1 ปี (365 วัน) -->
         <div style="background-color: #1c1c1c; border: 1px solid rgba(212, 175, 55, 0.35);" class="rounded-xl p-4 text-center mb-6">
             <p class="text-[10px] text-gray-400 tracking-wider mb-1">WARRANTY REMAINING / ระยะเวลารับประกันคงเหลือ (1 ปี)</p>
             <div id="countdown-text" style="color: #d4af37;" class="text-sm font-bold font-mono">
@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <!-- ปุ่ม VIP -->
+        <!-- ปุ่ม VIP ไป LINE OA -->
         <a href="https://line.me/R/ti/p/@962dvbat" target="_blank" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3); font-family: 'Young Serif', serif;" class="w-full text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
             <span>🎁</span>
             <span>รับสิทธิพิเศษ / สุ่มรางวัลลูกค้า VIP</span>
@@ -97,28 +97,35 @@
     </div>
 
     <script>
-        // --- ส่วนที่ 1: สลับหน้าต้อนรับไปหน้าการ์ดอัตโนมัติ (ทำงานแยกเด็ดขาด กันหน้าค้าง 100%) ---
-        window.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                var welcome = document.getElementById('welcome-screen');
-                var card = document.getElementById('card-screen');
-                if (welcome && card) {
-                    welcome.style.opacity = '0';
-                    setTimeout(function() {
-                        welcome.style.display = 'none';
-                        card.style.display = 'block';
-                    }, 800); // 0.8 วินาทีหลังจากเริ่มจาง
-                }
-            }, 5000); // โชว์หน้าต้อนรับ 5 วินาทีเป๊ะ
-        });
+        // 1. หน้าต้อนรับโชว์ 8 วินาทีเป๊ะ แล้วเปิดหน้าการ์ดอัตโนมัติ
+        setTimeout(function() {
+            var welcome = document.getElementById('welcome-screen');
+            var card = document.getElementById('card-screen');
+            if (welcome) {
+                welcome.style.opacity = '0';
+                welcome.style.transition = 'opacity 0.5s ease';
+                setTimeout(function() {
+                    welcome.style.display = 'none';
+                    if (card) card.style.display = 'block';
+                }, 500);
+            }
+        }, 8000);
 
-        // --- ส่วนที่ 2: ดึงข้อมูล Supabase และคำนวณเวลา ---
+        // 2. ดึงรหัส Chip ID จาก URL อัตโนมัติ
         var urlParams = new URLSearchParams(window.location.search);
         var chipId = urlParams.get('chip') || urlParams.get('code') || "";
-        
-        if (chipId) {
+
+        if (!chipId) {
+            document.getElementById('data-model').innerText = "ไม่พบรหัสชิปในลิงก์";
+            document.getElementById('data-size').innerText = "-";
+            document.getElementById('data-color').innerText = "-";
+            document.getElementById('data-chip').innerText = "-";
+            document.getElementById('data-owner').innerText = "-";
+            document.getElementById('countdown-text').innerText = "กรุณาสแกนผ่านชิปสินค้า";
+        } else {
             document.getElementById('data-chip').innerText = chipId;
 
+            // 3. เชื่อมต่อ Supabase ดึงข้อมูลจริงจากตาราง warranties ตาม chip_id ทันที
             var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
             var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";
 
@@ -127,66 +134,51 @@
                 headers: {
                     "apikey": supabaseAnonKey,
                     "Authorization": "Bearer " + supabaseAnonKey,
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Prefer": "return=representation"
                 }
             })
-            .then(function(res) { 
-                if (!res.ok) throw new Error("Network response was not ok");
-                return res.json(); 
-            })
+            .then(function(res) { return res.json(); })
             .then(function(data) {
                 if (data && data.length > 0) {
                     var item = data[0];
-                    renderCardData(
-                        item.model || item.product_name || "-",
-                        item.size || "-",
-                        item.color || "-",
-                        item.customer_name || item.owner || item.name || "-",
-                        item.activated || item.activated_at || item.start_date || item.created_at || null
-                    );
+                    renderCard({
+                        model: item.model || "-",
+                        size: item.size || "-",
+                        color: item.color || "-",
+                        customer_name: item.customer_name || item.owner || "-",
+                        activated_at: item.activated_at || item.start_date || null
+                    });
                 } else {
-                    setFallbackState("ไม่พบข้อมูลสินค้านี้ในระบบ", "ยังไม่ได้ลงทะเบียนรับประกัน");
+                    document.getElementById('data-model').innerText = "ไม่พบข้อมูลสินค้านี้ในระบบ";
+                    document.getElementById('data-size').innerText = "-";
+                    document.getElementById('data-color').innerText = "-";
+                    document.getElementById('data-owner').innerText = "-";
+                    document.getElementById('countdown-text').innerText = "ยังไม่ได้ลงทะเบียนรับประกัน";
                 }
             })
             .catch(function(err) {
-                console.error("Fetch error:", err);
-                setFallbackState("ไม่พบข้อมูล / สแกนชิปใหม่อีกครั้ง", "ระบบขัดข้องชั่วคราว");
+                console.error("Database fetch error:", err);
+                document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล";
             });
-        } else {
-            document.getElementById('data-chip').innerText = "ไม่พบรหัสชิป";
-            setFallbackState("-", "กรุณาสแกนผ่านชิปสินค้า");
         }
 
-        function setFallbackState(modelText, countdownText) {
-            document.getElementById('data-model').innerText = modelText;
-            document.getElementById('data-size').innerText = "-";
-            document.getElementById('data-color').innerText = "-";
-            document.getElementById('data-owner').innerText = "-";
-            document.getElementById('data-start-date').innerText = "-";
-            document.getElementById('countdown-text').innerText = countdownText;
-        }
+        // ฟังก์ชันแสดงผลข้อมูลและการนับถอยหลังเรียลไทม์
+        function renderCard(info) {
+            document.getElementById('data-model').innerText = info.model;
+            document.getElementById('data-size').innerText = info.size;
+            document.getElementById('data-color').innerText = info.color;
+            document.getElementById('data-owner').innerText = info.customer_name;
 
-        // --- ส่วนที่ 3: ระบบนับถอยหลัง Real-time ---
-        var timerInterval = null;
-
-        function renderCardData(model, size, color, owner, activatedAt) {
-            document.getElementById('data-model').innerText = model;
-            document.getElementById('data-size').innerText = size;
-            document.getElementById('data-color').innerText = color;
-            document.getElementById('data-owner').innerText = owner;
-
-            if (!activatedAt) {
+            if (!info.activated_at) {
                 document.getElementById('data-start-date').innerText = "-";
                 document.getElementById('countdown-text').innerText = "ไม่มีข้อมูลวันที่เริ่มรับประกัน";
                 return;
             }
 
-            var startDate = new Date(activatedAt);
-            if (isNaN(startDate.getTime())) {
-                document.getElementById('data-start-date').innerText = activatedAt;
-                document.getElementById('countdown-text').innerText = "รูปแบบวันที่ไม่ถูกต้อง";
-                return;
-            }
+            var startDateStr = info.activated_at.split('T')[0];
+            document.getElementById('data-start-date').innerText = startDateStr;
 
-            // แสดงวันที่ DD/MM/YYYY
-            var day = ("0" + startDate.getD
+            // คำนวณเวลาหมดอายุ 1 ปี (365 วัน) จากวันที่ลงทะเบียนครั้งแรกใน DB
+            var startTime = new Date(startDateStr + "T00:00:00").getTime();
+            var expireTime = startTime + (365 * 24 * 60 * 60 * 1000);
