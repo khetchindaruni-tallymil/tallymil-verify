@@ -6,6 +6,8 @@
     <title>TALLY MiL - Certificate of Authenticity & Warranty</title>
     <link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- โหลด Supabase SDK ตัวทางการเวอร์ชันเสถียร -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             background-color: #050505;
@@ -22,7 +24,7 @@
 </head>
 <body>
 
-    <!-- หน้าต้อนรับ: ทำงานอิสระ 7 วินาทีแล้วซ่อนตัวเองชัวร์ 100% -->
+    <!-- หน้าต้อนรับ: โชว์ 7 วินาที แล้วซ่อนอัตโนมัติแบบชัวร์ 100% -->
     <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999;">
         <div style="max-width: 320px;">
             <h1 style="color: #e2c068; letter-spacing: 0.25em; font-size: 1.5rem; margin-bottom: 8px;">TALLY MIL</h1>
@@ -93,7 +95,7 @@
     </div>
 
     <script>
-        // 1. ตัวควบคุมหน้าต้อนรับ (ทำงานแยกอิสระ 7 วินาที ตัดเข้าหน้าการ์ดแน่นอน 100%)
+        // 1. หน้าต้อนรับ 7 วินาที ตัดเข้าหน้าการ์ดอัตโนมัติแบบอิสระ
         setTimeout(function() {
             var welcome = document.getElementById('welcome-screen');
             var card = document.getElementById('card-screen');
@@ -101,87 +103,81 @@
             if (card) card.style.display = 'block';
         }, 7000);
 
-        // 2. ดึงข้อมูลจาก Supabase โดยใช้ Fetch ธรรมดา (ไม่พึ่งพา SDK ภายนอก ป้องกันสคริปต์ค้าง)
+        // 2. ดึง Chip ID จาก URL (ถ้าไม่ได้ส่งมา ให้ดึงรหัส 040ADD821B1291 มาเทส)
         var urlParams = new URLSearchParams(window.location.search);
         var chipId = urlParams.get('chip') || urlParams.get('code') || "040ADD821B1291";
         
         document.getElementById('data-chip').innerText = chipId;
 
-        var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
-        var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";
+        // 3. เชื่อมต่อผ่าน Supabase JS SDK ตัวทางการ
+        const SUPABASE_URL = 'https://nzcsgskrqmzboyqwbob.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
 
-        fetch(supabaseUrl, {
-            method: "GET",
-            headers: {
-                "apikey": supabaseAnonKey,
-                "Authorization": "Bearer " + supabaseAnonKey,
-                "Content-Type": "application/json",
-                "Prefer": "return=representation"
-            }
-        })
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-            if (data && data.length > 0) {
-                var item = data[0];
-                renderWarrantyCard({
-                    model: item.model || "-",
-                    size: item.size || "-",
-                    color: item.color || "-",
-                    customer_name: item.customer_name || "-",
-                    activated_at: item.activated_at || null
-                });
-            } else {
-                document.getElementById('data-model').innerText = "ไม่พบรหัสชิปนี้ในระบบ";
-                document.getElementById('data-size').innerText = "-";
-                document.getElementById('data-color').innerText = "-";
-                document.getElementById('data-owner').innerText = "-";
-                document.getElementById('countdown-text').innerText = "ยังไม่ได้ลงทะเบียนรับประกัน";
-            }
-        })
-        .catch(function(err) {
-            console.error("Database fetch error:", err);
-            document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล";
-        });
+        const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        function renderWarrantyCard(info) {
-            document.getElementById('data-model').innerText = info.model;
-            document.getElementById('data-size').innerText = info.size;
-            document.getElementById('data-color').innerText = info.color;
-            document.getElementById('data-owner').innerText = info.customer_name;
+        async function loadData() {
+            try {
+                let { data, error } = await client
+                    .from('warranties')
+                    .select('*')
+                    .eq('chip_id', chipId);
 
-            if (!info.activated_at) {
-                document.getElementById('data-start-date').innerText = "-";
-                document.getElementById('countdown-text').innerText = "ไม่มีข้อมูลวันที่เริ่มรับประกัน";
-                return;
-            }
-
-            var startDateStr = info.activated_at.split('T')[0];
-            document.getElementById('data-start-date').innerText = startDateStr;
-
-            var startTime = new Date(startDateStr + "T00:00:00").getTime();
-            var expireTime = startTime + (365 * 24 * 60 * 60 * 1000);
-
-            function updateCountdown() {
-                var now = new Date().getTime();
-                var distance = expireTime - now;
-
-                if (distance <= 0) {
-                    document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
+                if (error) {
+                    console.error("Supabase Query Error:", error);
+                    document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการดึงข้อมูล";
                     return;
                 }
 
-                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                if (data && data.length > 0) {
+                    var item = data[0];
+                    document.getElementById('data-model').innerText = item.model || "-";
+                    document.getElementById('data-size').innerText = item.size || "-";
+                    document.getElementById('data-color').innerText = item.color || "-";
+                    document.getElementById('data-owner').innerText = item.customer_name || "-";
 
-                document.getElementById('countdown-text').innerText = 
-                    days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที";
+                    if (item.activated_at) {
+                        var startDateStr = item.activated_at.split('T')[0];
+                        document.getElementById('data-start-date').innerText = startDateStr;
+
+                        var startTime = new Date(startDateStr + "T00:00:00").getTime();
+                        var expireTime = startTime + (365 * 24 * 60 * 60 * 1000);
+
+                        function updateCountdown() {
+                            var now = new Date().getTime();
+                            var distance = expireTime - now;
+
+                            if (distance <= 0) {
+                                document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
+                                return;
+                            }
+
+                            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                            document.getElementById('countdown-text').innerText = 
+                                days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที";
+                        }
+
+                        updateCountdown();
+                        setInterval(updateCountdown, 1000);
+                    } else {
+                        document.getElementById('data-start-date').innerText = "-";
+                        document.getElementById('countdown-text').innerText = "ไม่มีข้อมูลวันที่เริ่มรับประกัน";
+                    }
+
+                } else {
+                    document.getElementById('data-model').innerText = "ไม่พบรหัสชิปนี้ในระบบ";
+                    document.getElementById('data-size').innerText = "-";
+                    document.getElementById('data-color').innerText = "-";
+                    document.getElementById('data-owner').innerText = "-";
+                    document.getElementById('countdown-text').innerText = "ยังไม่ได้ลงทะเบียนรับประกัน";
+                }
+            } catch (err) {
+                console.error("Connection Exception:", err);
+                document.getElementById('data-model').innerText = "เชื่อมต่อฐานข้อมูลไม่สำเร็จ";
             }
-
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
         }
-    </script>
-</body>
-</html>
+
+        loadData()
