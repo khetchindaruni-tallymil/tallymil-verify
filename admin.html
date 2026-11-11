@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -136,6 +137,12 @@
             <input type="text" id="model" required>
         </div>
 
+        <!-- เพิ่มช่องกรอก SKU ตรงนี้ -->
+        <div class="form-group">
+            <label>รหัสสินค้า (SKU):</label>
+            <input type="text" id="sku" placeholder="เช่น HB-XS-CS" required>
+        </div>
+
         <div class="form-group">
             <label>ไซส์ (SIZE):</label>
             <input type="text" id="size" required>
@@ -148,7 +155,7 @@
 
         <div class="form-group">
             <label>ชื่อผู้ถือครอง (REGISTERED OWNER):</label>
-            <input type="text" id="customer_name" required>
+            <input type="text" id="customer_name" placeholder="ใส่ 'ยังไม่ได้ลงทะเบียน' ถ้ายังไม่ระบุเจ้าของ">
         </div>
 
         <div class="form-group">
@@ -204,12 +211,14 @@
             dateInput = new Date().toISOString().split('T')[0];
         }
 
+        // เพิ่มฟิลด์ sku เข้าไปใน payload ที่จะส่งเข้า Supabase
         const payload = {
             chip_id: cleanedChip,
             model: document.getElementById('model').value.trim(),
+            sku: document.getElementById('sku').value.trim(),
             size: document.getElementById('size').value.trim(),
             color: document.getElementById('color').value.trim(),
-            customer_name: document.getElementById('customer_name').value.trim(),
+            customer_name: document.getElementById('customer_name').value.trim() || "ยังไม่ได้ลงทะเบียน",
             phone: document.getElementById('phone').value.trim(),
             line_id: document.getElementById('line_id').value.trim(),
             activated_at: dateInput
@@ -223,7 +232,7 @@
             if (error) throw error;
 
             alertMsg.className = 'success';
-            alertMsg.innerText = '✓ บันทึกข้อมูลสำเร็จเรียบร้อย!';
+            alertMsg.innerText = '✓ บันทึกข้อมูลและ SKU สำเร็จเรียบร้อย!';
             alertMsg.style.display = 'block';
 
             // สร้างลิงก์ NFC อัตโนมัติ
