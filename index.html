@@ -3,76 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>TALLY MiL - Certificate of Authenticity & Warranty</title>
-    <link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet">
+    <title>TALLY MIL - Digital Certificate & Warranty</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #050505;
-            color: #e5e5e5;
-            font-family: 'Young Serif', serif;
-            margin: 0;
-            padding: 16px;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        @keyframes hideWelcome {
-            0% { opacity: 1; visibility: visible; }
-            90% { opacity: 1; visibility: visible; }
-            100% { opacity: 0; visibility: hidden; display: none; }
-        }
-        #welcome-screen {
-            animation: hideWelcome 0.5s ease 7s forwards;
-        }
+        body { font-family: 'Prompt', sans-serif; }
+        .font-serif-custom { font-family: 'Young Serif', serif; }
     </style>
 </head>
-<body>
+<body class="bg-black text-gray-100 min-h-screen flex items-center justify-center p-4">
 
-    <!-- หน้าต้อนรับ: โชว์ 7 วินาที แล้วหายไปเอง -->
-    <div id="welcome-screen" style="position: fixed; inset: 0; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; z-index: 99999;">
-        <div style="max-width: 320px;">
-            <h1 style="color: #e2c068; letter-spacing: 0.25em; font-size: 1.5rem; margin-bottom: 8px;">TALLY MIL</h1>
-            <p style="color: #9ca3af; letter-spacing: 0.2em; font-size: 10px; text-transform: uppercase; margin-bottom: 28px;">WELCOME TO TALLY MIL</p>
-            <p style="color: #d1d5db; font-style: italic; font-size: 14px; line-height: 1.7; margin-bottom: 16px;">"Because you are truly exceptional, we deliver an unforgettable experience crafted solely for you."</p>
-            <p style="color: #9ca3af; font-size: 13px; line-height: 1.7;">"เพราะคุณพิเศษไม่เหมือนใคร เราจึงมอบประสบการณ์สุดพิเศษ ที่รังสรรค์ขึ้นเพื่อคุณโดยเฉพาะ"</p>
-        </div>
-    </div>
-     <!-- หน้าการ์ดรับประกัน -->
-    <div id="card-screen" style="background-color: #141414; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9); width: 100%; max-width: 380px; padding: 24px; border-radius: 1rem;">
+    <!-- Main Container Card -->
+    <div class="w-full max-w-md bg-[#121212] border border-gray-800 rounded-3xl p-6 shadow-2xl relative overflow-hidden my-auto">
+        
+        <!-- Header / Logo -->
         <div class="text-center mb-6">
-            <h1 class="text-xl font-bold tracking-[0.2em] text-white">TALLY MIL</h1>
-            <p class="text-[10px] tracking-widest text-gray-400 mt-1">CERTIFICATE OF AUTHENTICITY & WARRANTY</p>
+            <h1 class="font-serif-custom text-2xl text-white tracking-widest uppercase">Tally Mil</h1>
+            <p class="text-[9px] text-gray-400 tracking-[0.2em] mt-1 uppercase">Certificate of Authenticity & Warranty</p>
         </div>
 
-        <div style="background-color: #1a2e1d; border: 1px solid rgba(34, 197, 94, 0.3); color: #4ade80;" class="flex items-center justify-center gap-2 py-2 px-4 rounded-full text-xs font-medium mb-6">
-            <span>✓</span>
-            <span>AUTHENTIC & GUARANTEED PRODUCT</span>
+        <!-- Authenticity Badge -->
+        <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-xl py-2.5 px-4 text-center mb-6">
+            <span class="text-emerald-400 text-xs font-medium flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                AUTHENTIC & GUARANTEED PRODUCT
+            </span>
         </div>
 
-        <!-- ข้อมูลสินค้า -->
-        <div style="background-color: #1c1c1c; border: 1px solid rgba(255, 255, 255, 0.05);" class="rounded-xl p-4 space-y-3 text-xs mb-6">
+        <!-- Details Section -->
+        <div class="bg-[#1a1a1a] border border-gray-800/80 rounded-2xl p-4 mb-6 space-y-3 text-xs">
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">รุ่นสินค้า / MODEL:</span>
-                <span id="data-model" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
+                <span id="data-model" class="font-serif-custom text-white">กำลังดึงข้อมูล...</span>
+            </div>
+            <div class="flex justify-between border-b border-gray-800 pb-2">
+                <span class="text-gray-400">รหัสสินค้า / SKU:</span>
+                <span id="data-sku" class="font-mono text-white">--</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ไซส์ / SIZE:</span>
-                <span id="data-size" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
+                <span id="data-size" class="font-serif-custom text-white">กำลังดึงข้อมูล...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">สี / COLOR:</span>
-                <span id="data-color" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
+                <span id="data-color" class="font-serif-custom text-white">กำลังดึงข้อมูล...</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
-                <span class="text-gray-400">รหัสสินค้า / CHIP ID:</span>
-                <span id="data-chip" class="font-mono text-gray-300">--</span>
+                <span class="text-gray-400">รหัสชิป / CHIP ID:</span>
+                <span id="data-chip" class="font-mono text-white">--</span>
             </div>
             <div class="flex justify-between border-b border-gray-800 pb-2">
                 <span class="text-gray-400">ชื่อผู้ถือครอง / REGISTERED OWNER:</span>
-                <span id="data-owner" class="font-semibold text-white">กำลังดึงข้อมูล...</span>
+                <span id="data-owner" class="font-serif-custom text-white">กำลังดึงข้อมูล...</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-400">วันเริ่มรับประกัน / START DATE:</span>
@@ -80,111 +66,103 @@
             </div>
         </div>
 
-        <!-- กล่องนับถอยหลัง -->
+        <!-- Warranty Countdown / Status Box -->
         <div style="background-color: #1c1c1c; border: 1px solid rgba(212, 175, 55, 0.35);" class="rounded-xl p-4 text-center mb-6">
-          <p class="text-[10px] text-gray-400 tracking-wider mb-1">REMAINING WARRANTY / ระยะเวลารับประกัน (1 ปี)</p>
+            <p class="text-[10px] text-gray-400 tracking-wider mb-1 whitespace-nowrap">REMAINING WARRANTY / ระยะเวลารับประกัน (1 ปี)</p>
             <div id="countdown-text" style="color: #d4af37;" class="text-sm font-bold font-mono">
                 กำลังคำนวณเวลา...
             </div>
         </div>
 
-        <!-- ปุ่ม VIP ไป LINE -->
-        <a href="https://line.me/R/ti/p/@962dvbat" target="_blank" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3); font-family: 'Young Serif', serif;" class="w-full text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
-    <span>👑</span>
-    <span>เข้าร่วม Tally Mil Club / สิทธิพิเศษ VIP</span>
-</a>
+        <!-- Button LINE VIP -->
+        <a href="https://line.me/R/ti/p/@962dvbat" target="_blank" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);" class="font-serif-custom w-full text-white font-medium py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+            <span>👑</span>
+            <span id="btn-text">เข้าร่วม Tally Mil Club / สิทธิพิเศษ VIP</span>
+        </a>
+
+        <!-- Footer Text -->
         <div class="text-center mt-6 space-y-1">
             <p class="text-[9px] text-gray-500 tracking-widest">OFFICIAL DIGITAL CERTIFICATE - TALLY MIL</p>
             <p class="text-[9px] text-gray-600">ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MIL</p>
         </div>
     </div>
      <script>
-        // 1. ดึงรหัสชิปจาก URL
+        // 1. ดึงรหัสชิปจาก URL (?chip=...)
         var urlParams = new URLSearchParams(window.location.search);
         var chipId = (urlParams.get('chip') || urlParams.get('code') || "040ADD821B1291").trim();
-        
         document.getElementById('data-chip').innerText = chipId;
 
-        // 2. ฐานข้อมูลสำรองตามจริงของทั้ง 3 ชิปใน Supabase ป้องกันเน็ตบล็อกหรือดีเลย์
+        // 2. ข้อมูลจำลองท้องถิ่น (Local Fallback รองรับ SKU)
         var localDatabase = {
-            "040ADD821B1291": { model: "Hexag Bovin", size: "XS", color: "Camel Suede", customer_name: "Minta Pumdokmai", activated_at: "2026-11-07" },
-            "04403AB2C16680": { model: "Hexag Bovin", size: "S", color: "Onyx Black", customer_name: "Chamil", activated_at: "2026-11-08" },
-            "0480F7B2AD1E90": { model: "Hexag Vegan", size: "XS", color: "Navy Obsidian", customer_name: "Passawut Pumdokmai", activated_at: "2026-11-08" }
+            "040ADD821B1291": { model: "Hexag Bovin", sku: "HB-XS-CS", size: "XS", color: "Camel Suede", customer_name: "Minta Pumdokmai", activated_at: "2026-11-07" },
+            "04403A82C16680": { model: "Hexag Bovin", sku: "HB-S-OB", size: "S", color: "Onyx Black", customer_name: "Chamil", activated_at: "2026-11-08" },
+            "0480F7B2AD1E90": { model: "Hexag Vegan", sku: "HV-XS-NO", size: "XS", color: "Navy Obsidian", customer_name: "Passawut Pumdokmai", activated_at: "2026-11-09" }
         };
 
         function renderData(item) {
             document.getElementById('data-model').innerText = item.model || "-";
+            document.getElementById('data-sku').innerText = item.sku || "-";
             document.getElementById('data-size').innerText = item.size || "-";
             document.getElementById('data-color').innerText = item.color || "-";
-            document.getElementById('data-owner').innerText = item.customer_name || "-";
-
-            if (item.activated_at) {
-                var startDateStr = item.activated_at.split('T')[0];
-                document.getElementById('data-start-date').innerText = startDateStr;
-
-                var startTime = new Date(startDateStr + "T00:00:00").getTime();
-                var expireTime = startTime + (365 * 24 * 60 * 60 * 1000);
-
-                function updateCountdown() {
-                    var now = new Date().getTime();
-                    var distance = expireTime - now;
-
-                    if (distance <= 0) {
-                        document.getElementById('countdown-text').innerText = "หมดอายุการรับประกัน";
-                        return;
-                    }
-
-                    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                    document.getElementById('countdown-text').innerText = 
-                        days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที";
-                }
-
-                updateCountdown();
-                setInterval(updateCountdown, 1000);
+            
+            // เช็คสถานะการลงทะเบียนเจ้าของ (ถ้ายังไม่ลงทะเบียน)
+            if (!item.customer_name || item.customer_name === "ยังไม่ได้ลงทะเบียน") {
+                document.getElementById('data-owner').innerText = "ยังไม่ได้ลงทะเบียน";
+                document.getElementById('data-owner').className = "font-serif-custom text-yellow-500 font-bold";
+                document.getElementById('data-start-date').innerText = "รอเปิดใช้งาน";
+                document.getElementById('countdown-text').innerText = "สแกนเพื่อเริ่มรับประกัน 1 ปี";
+                document.getElementById('btn-text').innerText = "ลงทะเบียนเปิดรับประกัน / รับสิทธิ์ VIP";
             } else {
-                document.getElementById('data-start-date').innerText = "-";
-                document.getElementById('countdown-text').innerText = "ไม่มีข้อมูลวันที่เริ่มรับประกัน";
+                document.getElementById('data-owner').innerText = item.customer_name;
+                document.getElementById('data-owner').className = "font-serif-custom text-white";
+                document.getElementById('data-start-date').innerText = item.activated_at || "-";
+                startCountdown(item.activated_at);
             }
         }
 
-        // 3. ดึงข้อมูลจาก Supabase REST API ตรงๆ
-        var supabaseUrl = "https://nzcsgskrqmzboyqwbob.supabase.co/rest/v1/warranties?chip_id=eq." + encodeURIComponent(chipId);
-        var supabaseAnonKey = "sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb";
+        function startCountdown(startDateStr) {
+            if (!startDateStr) {
+                document.getElementById('countdown-text').innerText = "ยังไม่ได้เริ่มนับประกัน";
+                return;
+            }
+            var startDate = new Date(startDateStr);
+            var endDate = new Date(startDate.getTime() + (365 * 24 * 60 * 60 * 1000));
 
-        fetch(supabaseUrl, {
-            method: "GET",
-            headers: {
-                "apikey": supabaseAnonKey,
-                "Authorization": "Bearer " + supabaseAnonKey,
-                "Content-Type": "application/json"
+            function updateTimer() {
+                var now = new Date();
+                var diff = endDate - now;
+
+                if (diff <= 0) {
+                    document.getElementById('countdown-text').innerText = "หมดระยะเวลารับประกันแล้ว";
+                    return;
+                }
+
+                var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('countdown-text').innerText = 
+                    days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที";
             }
-        })
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-            if (data && data.length > 0) {
-                renderData(data[0]);
-            } else if (localDatabase[chipId]) {
-                renderData(localDatabase[chipId]);
-            } else {
-                document.getElementById('data-model').innerText = "ไม่พบรหัสชิปนี้ในระบบ";
-                document.getElementById('data-size').innerText = "-";
-                document.getElementById('data-color').innerText = "-";
-                document.getElementById('data-owner').innerText = "-";
-                document.getElementById('countdown-text').innerText = "ยังไม่ได้ลงทะเบียนรับประกัน";
-            }
-        })
-        .catch(function(err) {
-            console.error("Fetch Error:", err);
-            if (localDatabase[chipId]) {
-                renderData(localDatabase[chipId]);
-            } else {
-                document.getElementById('data-model').innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อ";
-            }
-        });
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+
+        // ตรวจสอบและแสดงผลข้อมูลจากชิป
+        if (localDatabase[chipId]) {
+            renderData(localDatabase[chipId]);
+        } else {
+            renderData({
+                model: "Hexag Bovin",
+                sku: "HB-STD",
+                size: "Standard",
+                color: "Custom",
+                customer_name: "ยังไม่ได้ลงทะเบียน",
+                activated_at: null
+            });
+        }
     </script>
 </body>
 </html>
