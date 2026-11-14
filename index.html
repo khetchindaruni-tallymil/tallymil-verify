@@ -85,84 +85,101 @@
             <p class="text-[9px] text-gray-500 tracking-widest">OFFICIAL DIGITAL CERTIFICATE - TALLY MIL</p>
             <p class="text-[9px] text-gray-600">ขอบคุณที่เลือกใช้ผลิตภัณฑ์ TALLY MIL</p>
         </div>
-    </div>
-     <script>
-        // 1. ดึงรหัสชิปจาก URL (?chip=...)
-        var urlParams = new URLSearchParams(window.location.search);
-        var chipId = (urlParams.get('chip') || urlParams.get('code') || "040ADD821B1291").trim();
-        document.getElementById('data-chip').innerText = chipId;
+    </div><script>
+    // 1. ตั้งค่าการเชื่อมต่อ Supabase
+    const SUPABASE_URL = 'https://nzcsgskrqmzboysqwbob.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_pKnUa-Sk_hsyXkMM4VbH8w_I0Dy5yDb';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // 2. ข้อมูลจำลองท้องถิ่น (Local Fallback รองรับ SKU)
-        var localDatabase = {
-            "040ADD821B1291": { model: "Hexag Bovin", sku: "HB-XS-CS", size: "XS", color: "Camel Suede", customer_name: "Minta Pumdokmai", activated_at: "2026-11-07" },
-            "04403A82C16680": { model: "Hexag Bovin", sku: "HB-S-OB", size: "S", color: "Onyx Black", customer_name: "Chamil", activated_at: "2026-11-08" },
-            "0480F7B2AD1E90": { model: "Hexag Vegan", sku: "HV-XS-NO", size: "XS", color: "Navy Obsidian", customer_name: "Passawut Pumdokmai", activated_at: "2026-11-09" }
-        };
+    // 2. ดึงรหัสชิปจาก URL (?chip=...)
+    const urlParams = new URLSearchParams(window.location.search);
+    const chipId = (urlParams.get('chip') || urlParams.get('code') || "04872A823C2090").trim();
+    document.getElementById('data-chip').innerText = chipId;
 
-        function renderData(item) {
-            document.getElementById('data-model').innerText = item.model || "-";
-            document.getElementById('data-sku').innerText = item.sku || "-";
-            document.getElementById('data-size').innerText = item.size || "-";
-            document.getElementById('data-color').innerText = item.color || "-";
-            
-            // เช็คสถานะการลงทะเบียนเจ้าของ (ถ้ายังไม่ลงทะเบียน)
-            if (!item.customer_name || item.customer_name === "ยังไม่ได้ลงทะเบียน") {
-                document.getElementById('data-owner').innerText = "ยังไม่ได้ลงทะเบียน";
-                document.getElementById('data-owner').className = "font-serif-custom text-yellow-500 font-bold";
-                document.getElementById('data-start-date').innerText = "รอเปิดใช้งาน";
-                document.getElementById('countdown-text').innerText = "สแกนเพื่อเริ่มรับประกัน 1 ปี";
-                document.getElementById('btn-text').innerText = "ลงทะเบียนเปิดรับประกัน / รับสิทธิ์ VIP";
-            } else {
-                document.getElementById('data-owner').innerText = item.customer_name;
-                document.getElementById('data-owner').className = "font-serif-custom text-white";
-                document.getElementById('data-start-date').innerText = item.activated_at || "-";
-                startCountdown(item.activated_at);
-            }
+    // 3. ฟังก์ชันแสดงผลข้อมูลลงบนหน้าเว็บ
+    function renderData(item) {
+        document.getElementById('data-model').innerText = item.model || "-";
+        document.getElementById('data-sku').innerText = item.sku || "-";
+        document.getElementById('data-size').innerText = item.size || "-";
+        document.getElementById('data-color').innerText = item.color || "-";
+        
+        // เช็คสถานะการลงทะเบียนเจ้าของ
+        if (!item.customer_name || item.customer_name === "ยังไม่ได้ลงทะเบียน" || item.customer_name.trim() === "") {
+            document.getElementById('data-owner').innerText = "ยังไม่ได้ลงทะเบียน";
+            document.getElementById('data-owner').className = "font-serif-custom text-yellow-500 font-bold";
+            document.getElementById('data-start-date').innerText = "รอเปิดใช้งาน";
+            document.getElementById('countdown-text').innerText = "สแกนเพื่อเริ่มรับประกัน 1 ปี";
+            document.getElementById('btn-text').innerText = "ลงทะเบียนเปิดรับประกัน / รับสิทธิ์ VIP";
+        } else {
+            document.getElementById('data-owner').innerText = item.customer_name;
+            document.getElementById('data-owner').className = "font-serif-custom text-white";
+            document.getElementById('data-start-date').innerText = item.activated_at || "-";
+            startCountdown(item.activated_at);
         }
+    }
 
-        function startCountdown(startDateStr) {
-            if (!startDateStr) {
-                document.getElementById('countdown-text').innerText = "ยังไม่ได้เริ่มนับประกัน";
+    // 4. ฟังก์ชันนับถอยหลังประกัน 1 ปี
+    function startCountdown(startDateStr) {
+        if (!startDateStr) {
+            document.getElementById('countdown-text').innerText = "ยังไม่ได้เริ่มนับประกัน";
+            return;
+        }
+        var startDate = new Date(startDateStr);
+        var endDate = new Date(startDate.getTime() + (365 * 24 * 60 * 60 * 1000));
+
+        function updateTimer() {
+            var now = new Date();
+            var diff = endDate - now;
+
+            if (diff <= 0) {
+                document.getElementById('countdown-text').innerText = "หมดระยะเวลารับประกันแล้ว";
                 return;
             }
-            var startDate = new Date(startDateStr);
-            var endDate = new Date(startDate.getTime() + (365 * 24 * 60 * 60 * 1000));
 
-            function updateTimer() {
-                var now = new Date();
-                var diff = endDate - now;
+            var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-                if (diff <= 0) {
-                    document.getElementById('countdown-text').innerText = "หมดระยะเวลารับประกันแล้ว";
-                    return;
-                }
+            document.getElementById('countdown-text').innerText = 
+                days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที";
+        }
 
-                var days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        updateTimer();
+        setInterval(updateTimer, 1000);
+    }
 
-                document.getElementById('countdown-text').innerText = 
-                    days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที";
+    // 5. ดึงข้อมูลจริงจาก Supabase ตามรหัสชิป
+    async function fetchWarrantyData() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('warranties')
+                .select('*')
+                .eq('chip_id', chipId)
+                .single();
+
+            if (error || !data) {
+                console.log("ไม่พบข้อมูลในระบบ ใช้ค่าเริ่มต้น");
+                // ค่าสำรองถ้าหาชิปไม่พบในฐานข้อมูล
+                renderData({
+                    model: "Hexag Bovin",
+                    sku: "HB-STD",
+                    size: "Standard",
+                    color: "Custom",
+                    customer_name: "ยังไม่ได้ลงทะเบียน",
+                    activated_at: null
+                });
+            } else {
+                // แสดงข้อมูลจริงที่ดึงมาจาก Supabase
+                renderData(data);
             }
-
-            updateTimer();
-            setInterval(updateTimer, 1000);
+        } catch (err) {
+            console.error("Error fetching data:", err);
         }
+    }
 
-        // ตรวจสอบและแสดงผลข้อมูลจากชิป
-        if (localDatabase[chipId]) {
-            renderData(localDatabase[chipId]);
-        } else {
-            renderData({
-                model: "Hexag Bovin",
-                sku: "HB-STD",
-                size: "Standard",
-                color: "Custom",
-                customer_name: "ยังไม่ได้ลงทะเบียน",
-                activated_at: null
-            });
-        }
-    </script>
+    // เรียกใช้งานฟังก์ชันดึงข้อมูลทันทีที่เปิดหน้าเว็บ
+    fetchWarrantyData();
+</script>    
 </body>
 </html>
